@@ -5,9 +5,8 @@ const val FIRST_COL = 'a'
 // Move arguments index
 const val FROM_COL_IDX = 1
 const val FROM_ROW_IDX = 2
-const val CAPTURE_OR_TO_COL_IDX = 3
-const val TO_COL_OR_ROW_IDX = 4
-const val TO_ROW_IDX = 5
+const val TO_COL_IDX = 3
+const val TO_ROW_IDX = 4
 const val PROMOTION_IDX = 6
 const val CAPTURE_CHAR = 'x'
 const val CAPTURE_OFFSET = 1
@@ -123,33 +122,47 @@ class Board {
      * @property promotion new PieceType of promotion or null
      */
     data class Move(
-        val piece: Piece?,
         val from: Position,
         val capture: Boolean,
         val to: Position,
         val promotion: PieceType?
-    )
+    ) {
+        companion object {
+            operator fun invoke(string: String): Move {
+                require(checkMoveFormatting(string)) {
+                    "Use format: [<piece>][<from>][x][<to>][=<piece>]"
+                }
 
-    /**
-     * Convert a string to a Move.
-     * @return move
-     */
-    private fun String.toMove(): Move {
-        val fromPos = Position(this[FROM_COL_IDX], this[FROM_ROW_IDX].digitToInt())
-        val capture = 'x' in this
-        val toPos = Position(
-            this[if (capture) TO_COL_OR_ROW_IDX else CAPTURE_OR_TO_COL_IDX],
-            this[if (capture) TO_ROW_IDX else TO_COL_OR_ROW_IDX].digitToInt()
-        )
+                val fromPos = Position(string[FROM_COL_IDX], string[FROM_ROW_IDX].digitToInt())
+                val capture = CAPTURE_CHAR in string
+                val toPos = Position(
+                    string[TO_COL_IDX + if (capture) CAPTURE_OFFSET else NO_OFFSET],
+                    string[TO_ROW_IDX + if (capture) CAPTURE_OFFSET else NO_OFFSET].digitToInt()
+                )
 
-        return Move(
-            piece = chessBoard[fromPos.row - 1][fromPos.column - 'a' - 1],
-            from = fromPos,
-            capture = capture,
-            to = toPos,
-            promotion = if (this.length > PROMOTION_IDX) PieceType[this[PROMOTION_IDX]] else null
-        )
+                return Move(
+                    from = fromPos,
+                    capture = capture,
+                    to = toPos,
+                    promotion = if (string.length > PROMOTION_IDX) PieceType[string[PROMOTION_IDX]] else null
+                )
+            }
+
+            private fun checkMoveFormatting(move: String): Boolean {
+                val validPieceType = move[0] in PieceType.values().map { it.initial }
+
+                val validFromPosition = move[FROM_COL_IDX] in 'a'..'h' && move[FROM_ROW_IDX] in '1'..'8'
+                val capture = move[3] == CAPTURE_CHAR
+
+                val validToPosition =
+                    move[TO_COL_IDX + if (capture) CAPTURE_OFFSET else NO_OFFSET] in 'a'..'h' &&
+                            move[TO_ROW_IDX + if (capture) CAPTURE_OFFSET else NO_OFFSET] in '1'..'8'
+
+                return validPieceType && validFromPosition && validToPosition
+            }
+        }
     }
+
 
     /**
      * Move a piece in the board.
