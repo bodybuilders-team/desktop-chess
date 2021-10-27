@@ -1,13 +1,17 @@
 // Constants
 const val BOARD_SIZE = 8
+const val FIRST_COL = 'a'
 
-const val PIECE_IDX = 0
+// Move arguments index
 const val FROM_COL_IDX = 1
 const val FROM_ROW_IDX = 2
 const val CAPTURE_OR_TO_COL_IDX = 3
 const val TO_COL_OR_ROW_IDX = 4
 const val TO_ROW_IDX = 5
 const val PROMOTION_IDX = 6
+const val CAPTURE_CHAR = 'x'
+const val CAPTURE_OFFSET = 1
+const val NO_OFFSET = 0
 
 const val STRING_BOARD =
     "rnbqkbnr" +
@@ -20,6 +24,9 @@ const val STRING_BOARD =
             "RNBQKBNR"
 
 
+typealias Matrix2D<T> = Array<Array<T>>
+
+
 /**
  * Represents the game board with the pieces.
  */
@@ -28,17 +35,29 @@ class Board {
     /**
      * Chess piece.
      * @property type piece type
-     * @property position piece position in the board
      * @property color piece color (White or Black)
      */
-    data class Piece(val type: PieceType, val position: Position, val color: Color)
+    data class Piece(val type: PieceType, val color: Color)
 
     /**
      * Position of each board tile
-     * @property column char in range ['a', 'h']
+     * @property col char in range ['a', 'h']
      * @property row int in range [0..7]
      */
-    data class Position(val column: Char, val row: Int)
+    data class Position(val col: Char, val row: Int)
+
+    /**
+     * Position of each matrix value.
+     * @property col
+     * @property row
+     */
+    data class Matrix2DPosition(val col: Int, val row: Int)
+
+    /**
+     * Converts a position into a matrix position.
+     * @return Matrix position
+     */
+    private fun Position.toMatrixPosition() = Matrix2DPosition(col = col - FIRST_COL, row = BOARD_SIZE - row)
 
     /**
      * Piece color.
@@ -71,11 +90,10 @@ class Board {
         }
     }
 
-
     /**
      * 8x8 Matrix that represents the chess board.
      */
-    private val chessBoard: Array<Array<Piece?>> = Array(BOARD_SIZE) { Array(BOARD_SIZE) { null } }
+    private val chessBoard: Matrix2D<Piece?> = Array(BOARD_SIZE) { Array(BOARD_SIZE) { null } }
 
     init {
         initializeMatrix()
@@ -92,7 +110,6 @@ class Board {
                 if (char == ' ') null
                 else Piece(
                     PieceType[char.uppercaseChar()],
-                    Position('a' + col, row),
                     if (char.isUpperCase()) Color.WHITE else Color.BLACK
                 )
         }
@@ -100,7 +117,6 @@ class Board {
 
     /**
      * Chess move
-     * @property piece piece in the board
      * @property from original piece position
      * @property capture true if the piece will capture enemy piece
      * @property to new piece position
@@ -137,22 +153,64 @@ class Board {
 
     /**
      * Move a piece in the board.
-     * @param move piece move
+     * @param stringMove piece move
      * @return new board with piece moved
      */
-    fun makeMove(move: String): Board {
-        val realMove = move.toMove()
-
+    fun makeMove(stringMove: String): Board {
         try {
-            if (realMove.piece == null)
-                throw Throwable("No piece in the specified position")
+            // Get move arguments
+            val move = Move(stringMove)
+            val fromPos = move.from.toMatrixPosition()
+            val toPos = move.to.toMatrixPosition()
+            val piece = chessBoard[fromPos.row][fromPos.col] ?: throw Throwable("No piece in the specified position.")
 
+            // Board to return if it's a valid move
+            val newBoard = this
+
+            // If it's a capture move, check if it's a valid capture
+            if (move.capture) checkCapture(toPos, piece)
+
+            // Remove the piece from the original position
+            newBoard.chessBoard[fromPos.row][fromPos.col] = null
+
+            // If it's a promotion move, do promotion, else just put the piece in the to position
+            newBoard.chessBoard[toPos.row][toPos.col] =
+                if (move.promotion == null) piece
+                else doPromotion(piece, toPos, move.promotion)
+
+            return newBoard
         } catch (err: Throwable) {
             println(err)
             return this
         }
+    }
 
-        return this
+    /**
+     * Checks if the capture is valid.
+     * @param toPos position to capture
+     * @param piece piece to do the capture
+     * @throws Throwable if the capture is invalid
+     */
+    private fun checkCapture(toPos: Matrix2DPosition, piece: Piece) {
+        val captured = chessBoard[toPos.row][toPos.col]
+            ?: throw Throwable("No enemy piece in the specified position. You cannot capture.")
+        if (captured.color == piece.color)
+            throw Throwable("You cannot capture your color pieces.")
+    }
+
+    /**
+     * Checks if the promotion is valid and, if it is returns the new promoted piece.
+     * @param piece piece to promote
+     * @param toPos new piece position
+     * @param promotion new piece type to promote
+     * @return promoted piece
+     * @throws Throwable if the promotion is invalid
+     */
+    private fun doPromotion(piece: Piece, toPos: Matrix2DPosition, promotion: PieceType): Piece {
+        if (piece.color == Color.WHITE && toPos.row == 7 || piece.color == Color.BLACK && toPos.row == 0)
+            return piece.copy(type = promotion)
+        else
+            throw Throwable("You cannot get promoted.")
     }
 
 
@@ -168,10 +226,4 @@ class Board {
             }.joinToString("")
         }
     }
-}
-
-fun main() {
-    val board = Board()
-
-    board.makeMove("Pe9e9")
 }
