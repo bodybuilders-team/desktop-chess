@@ -5,7 +5,20 @@ fun main() {
     // checkEnvironment()   // Initialize MongoDB
     // val game = readGameName()
     // val (command,argument) = readCommand()
-    val chessBoard = Board()
+    
+    while(true){
+        try{
+            val (command, argument) = readCommand()
+            if(command == "play"){
+                if(argument != null) Board.Move(argument)
+            }
+        }
+        catch (err: Throwable){
+            //TODO("Create a specific Throwable regarding only errors from our own program")
+            //Catches any message thrown during execution and prints it on the console
+            println(err.message)
+        }
+    }
 }
 
 

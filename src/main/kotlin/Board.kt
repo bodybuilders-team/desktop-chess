@@ -1,26 +1,36 @@
 // Constants
 const val BOARD_SIZE = 8
 const val FIRST_COL = 'a'
+const val BLACK_FIRST_ROW_IDX = 0
+const val WHITE_FIRST_ROW_IDX = 7
+
+val VALID_COLS = 'a'..'h'
+val VALID_ROWS = '1'..'8'
 
 // Move arguments index
+val VALID_SIZE = 5..8
+const val PIECE_TYPE_IDX = 0
 const val FROM_COL_IDX = 1
 const val FROM_ROW_IDX = 2
+const val CAPTURE_IDX = 3
 const val TO_COL_IDX = 3
 const val TO_ROW_IDX = 4
-const val PROMOTION_IDX = 6
+const val PROMOTION_IDX = 5
+const val PROMOTION_PIECE_TYPE_IDX = 6
 const val CAPTURE_CHAR = 'x'
+const val PROMOTION_CHAR = '='
 const val CAPTURE_OFFSET = 1
 const val NO_OFFSET = 0
 
 const val STRING_BOARD =
     "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR"
+    "pppppppp" +
+    "        " +
+    "        " +
+    "        " +
+    "        " +
+    "PPPPPPPP" +
+    "RNBQKBNR"
 
 
 typealias Matrix2D<T> = Array<Array<T>>
@@ -86,6 +96,8 @@ class Board {
              */
             operator fun get(initial: Char) =
                 requireNotNull(values().find { it.initial == initial }) { "No PieceType with initial $initial" }
+            
+            fun validPieceTypes() = values().map { it.initial }
         }
     }
 
@@ -135,30 +147,54 @@ class Board {
 
                 val fromPos = Position(string[FROM_COL_IDX], string[FROM_ROW_IDX].digitToInt())
                 val capture = CAPTURE_CHAR in string
+                
+                val captureOffset = if (capture) CAPTURE_OFFSET else NO_OFFSET
+                
                 val toPos = Position(
-                    string[TO_COL_IDX + if (capture) CAPTURE_OFFSET else NO_OFFSET],
-                    string[TO_ROW_IDX + if (capture) CAPTURE_OFFSET else NO_OFFSET].digitToInt()
+                    string[TO_COL_IDX + captureOffset],
+                    string[TO_ROW_IDX + captureOffset].digitToInt()
                 )
 
                 return Move(
                     from = fromPos,
                     capture = capture,
                     to = toPos,
-                    promotion = if (string.length > PROMOTION_IDX) PieceType[string[PROMOTION_IDX]] else null
+                    promotion = if (string.length > PROMOTION_IDX + captureOffset)
+                        PieceType[string[PROMOTION_PIECE_TYPE_IDX + captureOffset]] else null
                 )
             }
 
+            /**
+             * Checks if the given string is a well-formatted move, that follows the format
+             * [<piece>][<from>][x][<to>][=<piece>]
+             * 
+             * @param move string to verify formatting
+             * @return if the formatting is valid
+             */
             private fun checkMoveFormatting(move: String): Boolean {
-                val validPieceType = move[0] in PieceType.values().map { it.initial }
+                val validSize = move.length in VALID_SIZE
+                
+                //Return false immediately if the size is invalid (prevents array out of bounds in the next lines)
+                if(!validSize) return false
+                
+                val validPieceType = move[PIECE_TYPE_IDX] in PieceType.validPieceTypes()
 
-                val validFromPosition = move[FROM_COL_IDX] in 'a'..'h' && move[FROM_ROW_IDX] in '1'..'8'
-                val capture = move[3] == CAPTURE_CHAR
+                val validFromPosition = move[FROM_COL_IDX] in VALID_COLS && move[FROM_ROW_IDX] in VALID_ROWS
+                val capture = move[CAPTURE_IDX] == CAPTURE_CHAR
+                val captureOffset = if (capture) CAPTURE_OFFSET else NO_OFFSET
 
                 val validToPosition =
-                    move[TO_COL_IDX + if (capture) CAPTURE_OFFSET else NO_OFFSET] in 'a'..'h' &&
-                            move[TO_ROW_IDX + if (capture) CAPTURE_OFFSET else NO_OFFSET] in '1'..'8'
+                    move[TO_COL_IDX + captureOffset] in VALID_COLS && move[TO_ROW_IDX + captureOffset] in VALID_ROWS
 
-                return validPieceType && validFromPosition && validToPosition
+                val validPromotion = 
+                    if(move.length > PROMOTION_IDX + captureOffset){
+                        move.length == (if(capture) VALID_SIZE.last else VALID_SIZE.last - CAPTURE_OFFSET) &&
+                        move[PROMOTION_IDX + captureOffset] == PROMOTION_CHAR &&
+                        move[PROMOTION_PIECE_TYPE_IDX + captureOffset] in PieceType.validPieceTypes()
+                    }
+                    else true
+                
+                return validSize && validPieceType && validFromPosition && validToPosition && validPromotion
             }
         }
     }
@@ -182,6 +218,8 @@ class Board {
 
             // If it's a capture move, check if it's a valid capture
             if (move.capture) checkCapture(toPos, piece)
+            
+            //TODO("Prevent pieces from doing whatever they want. Each piece has different moves.")
 
             // Remove the piece from the original position
             newBoard.chessBoard[fromPos.row][fromPos.col] = null
@@ -213,6 +251,7 @@ class Board {
 
     /**
      * Checks if the promotion is valid and, if it is returns the new promoted piece.
+     * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.
      * @param piece piece to promote
      * @param toPos new piece position
      * @param promotion new piece type to promote
@@ -220,7 +259,10 @@ class Board {
      * @throws Throwable if the promotion is invalid
      */
     private fun doPromotion(piece: Piece, toPos: Matrix2DPosition, promotion: PieceType): Piece {
-        if (piece.color == Color.WHITE && toPos.row == 7 || piece.color == Color.BLACK && toPos.row == 0)
+        //TODO("If no promote piece is specified, promote to queen by default or do nothing and require a choice?")
+        if (piece.type == PieceType.PAWN &&
+            (piece.color == Color.WHITE && toPos.row == BLACK_FIRST_ROW_IDX ||
+             piece.color == Color.BLACK && toPos.row == WHITE_FIRST_ROW_IDX))
             return piece.copy(type = promotion)
         else
             throw Throwable("You cannot get promoted.")

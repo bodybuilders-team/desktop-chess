@@ -4,14 +4,73 @@ import kotlin.test.*
 
 class MoveFormattingTests {
     @Test
-    fun `correctly written move returns no errors`() {
+    fun `valid simple move returns no errors`() {
         Board.Move("Pe2e4")
     }
 
     @Test
-    fun `wrongly written 'from position' throws error`() {
+    fun `valid capture returns no errors`() {
+        Board.Move("Pe2xd3")
+    }
+
+    @Test
+    fun `valid promotion returns no errors`() {
+        Board.Move("Pe7e8=Q")
+    }
+
+    @Test
+    fun `empty throws error`() {
+        assertFailsWith<IllegalArgumentException> {
+            Board.Move("")
+        }
+    }
+
+    @Test
+    fun `invalid piece type throws error`() {
+        assertFailsWith<IllegalArgumentException> {
+            Board.Move("A92e4")
+        }
+    }
+
+    @Test
+    fun `invalid 'from position' throws error`() {
         assertFailsWith<IllegalArgumentException> {
             Board.Move("P92e4")
+        }
+    }
+
+    @Test
+    fun `invalid 'capture char' throws error`() {
+        assertFailsWith<IllegalArgumentException> {
+            Board.Move("Pe2fe4")
+        }
+    }
+
+    @Test
+    fun `invalid 'to position' throws error`() {
+        assertFailsWith<IllegalArgumentException> {
+            Board.Move("Pe2e9")
+        }
+    }
+
+    @Test
+    fun `invalid promotion symbol throws error`() {
+        assertFailsWith<IllegalArgumentException> {
+            Board.Move("Pe2e9+Q")
+        }
+    }
+
+    @Test
+    fun `invalid promotion piece throws error`() {
+        assertFailsWith<IllegalArgumentException> {
+            Board.Move("Pe2e9=L")
+        }
+    }
+
+    @Test
+    fun `too lengthy throws error`() {
+        assertFailsWith<IllegalArgumentException> {
+            Board.Move("Pe2e9aaaaaa")
         }
     }
 

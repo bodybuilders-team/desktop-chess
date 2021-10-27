@@ -59,4 +59,20 @@ class BoardTests {
             "RNBQKBNR", sut.toString()
         )
     }
+
+    @Test
+    fun `MakeMove with promotion in Board`() {
+        val sut = Board().makeMove("Pf2f4").makeMove("Pg7g5").makeMove("Pf4xg5").makeMove("Pg5g6").makeMove("Pg6g7")
+                         .makeMove("Ng8f6").makeMove("Pg7g8=Q")
+        assertEquals(
+            "rnbqkbQr" +
+            "pppppp p" +
+            "     n  " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQKBNR", sut.toString()
+        )
+    }
 }
