@@ -7,6 +7,8 @@ const val WHITE_FIRST_ROW_IDX = 7
 val VALID_COLS = 'a'..'h'
 val VALID_ROWS = '1'..'8'
 
+const val moveRegexFormat = "^[PKQNBR][a-h][1-8]x?[a-h][1-8](=[KQNBR])?\$"
+
 // Move arguments index
 val VALID_SIZE = 5..8
 const val PIECE_TYPE_IDX = 0
@@ -141,7 +143,8 @@ class Board {
     ) {
         companion object {
             operator fun invoke(string: String): Move {
-                require(checkMoveFormatting(string)) {
+                //Tests if the move is well formatted by using a regular expression (regex)
+                require(moveRegexFormat.toRegex().containsMatchIn(string)) {
                     "Use format: [<piece>][<from>][x][<to>][=<piece>]"
                 }
 
@@ -162,39 +165,6 @@ class Board {
                     promotion = if (string.length > PROMOTION_IDX + captureOffset)
                         PieceType[string[PROMOTION_PIECE_TYPE_IDX + captureOffset]] else null
                 )
-            }
-
-            /**
-             * Checks if the given string is a well-formatted move, that follows the format
-             * [<piece>][<from>][x][<to>][=<piece>]
-             * 
-             * @param move string to verify formatting
-             * @return if the formatting is valid
-             */
-            private fun checkMoveFormatting(move: String): Boolean {
-                val validSize = move.length in VALID_SIZE
-                
-                //Return false immediately if the size is invalid (prevents array out of bounds in the next lines)
-                if(!validSize) return false
-                
-                val validPieceType = move[PIECE_TYPE_IDX] in PieceType.validPieceTypes()
-
-                val validFromPosition = move[FROM_COL_IDX] in VALID_COLS && move[FROM_ROW_IDX] in VALID_ROWS
-                val capture = move[CAPTURE_IDX] == CAPTURE_CHAR
-                val captureOffset = if (capture) CAPTURE_OFFSET else NO_OFFSET
-
-                val validToPosition =
-                    move[TO_COL_IDX + captureOffset] in VALID_COLS && move[TO_ROW_IDX + captureOffset] in VALID_ROWS
-
-                val validPromotion = 
-                    if(move.length > PROMOTION_IDX + captureOffset){
-                        move.length == (if(capture) VALID_SIZE.last else VALID_SIZE.last - CAPTURE_OFFSET) &&
-                        move[PROMOTION_IDX + captureOffset] == PROMOTION_CHAR &&
-                        move[PROMOTION_PIECE_TYPE_IDX + captureOffset] in PieceType.validPieceTypes()
-                    }
-                    else true
-                
-                return validSize && validPieceType && validFromPosition && validToPosition && validPromotion
             }
         }
     }
