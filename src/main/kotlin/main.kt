@@ -5,12 +5,23 @@ fun main() {
     // checkEnvironment()   // Initialize MongoDB
     // val game = readGameName()
     // val (command,argument) = readCommand()
-    
+    var board = Board()
+
+
     while(true){
         try{
             val (command, argument) = readCommand()
             if(command == "play"){
-                if(argument != null) Board.Move(argument)
+                if(argument != null) {
+                    //TODO("Shit happening with .copy()")
+                    var oldBoard = board.copy()
+                    oldBoard = oldBoard.makeMove(argument)
+                    //board = board.makeMove(argument)
+
+                    oldBoard.toString().chunked(8).forEach { println(it) }
+                    board.toString().chunked(8).forEach { println(it) }
+
+                }
             }
         }
         catch (err: Throwable){
@@ -31,12 +42,13 @@ fun readGameName(): String {
     return readLn().trim()
 }
 
+
 /**
  * Reads the command entered by the user
  * @return Pair of command and its arguments
  */
 fun readCommand(): Pair<String, String?> {
-    print(">")
+    print("> ")
     val input = readLn()
     val command = input.substringBefore(' ')
     val argument = input.substringAfter(' ')
