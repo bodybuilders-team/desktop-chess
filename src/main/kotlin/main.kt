@@ -5,7 +5,7 @@ fun main() {
     // checkEnvironment()   // Initialize MongoDB
     // val game = readGameName()
     // val (command,argument) = readCommand()
-    var board = Board()
+    val board = Board()
 
 
     while(true){
@@ -13,7 +13,6 @@ fun main() {
             val (command, argument) = readCommand()
             if(command == "play"){
                 if(argument != null) {
-                    //TODO("Shit happening with .copy()")
                     var oldBoard = board.copy()
                     oldBoard = oldBoard.makeMove(argument)
                     //board = board.makeMove(argument)
@@ -29,7 +28,7 @@ fun main() {
             //Catches any message thrown during execution and prints it on the console
             println(err.message)
         }
-    }
+    }*/
 }
 
 

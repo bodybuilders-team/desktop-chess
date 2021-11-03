@@ -1,7 +1,23 @@
+import java.lang.IllegalArgumentException
 import kotlin.test.*
 
 
 class BoardTests {
+    @Test
+    fun `Position with collum outside bounds throws`() {
+        assertFailsWith<IllegalArgumentException> {
+            Board.Position(col = 'x', row = 2)
+        }
+    }
+
+    @Test
+    fun `Position with row outside bounds throws`() {
+        assertFailsWith<IllegalArgumentException> {
+            Board.Position(col = 'a', row = 9)
+        }
+    }
+
+
     @Test
     fun `Initial position Board`() {
         val sut = Board()
