@@ -48,7 +48,7 @@ class BoardTests {
 
     @Test
     fun `MakeMove in Board`() {
-        val sut = Board().makeMove("Pe2e4").makeMove("Pe7e5").makeMove("Nb1c3")
+        val sut = Board().makeMove("Pe2e4").makeMove("Pe7e5")//.makeMove("Nb1c3")
         assertEquals(
             "rnbqkbnr" +
             "pppp ppp" +

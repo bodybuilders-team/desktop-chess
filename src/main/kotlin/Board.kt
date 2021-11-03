@@ -4,7 +4,7 @@ const val FIRST_COL = 'a'
 const val BLACK_FIRST_ROW_IDX = 0
 const val WHITE_FIRST_ROW_IDX = 7
 
-const val moveRegexFormat = "^[PKQNBR][a-h][1-8]x?[a-h][1-8](=[KQNBR])?\$"
+const val moveRegexFormat = "^[PKQNBR][a-h][1-8]x?[a-h][1-8](=[QNBR])?\$"
 
 // Move arguments index
 const val FROM_COL_IDX = 1
@@ -52,7 +52,7 @@ data class Board(private val chessBoard: Matrix2D<Piece?> = Array(BOARD_SIZE) { 
      * @param pos position to get piece
      * @return piece in [pos]
      */
-    private fun getPiece(pos: Position) = chessBoard[BOARD_SIZE - pos.row][pos.col - FIRST_COL]
+    fun getPiece(pos: Position) = chessBoard[BOARD_SIZE - pos.row][pos.col - FIRST_COL]
 
     /**
      * Sets [newPiece] in [pos]
@@ -132,11 +132,14 @@ data class Board(private val chessBoard: Matrix2D<Piece?> = Array(BOARD_SIZE) { 
             val toPos = move.to
             val piece = getPiece(fromPos) ?: throw Throwable("No piece in the specified position.")
 
+            if (!piece.checkMove(this, move)) throw Throwable("Invalid move.")
+
             // Board to return if it's a valid move
             val newBoard = this.copy()
 
             // Remove the piece from the original position
             newBoard.setPiece(fromPos, null)
+
 
             // If it's a promotion move, do promotion, else just put the piece in the to position
             newBoard.setPiece(
