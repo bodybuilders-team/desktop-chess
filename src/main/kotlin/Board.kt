@@ -1,10 +1,9 @@
 // Constants
 const val BOARD_SIZE = 8
 const val FIRST_COL = 'a'
-const val BLACK_FIRST_ROW_IDX = 0
-const val WHITE_FIRST_ROW_IDX = 7
+const val BLACK_FIRST_ROW = 8
+const val WHITE_FIRST_ROW = 1
 
-const val moveRegexFormat = "^[PKQNBR][a-h][1-8]x?[a-h][1-8](=[QNBR])?\$"
 
 // Move arguments index
 const val FROM_COL_IDX = 1
@@ -65,49 +64,6 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
         }
     }
 
-    /**
-     * Chess move
-     * @property from original piece position
-     * @property capture true if the piece will capture enemy piece
-     * @property to new piece position
-     * @property promotion new PieceType of promotion or null
-     */
-    data class Move(
-        val from: Position,
-        val capture: Boolean,
-        val to: Position,
-        val promotion: Char?
-    ) {
-        companion object {
-            operator fun invoke(string: String): Move {
-                //Tests if the move is well formatted by using a regular expression (regex)
-                require(moveRegexFormat.toRegex().containsMatchIn(string)) {
-                    "Use format: [<piece>][<from>][x][<to>][=<piece>]"
-                }
-
-                val fromPos = Position(string[FROM_COL_IDX], string[FROM_ROW_IDX].digitToInt())
-
-                val capture = CAPTURE_CHAR in string
-
-                val captureOffset = if (capture) CAPTURE_OFFSET else NO_OFFSET
-
-                val toPos = Position(
-                    string[TO_COL_IDX + captureOffset],
-                    string[TO_ROW_IDX + captureOffset].digitToInt()
-                )
-
-                return Move(
-                    from = fromPos,
-                    capture = capture,
-                    to = toPos,
-                    promotion = if (string.length > PROMOTION_IDX + captureOffset)
-                        string[PROMOTION_PIECE_TYPE_IDX + captureOffset]
-                    else null
-                )
-            }
-        }
-    }
-
 
     /**
      * Move a piece in the board.
@@ -122,7 +78,15 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
             val toPos = move.to
             val piece = getPiece(fromPos) ?: throw Throwable("No piece in the specified position.")
 
+            // Check if it's a valid move
             if (!piece.checkMove(this, move)) throw Throwable("Invalid move.")
+
+            // Check if it's a valid capture
+            if (move.capture) {
+                val captured = getPiece(toPos)
+                    ?: throw Throwable("No enemy piece in the specified position. You cannot capture.")
+                if (captured.color == piece.color) throw Throwable("You cannot capture your color pieces.")
+            }
 
             // Board to return if it's a valid move
             val newBoard = this.copy()
@@ -147,20 +111,6 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
 
 
     /**
-     * Checks if the capture is valid.
-     * @param toPos position to capture
-     * @param piece piece to do the capture
-     * @throws Throwable if the capture is invalid
-     */
-    private fun checkCapture(toPos: Position, piece: Piece) {
-        val captured = getPiece(toPos)
-            ?: throw Throwable("No enemy piece in the specified position. You cannot capture.")
-        if (captured.color == piece.color)
-            throw Throwable("You cannot capture your color pieces.")
-    }
-
-
-    /**
      * Checks if the promotion is valid and, if it is returns the new promoted piece.
      * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.
      * @param piece piece to promote
@@ -172,8 +122,8 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
     private fun doPromotion(piece: Piece, toPos: Position, promotion: Char): Piece {
         //TODO("If no promote piece is specified, promote to queen by default or do nothing and require a choice?")
         if (piece is Pawn &&
-            (piece.color == Color.WHITE && toPos.row == BLACK_FIRST_ROW_IDX ||
-                    piece.color == Color.BLACK && toPos.row == WHITE_FIRST_ROW_IDX)
+            (piece.color == Color.WHITE && toPos.row == BLACK_FIRST_ROW ||
+                    piece.color == Color.BLACK && toPos.row == WHITE_FIRST_ROW)
         )
             return getPieceFromSymbol(promotion, piece.color)
         else
@@ -194,13 +144,14 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
         }
     }
 
+
     /**
      * Returns a copy board, using the array function copyOf() for each array in the matrix.
      * @return copied board
      */
-    fun copy(): Board{
+    private fun copy(): Board {
         val newBoard = Board(this.chessBoard.copyOf())
-        repeat(this.chessBoard.size){
+        repeat(this.chessBoard.size) {
             newBoard.chessBoard[it] = this.chessBoard[it].copyOf()
         }
 
@@ -209,9 +160,13 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
 }
 
 
-fun getInitialBoard() : Matrix2D<Piece?>{
-    val chessBoard = Matrix2D<Piece?>(8) { Array(BOARD_SIZE) { null }  }
-    
+/**
+ * Returns initial chess board.
+ * @return initial chess board
+ */
+fun getInitialBoard(): Matrix2D<Piece?> {
+    val chessBoard = Matrix2D<Piece?>(8) { Array(BOARD_SIZE) { null } }
+
     STRING_BOARD.forEachIndexed { idx, char ->
         val row = idx / BOARD_SIZE
         val col = idx % BOARD_SIZE

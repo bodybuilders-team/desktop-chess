@@ -1,5 +1,12 @@
 import kotlin.math.abs
 
+// Constants.
+const val WHITE_PAWN_INITIAL_ROW = 2
+const val BLACK_PAWN_INITIAL_ROW = 7
+const val MAX_INITIAL_PAWN_MOVE = 2
+const val ONE_MOVE = 1
+
+
 /**
  * Piece color.
  */
@@ -41,37 +48,42 @@ interface Piece {
      * @param move move to test
      * @return true if the move is possible
      */
-    fun checkMove(board: Board, move: Board.Move): Boolean
+    fun checkMove(board: Board, move: Move): Boolean
 }
+
+/**
+ * Checks if the piece color ir White.
+ * @return true if the piece is white
+ */
+fun Piece.isWhite() = color == Color.WHITE
 
 
 class Pawn(override val color: Color) : Piece {
 
     override val symbol = 'P'
 
-    override fun checkMove(board: Board, move: Board.Move): Boolean {
-        if (board.getPiece(move.from) == null) return false
-        if (board.getPiece(move.from) !is Pawn) return false
-
-        // Only vertically up or diagonally capturing
+    override fun checkMove(board: Board, move: Move): Boolean {
+        if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Pawn) return false
+        // Pawn -> Only vertically up or diagonally capturing
 
 
         // Vertical
-        if (move.from.col == move.to.col) {
-            if (move.from.row == if (color == Color.WHITE) 2 else 7) {
-                if (move.to.row == move.from.row + if (color == Color.WHITE) 2 else -2) {
-                    return board.getPiece(move.to) == null
-                }
-            }
+        if (move.isVertical()) {
+            // First pawn move can be 2 or 1
 
-            if (move.to.row == move.from.row + if (color == Color.WHITE) 1 else -1) {
-                return board.getPiece(move.to) == null
-            }
+            val defaultMove = move.to.row == move.from.row + if (isWhite()) 1 else -1
+            val isInInitialRow = move.from.row == if (isWhite())
+                WHITE_PAWN_INITIAL_ROW else BLACK_PAWN_INITIAL_ROW
+            val doubleMove =
+                isInInitialRow && move.to.row == move.from.row + if (isWhite()) MAX_INITIAL_PAWN_MOVE else -MAX_INITIAL_PAWN_MOVE
+
+            if (defaultMove || doubleMove) return board.getPiece(move.to) == null
+
             return false
         }
 
         // Diagonal (only capture)
-        if (abs(move.from.col - move.to.col) == 1) {
+        if (abs(move.from.col - move.to.col) == ONE_MOVE) {
             if (move.to.row == move.from.row + if (color == Color.WHITE) 1 else -1) {
                 return board.getPiece(move.to) != null
             }
@@ -87,8 +99,9 @@ class Rook(override val color: Color) : Piece {
 
     override val symbol = 'R'
 
-    override fun checkMove(board: Board, move: Board.Move): Boolean {
-        return move.from.row == move.to.row || move.from.col == move.to.col
+    override fun checkMove(board: Board, move: Move): Boolean {
+        if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Rook) return false
+        return move.isHorizontal() || move.isVertical()
     }
 }
 
@@ -97,8 +110,9 @@ class King(override val color: Color) : Piece {
 
     override val symbol = 'K'
 
-    override fun checkMove(board: Board, move: Board.Move): Boolean {
-        return abs(move.from.row - move.to.row) == 1 || abs(move.from.col - move.to.col) == 1
+    override fun checkMove(board: Board, move: Move): Boolean {
+        if (board.getPiece(move.from) == null || board.getPiece(move.from) !is King) return false
+        return abs(move.from.row - move.to.row) == ONE_MOVE || abs(move.from.col - move.to.col) == ONE_MOVE
     }
 }
 
@@ -107,8 +121,9 @@ class Queen(override val color: Color) : Piece {
 
     override val symbol = 'Q'
 
-    override fun checkMove(board: Board, move: Board.Move): Boolean {
-        TODO("Not yet implemented")
+    override fun checkMove(board: Board, move: Move): Boolean {
+        if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Queen) return false
+        return move.isDiagonal() || move.isHorizontal() || move.isVertical()
     }
 }
 
@@ -117,8 +132,9 @@ class Bishop(override val color: Color) : Piece {
 
     override val symbol = 'B'
 
-    override fun checkMove(board: Board, move: Board.Move): Boolean {
-        return move.from.row != move.to.row && move.from.col != move.to.col
+    override fun checkMove(board: Board, move: Move): Boolean {
+        if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Bishop) return false
+        return move.isDiagonal()
     }
 }
 
@@ -127,8 +143,10 @@ class Knight(override val color: Color) : Piece {
 
     override val symbol = 'N'
 
-    override fun checkMove(board: Board, move: Board.Move): Boolean {
-        TODO("Not yet implemented")
+    override fun checkMove(board: Board, move: Move): Boolean {
+        if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Knight) return false
+        return abs(move.from.row - move.to.row) == ONE_MOVE && abs(move.from.col - move.to.col) == 2 ||
+                abs(move.from.col - move.to.col) == ONE_MOVE && abs(move.from.row - move.to.row) == 2
     }
 }
 
