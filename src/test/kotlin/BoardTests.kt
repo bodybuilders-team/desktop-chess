@@ -31,9 +31,8 @@ class BoardTests {
     }
 
     @Test
-    fun `Make move in Board (one move)`() {
-        val sut = Board()
-        sut.makeMove("Pe2e4")
+    fun `Move pawn (pawn's first move, can walk 2 squares)`() {
+        val sut = Board().makeMove("Pe2e4")
         assertEquals(
             "rnbqkbnr" +
             "pppppppp" +
@@ -48,7 +47,7 @@ class BoardTests {
 
     @Test
     fun `MakeMove in Board`() {
-        val sut = Board().makeMove("Pe2e4").makeMove("Pe7e5")//.makeMove("Nb1c3")
+        val sut = Board().makeMove("Pe2e4").makeMove("Pe7e5").makeMove("Nb1c3")
         assertEquals(
             "rnbqkbnr" +
             "pppp ppp" +

@@ -35,17 +35,7 @@ typealias Matrix2D<T> = Array<Array<T>>
  * Represents the game board with the pieces.
  * @property chessBoard 2DMatrix with the pieces
  */
-data class Board(private val chessBoard: Matrix2D<Piece?> = Array(BOARD_SIZE) { Array(BOARD_SIZE) { null } }) {
-    init {
-        STRING_BOARD.forEachIndexed { idx, char ->
-            val row = idx / BOARD_SIZE
-            val col = idx % BOARD_SIZE
-            chessBoard[row][col] =
-                if (char == ' ') null
-                else getPieceFromSymbol(char.uppercaseChar(), if (char.isUpperCase()) Color.WHITE else Color.BLACK)
-        }
-    }
-
+data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
 
     /**
      * Returns the piece in [pos]
@@ -203,4 +193,31 @@ data class Board(private val chessBoard: Matrix2D<Piece?> = Array(BOARD_SIZE) { 
             }.joinToString("")
         }
     }
+
+    /**
+     * Returns a copy board, using the array function copyOf() for each array in the matrix.
+     * @return copied board
+     */
+    fun copy(): Board{
+        val newBoard = Board(this.chessBoard.copyOf())
+        repeat(this.chessBoard.size){
+            newBoard.chessBoard[it] = this.chessBoard[it].copyOf()
+        }
+
+        return newBoard
+    }
+}
+
+
+fun getInitialBoard() : Matrix2D<Piece?>{
+    val chessBoard = Matrix2D<Piece?>(8) { Array(BOARD_SIZE) { null }  }
+    
+    STRING_BOARD.forEachIndexed { idx, char ->
+        val row = idx / BOARD_SIZE
+        val col = idx % BOARD_SIZE
+        chessBoard[row][col] =
+            if (char == ' ') null
+            else getPieceFromSymbol(char.uppercaseChar(), if (char.isUpperCase()) Color.WHITE else Color.BLACK)
+    }
+    return chessBoard
 }

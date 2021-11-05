@@ -6,7 +6,7 @@ class PieceTests {
     @Test
     fun `Check if Pawn's piece type is equal to expected`() {
         val pawn = Pawn(Color.WHITE)
-        assertEquals(pawn.symbol, 'P')
+        assertEquals('P', pawn.symbol)
     }
 
     @Test

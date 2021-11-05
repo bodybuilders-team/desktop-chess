@@ -5,9 +5,10 @@ fun main() {
     // checkEnvironment()   // Initialize MongoDB
     // val game = readGameName()
     // val (command,argument) = readCommand()
-    val board = Board()
-
-    board.makeMove("Pe7e5").makeMove("Pe2e4")
+    
+    var board = Board()
+    
+    board = board.makeMove("Pe7e5").makeMove("Pe2e4")
 
     board.toString().chunked(8).forEach { println(it) }
 
