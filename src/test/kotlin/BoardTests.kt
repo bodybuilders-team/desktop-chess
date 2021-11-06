@@ -46,6 +46,36 @@ class BoardTests {
     }
 
     @Test
+    fun `Move Rook goes as expected`() {
+        val sut = Board().makeMove("Pa2a4").makeMove("Ra1a3")
+        assertEquals(
+                    "rnbqkbnr" +
+                    "pppppppp" +
+                    "        " +
+                    "        " +
+                    "P       " +
+                    "R       " +
+                    " PPPPPPP" +
+                    " NBQKBNR", sut.toString()
+        )
+    }
+
+    @Test
+    fun `Move King goes as expected`() {
+        val sut = Board().makeMove("Pe2e4").makeMove("Ke1e2")
+        assertEquals(
+                    "rnbqkbnr" +
+                    "pppppppp" +
+                    "        " +
+                    "        " +
+                    "    P   " +
+                    "        " +
+                    "PPPPKPPP" +
+                    "RNBQ BNR", sut.toString()
+        )
+    }
+
+    @Test
     fun `MakeMove in Board`() {
         val sut = Board().makeMove("Pe2e4").makeMove("Pe7e5").makeMove("Nb1c3")
         assertEquals(
