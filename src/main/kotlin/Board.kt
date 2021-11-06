@@ -64,7 +64,6 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
         }
     }
 
-
     /**
      * Move a piece in the board.
      * @param moveInString piece move
@@ -165,7 +164,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
  * @return initial chess board
  */
 fun getInitialBoard(): Matrix2D<Piece?> {
-    val chessBoard = Matrix2D<Piece?>(8) { Array(BOARD_SIZE) { null } }
+    val chessBoard = Matrix2D<Piece?>(BOARD_SIZE) { Array(BOARD_SIZE) { null } }
 
     STRING_BOARD.forEachIndexed { idx, char ->
         val row = idx / BOARD_SIZE

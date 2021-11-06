@@ -5,6 +5,7 @@ const val WHITE_PAWN_INITIAL_ROW = 2
 const val BLACK_PAWN_INITIAL_ROW = 7
 const val MAX_INITIAL_PAWN_MOVE = 2
 const val ONE_MOVE = 1
+const val NO_MOVE = 0
 
 
 /**
@@ -57,6 +58,12 @@ interface Piece {
  */
 fun Piece.isWhite() = color == Color.WHITE
 
+/**
+ * Checks if the piece color ir Black.
+ * @return true if the piece is black
+ */
+fun Piece.isBlack() = color == Color.BLACK
+
 
 class Pawn(override val color: Color) : Piece {
 
@@ -101,7 +108,16 @@ class Rook(override val color: Color) : Piece {
 
     override fun checkMove(board: Board, move: Move): Boolean {
         if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Rook) return false
-        return move.isHorizontal() || move.isVertical()
+        //return move.isHorizontal() || move.isVertical()
+        var distance = if (move.isHorizontal()) move.to.col - move.from.col else move.to.row - move.from.row
+        while (abs(distance) > 0) {
+            if (move.isHorizontal() && board.getPiece(Board.Position(move.from.col + distance,move.to.row)) != null
+                || move.isVertical() && board.getPiece(Board.Position(move.to.col,move.from.row + distance)) != null) {
+                return false
+            }
+            if (distance > 0) distance-- else distance++
+        }
+        return true
     }
 }
 
@@ -112,7 +128,12 @@ class King(override val color: Color) : Piece {
 
     override fun checkMove(board: Board, move: Move): Boolean {
         if (board.getPiece(move.from) == null || board.getPiece(move.from) !is King) return false
-        return abs(move.from.row - move.to.row) == ONE_MOVE || abs(move.from.col - move.to.col) == ONE_MOVE
+        if ((abs(move.from.row - move.to.row) == ONE_MOVE || abs(move.from.row - move.to.row) == NO_MOVE )
+            && (abs(move.from.col - move.to.col) == ONE_MOVE || abs(move.from.col - move.to.col) == NO_MOVE)
+            && !(abs(move.from.col - move.to.col) == NO_MOVE && abs(move.from.row - move.to.row) == NO_MOVE )) {
+            return true
+        }
+        return false
     }
 }
 
