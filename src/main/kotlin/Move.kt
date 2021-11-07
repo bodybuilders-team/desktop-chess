@@ -1,6 +1,7 @@
 import kotlin.math.abs
 import Board.Position
 
+// Move Regex Format
 const val moveRegexFormat = "^[PKQNBR][a-h][1-8]x?[a-h][1-8](=[QNBR])?\$"
 
 /**

@@ -12,7 +12,7 @@ interface ChessCommands {
     fun open(gameId: String)
 
     /**
-     * used by a second user to open the game with the name [gameId]
+     * Used by a second user to open the game with the name [gameId]
      * @param gameId the game´s name
      */
     fun join(gameId: String)

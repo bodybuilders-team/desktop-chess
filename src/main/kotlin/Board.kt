@@ -1,3 +1,5 @@
+import pieces.*
+
 // Constants
 const val BOARD_SIZE = 8
 const val FIRST_COL = 'a'
@@ -81,7 +83,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
             if (!piece.checkMove(this, move)) throw Throwable("Invalid move.")
 
             // Check if it's a valid capture
-            if (move.capture) {
+            if (move.capture || positionIsOccupied(move.to)) {
                 val captured = getPiece(toPos)
                     ?: throw Throwable("No enemy piece in the specified position. You cannot capture.")
                 if (captured.color == piece.color) throw Throwable("You cannot capture your color pieces.")
@@ -107,6 +109,14 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
             return this
         }
     }
+
+
+    /**
+     * Checks if a position is occupied by a piece.
+     * @param position position to check
+     * @return true if there's a piece in [position]
+     */
+    fun positionIsOccupied(position: Position) = getPiece(position) != null
 
 
     /**

@@ -1,3 +1,5 @@
+
+
 /**
  * The application entry point.
  */
@@ -5,9 +7,9 @@ fun main() {
     // checkEnvironment()   // Initialize MongoDB
     // val game = readGameName()
     // val (command,argument) = readCommand()
-    
+
     var board = Board()
-    
+
     board = board.makeMove("Pe7e5").makeMove("Pe2e4")
 
     board.toString().chunked(8).forEach { println(it) }
@@ -62,5 +64,4 @@ fun readCommand(): Pair<String, String?> {
 
 
 private fun readLn() = readLine()!!
-
 
