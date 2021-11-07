@@ -1,5 +1,5 @@
 import kotlin.test.*
-
+import pieces.*
 
 class PieceTests {
 
