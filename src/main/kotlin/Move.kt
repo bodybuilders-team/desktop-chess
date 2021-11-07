@@ -62,4 +62,11 @@ data class Move(
      * @return true if the movement is diagonal
      */
     fun isDiagonal() = abs(from.row - to.row) == abs(from.col - to.col)
+
+    /**
+     * Return true if the difference between rows equals [difference]
+     * @param difference difference to test
+     * @return true if the difference equals [difference]
+     */
+    fun rowDifEquals(difference: Int) = to.row == from.row + difference
 }

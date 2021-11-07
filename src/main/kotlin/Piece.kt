@@ -3,7 +3,7 @@ import kotlin.math.abs
 // Constants.
 const val WHITE_PAWN_INITIAL_ROW = 2
 const val BLACK_PAWN_INITIAL_ROW = 7
-const val MAX_INITIAL_PAWN_MOVE = 2
+const val DOUBLE_MOVE = 2
 const val ONE_MOVE = 1
 const val NO_MOVE = 0
 
@@ -71,33 +71,30 @@ class Pawn(override val color: Color) : Piece {
 
     override fun checkMove(board: Board, move: Move): Boolean {
         if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Pawn) return false
-        // Pawn -> Only vertically up or diagonally capturing
-
+        
+        // Pawn -> Only vertically up or diagonally if capturing
 
         // Vertical
-        if (move.isVertical()) {
-            // First pawn move can be 2 or 1
-
-            val defaultMove = move.to.row == move.from.row + if (isWhite()) 1 else -1
-            val isInInitialRow = move.from.row == if (isWhite())
-                WHITE_PAWN_INITIAL_ROW else BLACK_PAWN_INITIAL_ROW
-            val doubleMove =
-                isInInitialRow && move.to.row == move.from.row + if (isWhite()) MAX_INITIAL_PAWN_MOVE else -MAX_INITIAL_PAWN_MOVE
-
-            if (defaultMove || doubleMove) return board.getPiece(move.to) == null
-
-            return false
-        }
+        if (move.isVertical()) return checkMoveVertical(board, move)
 
         // Diagonal (only capture)
         if (abs(move.from.col - move.to.col) == ONE_MOVE) {
-            if (move.to.row == move.from.row + if (color == Color.WHITE) 1 else -1) {
-                return board.getPiece(move.to) != null
-            }
-            return false
+            return if (move.rowDifEquals(if (isWhite()) ONE_MOVE else -ONE_MOVE)) board.getPiece(move.to) != null
+            else false
         }
 
         return false
+    }
+    
+    private fun checkMoveVertical(board: Board, move: Move): Boolean{
+        // First pawn move can be 2 or 1
+
+        val defaultMove = move.rowDifEquals(if (isWhite()) ONE_MOVE else -ONE_MOVE)
+        val isInInitialRow = move.from.row == if (isWhite()) WHITE_PAWN_INITIAL_ROW else BLACK_PAWN_INITIAL_ROW
+        val doubleMove = isInInitialRow && move.rowDifEquals(if (isWhite()) DOUBLE_MOVE else -DOUBLE_MOVE)
+
+        return if (defaultMove || doubleMove) board.getPiece(move.to) == null
+        else false
     }
 }
 
@@ -108,16 +105,25 @@ class Rook(override val color: Color) : Piece {
 
     override fun checkMove(board: Board, move: Move): Boolean {
         if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Rook) return false
-        //return move.isHorizontal() || move.isVertical()
-        var distance = if (move.isHorizontal()) move.to.col - move.from.col else move.to.row - move.from.row
+        
+        //Move has to be horizontal or vertical
+        if(!move.isHorizontal() && !move.isVertical()) return false
+
+        var distance = (if (move.isHorizontal()) move.to.col - move.from.col else move.to.row - move.from.row) - 1
+        
         while (abs(distance) > 0) {
-            if (move.isHorizontal() && board.getPiece(Board.Position(move.from.col + distance,move.to.row)) != null
-                || move.isVertical() && board.getPiece(Board.Position(move.to.col,move.from.row + distance)) != null) {
+            if (move.isHorizontal() && board.getPiece(move.from.copy(col = move.from.col + distance)) != null
+                || move.isVertical() && board.getPiece(move.from.copy(row = move.from.row + distance)) != null) {
                 return false
             }
             if (distance > 0) distance-- else distance++
         }
-        return true
+        
+        //Capture
+        val toPosPiece = board.getPiece(move.to)
+        
+        return if(toPosPiece != null) toPosPiece.color != color
+        else true
     }
 }
 

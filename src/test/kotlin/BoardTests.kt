@@ -17,7 +17,6 @@ class BoardTests {
         }
     }
 
-
     @Test
     fun `Initial position Board`() {
         val sut = Board()
@@ -26,6 +25,26 @@ class BoardTests {
             "pppppppp" +
             "        ".repeat(4) +
             "PPPPPPPP" +
+            "RNBQKBNR", sut.toString()
+        )
+    }
+
+    
+    /*
+      ------------------------------Pawn tests------------------------------
+     */
+
+    @Test
+    fun `Move pawn (pawn's first move, can walk 1 square)`() {
+        val sut = Board().makeMove("Pe2e3")
+        assertEquals(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "    P   " +
+            "PPPP PPP" +
             "RNBQKBNR", sut.toString()
         )
     }
@@ -46,32 +65,101 @@ class BoardTests {
     }
 
     @Test
-    fun `Move Rook goes as expected`() {
-        val sut = Board().makeMove("Pa2a4").makeMove("Ra1a3")
+    fun `Move pawn to promotion`() {
+        val sut = Board().makeMove("Pf2f4").makeMove("Pg7g5").makeMove("Pf4xg5").makeMove("Pg5g6").makeMove("Pg6g7")
+            .makeMove("Ng8f6").makeMove("Pg7g8=Q")
         assertEquals(
-                    "rnbqkbnr" +
-                    "pppppppp" +
-                    "        " +
-                    "        " +
-                    "P       " +
-                    "R       " +
-                    " PPPPPPP" +
-                    " NBQKBNR", sut.toString()
+            "rnbqkbQr" +
+            "pppppp p" +
+            "     n  " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQKBNR", sut.toString()
+        )
+    }
+
+    /*
+      ------------------------------Rook tests------------------------------
+     */
+
+    @Test
+    fun `Move Rook - stays in place if same color piece is in its path`() {
+        val sut = Board().makeMove("Pa2a3").makeMove("Ra1a4")
+        assertEquals(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "P       " +
+            " PPPPPPP" +
+            "RNBQKBNR", sut.toString()
         )
     }
 
     @Test
+    fun `Move Rook - stays in place if opponent's piece is in its path`() {
+        val sut = Board().makeMove("Pa2a4").makeMove("Pb7b5").makeMove("Pb5a4").makeMove("Ra1a5")
+        assertEquals(
+            "rnbqkbnr" +
+            "p pppppp" +
+            "        " +
+            "        " +
+            "p       " +
+            "        " +
+            " PPPPPPP" +
+            "RNBQKBNR", sut.toString()
+        )
+    }
+
+    @Test
+    fun `Move Rook - moves if no piece is in its path`() {
+        val sut = Board().makeMove("Pa2a4").makeMove("Ra1a3")
+        assertEquals(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "P       " +
+            "R       " +
+            " PPPPPPP" +
+            " NBQKBNR", sut.toString()
+        )
+    }
+
+    @Test
+    fun `Move Rook - captures piece vertically`() {
+        val sut = Board().makeMove("Pa2a4").makeMove("Ra1a3").makeMove("Ra3b3").makeMove("Rb3b7")
+        assertEquals(
+            "rnbqkbnr" +
+            "pRpppppp" +
+            "        " +
+            "        " +
+            "P       " +
+            "        " +
+            " PPPPPPP" +
+            " NBQKBNR", sut.toString()
+        )
+    }
+
+    /*
+      ------------------------------King tests------------------------------
+     */
+    
+    @Test
     fun `Move King goes as expected`() {
         val sut = Board().makeMove("Pe2e4").makeMove("Ke1e2")
         assertEquals(
-                    "rnbqkbnr" +
-                    "pppppppp" +
-                    "        " +
-                    "        " +
-                    "    P   " +
-                    "        " +
-                    "PPPPKPPP" +
-                    "RNBQ BNR", sut.toString()
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "    P   " +
+            "        " +
+            "PPPPKPPP" +
+            "RNBQ BNR", sut.toString()
         )
     }
 
@@ -87,37 +175,6 @@ class BoardTests {
             "  N     " +
             "PPPP PPP" +
             "R BQKBNR", sut.toString()
-        )
-    }
-
-    @Test
-    fun `MakeMove with capture in Board`() {
-        val sut = Board().makeMove("Pe2e4").makeMove("Pd7d5").makeMove("Pe4xd5")
-        assertEquals(
-            "rnbqkbnr" +
-            "ppp pppp" +
-            "        " +
-            "   P    " +
-            "        " +
-            "        " +
-            "PPPP PPP" +
-            "RNBQKBNR", sut.toString()
-        )
-    }
-
-    @Test
-    fun `MakeMove with promotion in Board`() {
-        val sut = Board().makeMove("Pf2f4").makeMove("Pg7g5").makeMove("Pf4xg5").makeMove("Pg5g6").makeMove("Pg6g7")
-                         .makeMove("Ng8f6").makeMove("Pg7g8=Q")
-        assertEquals(
-            "rnbqkbQr" +
-            "pppppp p" +
-            "     n  " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQKBNR", sut.toString()
         )
     }
 }
