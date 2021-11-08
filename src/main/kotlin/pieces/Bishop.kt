@@ -16,7 +16,9 @@ class Bishop(override val color: Color) : Piece {
         var distance = move.rowsDistance() + if (move.rowsDistance() > 0) -1 else 1
 
         while (abs(distance) > 0) {
-            if (board.positionIsOccupied(move.from.copy(col = move.from.col - distance,row = move.from.row + distance))) return false
+            if (board.positionIsOccupied(move.from.copy(col = move.from.col + distance, row = move.from.row + distance)))
+                return false
+
             if (distance > 0) distance-- else distance++
         }
         return true

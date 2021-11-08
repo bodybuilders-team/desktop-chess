@@ -1,3 +1,5 @@
+import commands.buildCommands
+
 /**
  * TODO List:
  * - Queen checkMove
@@ -10,43 +12,100 @@
  * - MongoDBChess
  */
 
+enum class GameState { LOGGING, PLAYING, WAITING_FOR_OPPONENT, ENDED }
+data class Game(val name: String?, val state: GameState, val color: String?)
+
 /**
  * The application entry point.
  */
 fun main() {
-    // checkEnvironment()   // Initialize MongoDB
-    // val game = readGameName()
-    // val (command,argument) = readCommand()
+    /*val driver = if (checkEnvironment() == DbMode.REMOTE)
+        createMongoClient(System.getenv(ENV_DB_CONNECTION))
+    else
+        createMongoClient()*/
 
+    var chess = Game(name = null, state = GameState.LOGGING, color = null)
     var board = Board()
 
-    board = board.makeMove("Pe7e5").makeMove("Pe2e4")
+    try {
+        val dispatcher = buildCommands(chess, board)
 
-    printBoard(board)
 
+        while (true) {
+            val (command, argument) = readCommand(if (chess.name == null) "" else "${chess.name}:${chess.color}")
 
-    /*
-    while(true){
-        try{
-            val (command, argument) = readCommand()
-            if(command == "play"){
-                if(argument != null) {
-                    var oldBoard = board.copy()
-                    oldBoard = oldBoard.makeMove(argument)
-                    //board = board.makeMove(argument)
+            when (command) {
+                "open" -> {
+                    if (argument == null) {
+                        println("ERROR: Missing game name.")
+                        continue
+                    }
 
-                    oldBoard.toString().chunked(8).forEach { println(it) }
-                    board.toString().chunked(8).forEach { println(it) }
-
+                    chess = Game(name = argument, state = GameState.PLAYING, color = "White")
+                    printBoard(board)
+                    println("Game ${chess.name} opened. Play with white pieces.")
                 }
+
+                "join" -> {
+                    if (argument == null) {
+                        println("ERROR: Missing game name.")
+                        continue
+                    }
+                    /*if (chessGame.isUnknown()) {
+                        println("Unknown game.")
+                        continue
+                    }*/
+                }
+
+                "play" -> {
+                    if (chess.state == GameState.LOGGING) {
+                        println("ERROR: Can't play without a game: try open or join commands.")
+                        continue
+                    }
+                    if (chess.state == GameState.WAITING_FOR_OPPONENT) {
+                        println("ERROR: Wait for your turn: try refresh command.")
+                        continue
+                    }
+
+                    if (argument != null) {
+                        board = board.makeMove(argument)
+                        printBoard(board)
+                        chess = chess.copy(state = GameState.WAITING_FOR_OPPONENT)
+                    }
+                    else println("ERROR: Missing move.")
+                }
+
+                "refresh" -> {
+                    if (chess.state == GameState.LOGGING) {
+                        println("ERROR: Can't refresh without a game: try open or join commands.")
+                        continue
+                    }
+                    printBoard(board)
+                }
+
+                "moves" -> {
+                    if (chess.state == GameState.LOGGING) {
+                        println("No game, no moves.")
+                        continue
+                    }
+                }
+
+                "exit" -> {
+                    chess = chess.copy(state = GameState.ENDED)
+                    break
+                }
+                else -> println("Invalid command")
             }
+
         }
-        catch (err: Throwable){
-            //TODO("Create a specific Throwable regarding only errors from our own program")
-            //Catches any message thrown during execution and prints it on the console
-            println(err.message)
-        }
-    }*/
+    } catch (err: Throwable) {
+        //TODO("Create a specific Throwable regarding only errors from our own program")
+        //Catches any message thrown during execution and prints it on the console
+        println(err.message)
+    } finally {
+        println("BYE. \n")
+        //driver.close()
+    }
 }
 
 
@@ -54,18 +113,15 @@ fun main() {
  * Prints the board, one row in each line.
  * @param board board to print
  */
-fun printBoard(board: Board){
-    board.toString().chunked(8).forEach { println(it) }
-}
-
-
-/**
- * Reads from the console the name of the game the user wants to join
- * @return the name of the game
- */
-fun readGameName(): String {
-    print("Welcome to the Queen´s Gambit!! Please enter the name of the game you want to join: ")
-    return readLn().trim()
+fun printBoard(board: Board) {
+    println("     a b c d e f g h  ")
+    println("    ----------------- ")
+    board.toString().chunked(8).forEachIndexed { idx, cols ->
+        print(" ${(BOARD_SIZE - idx)} | ")
+        cols.forEach { print("$it ") }
+        println("|")
+    }
+    println("    ----------------- ")
 }
 
 
@@ -73,8 +129,8 @@ fun readGameName(): String {
  * Reads the command entered by the user
  * @return Pair of command and its arguments
  */
-fun readCommand(): Pair<String, String?> {
-    print("> ")
+fun readCommand(questString: String): Pair<String, String?> {
+    print("$questString> ")
     val input = readLn()
     val command = input.substringBefore(' ')
     val argument = input.substringAfter(' ')
@@ -82,5 +138,24 @@ fun readCommand(): Pair<String, String?> {
 }
 
 
+/**
+ * Let's use this while we don't get to Kotlin v1.6
+ */
 private fun readLn() = readLine()!!
 
+
+private const val ENV_DB_NAME = "MONGO_DB_NAME"
+private const val ENV_DB_CONNECTION = "MONGO_DB_CONNECTION"
+
+private enum class DbMode { LOCAL, REMOTE }
+
+private fun checkEnvironment(): DbMode {
+    requireNotNull(System.getenv(ENV_DB_NAME)) {
+        "You must specify the environment variable $ENV_DB_NAME"
+    }
+
+    return if (System.getenv(ENV_DB_CONNECTION) != null)
+        DbMode.REMOTE
+    else
+        DbMode.LOCAL
+}
