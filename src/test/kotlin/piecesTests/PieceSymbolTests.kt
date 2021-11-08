@@ -1,7 +1,5 @@
 package piecesTests
 
-import Board
-import Move
 import kotlin.test.*
 import pieces.*
 
@@ -77,19 +75,6 @@ class PieceSymbolTests {
     fun `getPieceFromSymbol returns correct PieceType King`() {
         val piece = getPieceFromSymbol('K', Color.WHITE)
         assertTrue(piece is King)
-    }
-
-
-    @Test
-    fun `checkMoveValidity works as expected`() {
-        val piece = getPieceFromSymbol('P', Color.WHITE)
-        assertTrue(piece.validInitialPiece(board = Board(), Move("Pe2e4")))
-    }
-
-    @Test
-    fun `checkMoveValidity with wrong piece symbol returns false`() {
-        val piece = getPieceFromSymbol('P', Color.WHITE)
-        assertFalse(piece.validInitialPiece(board = Board(), Move("Ke2e4")))
     }
 
 }

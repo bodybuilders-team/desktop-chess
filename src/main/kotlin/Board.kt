@@ -33,6 +33,16 @@ const val STRING_BOARD =
     "RNBQKBNR"
 
 
+// - Play MOVE
+// - MOVE syntax is verified using Regex
+// MOVE has PIECE_TYPE
+// MOVE has INITIAL_POSITION
+// MOVE has FINAL_POSITION
+// - Given the piecetype and an initial and final position, verify if the move is valid:
+//   - Is there a piece in the initial position?
+//   - Is the piece in the initial position of the same piecetype as MOVE.PIECE_TYPE?
+//   - The piece specific movement is valid? To test this the piece color is relevant.
+
 /**
  * 2D Matrix made with an array of arrays.
  */
@@ -43,7 +53,7 @@ typealias Matrix2D<T> = Array<Array<T>>
  * Represents the game board with the pieces.
  * @property chessBoard 2DMatrix with the pieces
  */
-data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
+data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BOARD)) {
 
     /**
      * Returns the piece in [pos]
@@ -85,24 +95,14 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
             val fromPos = move.from
             val toPos = move.to
             val piece = getPiece(fromPos) ?: throw Throwable("No piece in the specified position.")
+            
+            // Check if the piece specific move is valid
+            if (!checkMove(move)) throw Throwable("Invalid move.")
 
-            //Check if the initial position is valid
-            if(!piece.validInitialPiece(this, move)) throw Throwable("Invalid initial position.")
-
-            // Check if it's a valid move
-            if (!piece.checkMove(this, move)) throw Throwable("Invalid move.")
-
-            // Check if it's a valid capture (NÃO SEI SE TÁ FIXE)
-            if (move.capture || positionIsOccupied(move.to)) {
-                val captured = getPiece(toPos)
-                    ?: throw Throwable("No enemy piece in the specified position. You cannot capture.")
-                if (captured.color == piece.color) throw Throwable("You cannot capture your color pieces.")
-            }
-
-            // Board to return if it's a valid move (FIXE)
+            // Board to return if it's a valid move
             val newBoard = this.copy()
 
-            // Remove the piece from the original position (FIXE)
+            // Remove the piece from the original position
             newBoard.setPiece(fromPos, null)
 
 
@@ -118,6 +118,43 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
             println(err)
             return this
         }
+    }
+
+
+    /**
+     * Checks if the initial position of the move is valid,
+     * by checking if the position is occupied and the piece is of the right type.
+     * @param board board where the move will happen
+     * @param move move to test
+     * @return if the the initial position is valid
+     *
+     * TODO(Use of positionIsOccupied prevents smart cast (piece != null). Currently using !! (bang operator).)
+     */
+    private fun validInitialPiece(move: Move) =
+        positionIsOccupied(move.from) && getPiece(move.from)!!.symbol == move.symbol
+    
+    
+    fun checkMove(move: Move) : Boolean{
+        require(validInitialPiece(move)) { "Invalid initial position." }
+        require(validCapture(move)) { "Invalid capture." }
+        
+        return when(move.symbol){
+            'P' -> Pawn.checkMove(this, move, getPiece(move.from)!!.color) //TODO - Remove Double Bang (!!)
+            'R' -> Rook.checkMove(this, move)
+            'N' -> Knight.checkMove(this, move)
+            'B' -> Bishop.checkMove(this, move)
+            'Q' -> Queen.checkMove(this, move)
+            'K' -> King.checkMove(this, move)
+            else -> throw IllegalArgumentException("Invalid piece symbol.")
+        }
+    }
+    
+    private fun validCapture(move: Move): Boolean{
+        if (move.capture || positionIsOccupied(move.to)) {
+            val captured = getPiece(move.to) ?: return false
+            return captured.color != getPiece(move.from)!!.color //TODO - Remove Double Bang (!!)
+        }
+        return true
     }
 
 
@@ -183,10 +220,10 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
  * Returns initial chess board.
  * @return initial chess board
  */
-fun getInitialBoard(): Matrix2D<Piece?> {
+fun getBoardFromString(stringBoard: String): Matrix2D<Piece?> {
     val chessBoard = Matrix2D<Piece?>(BOARD_SIZE) { Array(BOARD_SIZE) { null } }
 
-    STRING_BOARD.forEachIndexed { idx, char ->
+    stringBoard.forEachIndexed { idx, char ->
         val row = idx / BOARD_SIZE
         val col = idx % BOARD_SIZE
         chessBoard[row][col] =

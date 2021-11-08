@@ -31,7 +31,7 @@ class MoveFormattingTests {
     @Test
     fun `invalid piece type throws error`() {
         assertFailsWith<IllegalArgumentException> {
-            Move("A92e4")
+            Move("Ae2e4")
         }
     }
 

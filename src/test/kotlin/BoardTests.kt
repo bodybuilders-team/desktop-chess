@@ -212,4 +212,19 @@ class BoardTests {
                 "RNBQK NR", sut.toString()
         )
     }
+
+    @Test
+    fun `Move Bishop - stays in place if opponent's piece is in its path`() {
+        val sut = Board().makeMove("Pe2e4").makeMove("Pb7b5").makeMove("Bf1a6")
+        assertEquals(
+            "rnbqkbnr" +
+            "p pppppp" +
+            "        " +
+            " p      " +
+            "    P   " +
+            "        " +
+            "PPPP PPP" +
+            "RNBQKBNR", sut.toString()
+        )
+    }
 }
