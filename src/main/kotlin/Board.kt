@@ -1,10 +1,12 @@
 import pieces.*
 
-// Constants
+// Board properties constants
 const val BOARD_SIZE = 8
 const val FIRST_COL = 'a'
 const val BLACK_FIRST_ROW = 8
 const val WHITE_FIRST_ROW = 1
+val COLS_RANGE = 'a'..'h'
+val ROWS_RANGE = 1..8
 
 
 // Move arguments index
@@ -19,6 +21,7 @@ const val CAPTURE_CHAR = 'x'
 const val CAPTURE_OFFSET = 1
 const val NO_OFFSET = 0
 
+// Initial board in String format
 const val STRING_BOARD =
     "rnbqkbnr" +
     "pppppppp" +
@@ -30,6 +33,9 @@ const val STRING_BOARD =
     "RNBQKBNR"
 
 
+/**
+ * 2D Matrix made with an array of arrays.
+ */
 typealias Matrix2D<T> = Array<Array<T>>
 
 
@@ -63,7 +69,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
      */
     data class Position(val col: Char, val row: Int) {
         init {
-            require(col in 'a'..'h' && row in 1..8) { "Invalid Position." }
+            require(col in COLS_RANGE && row in ROWS_RANGE) { "Invalid Position." }
         }
     }
 

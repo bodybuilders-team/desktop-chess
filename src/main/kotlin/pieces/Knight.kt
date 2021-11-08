@@ -9,7 +9,7 @@ class Knight(override val color: Color) : Piece {
     override val symbol = 'N'
 
     override fun checkMove(board: Board, move: Move): Boolean {
-        return move.rowsDistance() == ONE_MOVE && move.colsDistance() == DOUBLE_MOVE ||
-                move.colsDistance() == ONE_MOVE && move.rowsDistance() == DOUBLE_MOVE
+        return move.rowsAbsoluteDistance() == ONE_MOVE && move.colsAbsoluteDistance() == DOUBLE_MOVE ||
+                move.colsAbsoluteDistance() == ONE_MOVE && move.rowsAbsoluteDistance() == DOUBLE_MOVE
     }
 }

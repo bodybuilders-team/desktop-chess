@@ -1,7 +1,9 @@
-import com.mongodb.client.MongoDatabase
-import commands.Result
+package commands
 
-class MongoDbChess(private val database: MongoDatabase):commands.ChessCommands {
+import Board
+
+
+class Commands(private var board: Board): ChessCommands{
     override fun open(gameId: String): Result {
         TODO("Not yet implemented")
     }
@@ -11,7 +13,8 @@ class MongoDbChess(private val database: MongoDatabase):commands.ChessCommands {
     }
 
     override fun play(stringMove: String): Result {
-        TODO("Not yet implemented")
+        board = board.makeMove(stringMove)
+        return Result.CONTINUE
     }
 
     override fun refresh(): Result {
@@ -23,8 +26,7 @@ class MongoDbChess(private val database: MongoDatabase):commands.ChessCommands {
     }
 
     override fun exit(): Result {
-        TODO("Not yet implemented")
+        return Result.EXIT
     }
 
 }
-

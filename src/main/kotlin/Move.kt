@@ -66,17 +66,30 @@ data class Move(
      * Return true if the movement is diagonal
      * @return true if the movement is diagonal
      */
-    fun isDiagonal() = abs(from.row - to.row) == abs(from.col - to.col)
+    fun isDiagonal() = rowsAbsoluteDistance() == colsAbsoluteDistance()
+
 
     /**
      * Calculates the distance between the rows from the move
      * @return distance between the rows
      */
-    fun rowsDistance(): Int = abs(from.row - to.row)
+    fun rowsDistance(): Int = to.row - from.row
+
+    /**
+     * Calculates the absolute distance between the rows from the move
+     * @return distance between the rows
+     */
+    fun rowsAbsoluteDistance(): Int = abs(rowsDistance())
 
     /**
      * Calculates the distance between the columns from the move
      * @return distance between the columns
      */
-    fun colsDistance(): Int = abs(from.col - to.col)
+    fun colsDistance(): Int = to.col - from.col
+
+    /**
+     * Calculates the absolute distance between the columns from the move
+     * @return distance between the columns
+     */
+    fun colsAbsoluteDistance(): Int = abs(colsDistance())
 }

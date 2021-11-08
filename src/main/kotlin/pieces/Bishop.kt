@@ -12,7 +12,8 @@ class Bishop(override val color: Color) : Piece {
     override fun checkMove(board: Board, move: Move): Boolean {
         if (!move.isDiagonal()) return false
 
-        var distance = move.to.row - move.from.row + if (move.to.row - move.from.row > 0) -1 else 1
+        // Distance can be calculated with rows or cols because it's diagonal
+        var distance = move.rowsDistance() + if (move.rowsDistance() > 0) -1 else 1
 
         while (abs(distance) > 0) {
             if (board.positionIsOccupied(move.from.copy(col = move.from.col - distance,row = move.from.row + distance))) return false

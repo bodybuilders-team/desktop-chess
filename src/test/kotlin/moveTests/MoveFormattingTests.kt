@@ -1,3 +1,6 @@
+package moveTests
+
+import Move
 import java.lang.IllegalArgumentException
 import kotlin.test.*
 

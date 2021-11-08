@@ -8,14 +8,13 @@ class Pawn(override val color: Color) : Piece {
 
     override val symbol = 'P'
 
-    // Pawn -> Only vertically up or diagonally if capturing
     override fun checkMove(board: Board, move: Move): Boolean {
         // Vertical
         if (move.isVertical()) return checkMoveVertical(board, move)
 
         // Diagonal (only capture)
-        if ((move.capture || board.positionIsOccupied(move.to)) && move.colsDistance() == ONE_MOVE)
-            return move.rowsDistance() == ONE_MOVE && board.positionIsOccupied(move.to)
+        if ((move.capture || board.positionIsOccupied(move.to)) && move.colsAbsoluteDistance() == ONE_MOVE)
+            return (move.rowsDistance() == if (isWhite()) ONE_MOVE else -ONE_MOVE) && board.positionIsOccupied(move.to)
 
         return false
     }
@@ -27,9 +26,9 @@ class Pawn(override val color: Color) : Piece {
      * @param move move to test
      */
     private fun checkMoveVertical(board: Board, move: Move): Boolean {
-        val defaultMove = move.rowsDistance() == ONE_MOVE
+        val defaultMove = move.rowsDistance() == if (isWhite()) ONE_MOVE else -ONE_MOVE
         val isInInitialRow = move.from.row == if (isWhite()) WHITE_PAWN_INITIAL_ROW else BLACK_PAWN_INITIAL_ROW
-        val doubleMove = isInInitialRow && move.rowsDistance() == DOUBLE_MOVE
+        val doubleMove = isInInitialRow && move.rowsDistance() == if (isWhite()) DOUBLE_MOVE else -DOUBLE_MOVE
 
         return (defaultMove || doubleMove) && !board.positionIsOccupied(move.to)
     }

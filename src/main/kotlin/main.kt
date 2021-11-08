@@ -2,8 +2,11 @@
  * TODO List:
  * - Queen checkMove
  * - Bishop checkMove
+ * - substituir por rowsDistance e tal nos checkMove
  *
- * - ChessCommands
+ * - checkMove tests for each piece
+ *
+ * - commands.ChessCommands
  * - MongoDBChess
  */
 
