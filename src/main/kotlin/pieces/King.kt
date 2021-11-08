@@ -2,7 +2,6 @@ package pieces
 
 import Board
 import Move
-import kotlin.math.abs
 
 
 class King(override val color: Color) : Piece {
@@ -10,9 +9,9 @@ class King(override val color: Color) : Piece {
     override val symbol = 'K'
 
     override fun checkMove(board: Board, move: Move): Boolean {
-        return (abs(move.from.row - move.to.row) == ONE_MOVE || abs(move.from.row - move.to.row) == NO_MOVE)
-                && (abs(move.from.col - move.to.col) == ONE_MOVE || abs(move.from.col - move.to.col) == NO_MOVE)
-                && !(abs(move.from.col - move.to.col) == NO_MOVE && abs(move.from.row - move.to.row) == NO_MOVE)
+        return (move.rowsDistance() in NO_MOVE .. ONE_MOVE)
+                && (move.colsDistance() in NO_MOVE .. ONE_MOVE)
+                && !(move.colsDistance() == NO_MOVE && move.rowsDistance() == NO_MOVE)
 
     }
 }

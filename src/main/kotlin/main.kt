@@ -1,4 +1,11 @@
-
+/**
+ * TODO List:
+ * - Queen checkMove
+ * - Bishop checkMove
+ *
+ * - ChessCommands
+ * - MongoDBChess
+ */
 
 /**
  * The application entry point.
@@ -42,6 +49,7 @@ fun main() {
 
 /**
  * Prints the board, one row in each line.
+ * @param board board to print
  */
 fun printBoard(board: Board){
     board.toString().chunked(8).forEach { println(it) }
