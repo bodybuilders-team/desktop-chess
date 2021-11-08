@@ -192,4 +192,24 @@ class BoardTests {
             "R BQKBNR", sut.toString()
         )
     }
+
+
+    /*
+      ------------------------------Bishop tests------------------------------
+     */
+
+    @Test
+    fun `Move Bishop goes as expected`() {
+        val sut = Board().makeMove("Pe2e4").makeMove("Bf1a6")
+        assertEquals(
+                "rnbqkbnr" +
+                "pppppppp" +
+                "B       " +
+                "        " +
+                "    P   " +
+                "        " +
+                "PPPP PPP" +
+                "RNBQK NR", sut.toString()
+        )
+    }
 }

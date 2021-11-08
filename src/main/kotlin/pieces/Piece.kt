@@ -74,3 +74,10 @@ interface Piece {
  * @return true if the piece is white
  */
 fun Piece.isWhite() = color == Color.WHITE
+
+
+/**
+ * Checks if the piece color ir Black.
+ * @return true if the piece is black
+ */
+fun Piece.isBlack() = color == Color.BLACK

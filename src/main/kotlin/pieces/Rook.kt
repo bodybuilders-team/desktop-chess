@@ -13,7 +13,9 @@ class Rook(override val color: Color) : Piece {
         //Move has to be horizontal or vertical
         if (!move.isHorizontal() && !move.isVertical()) return false
 
-        var distance = (if (move.isHorizontal()) move.to.col - move.from.col else move.to.row - move.from.row) - 1
+        var distance = (if (move.isHorizontal()) move.to.col - move.from.col else move.to.row - move.from.row) +
+                        if (move.to.col - move.from.col > 0 || move.to.row - move.from.row > 0) -1 else 1
+
 
         while (abs(distance) > 0) {
             if (move.isHorizontal() && board.positionIsOccupied(move.from.copy(col = move.from.col + distance))
