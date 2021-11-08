@@ -11,8 +11,6 @@ class Pawn(override val color: Color) : Piece {
 
     // Pawn -> Only vertically up or diagonally if capturing
     override fun checkMove(board: Board, move: Move): Boolean {
-        if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Pawn) return false
-
         // Vertical
         if (move.isVertical()) return checkMoveVertical(board, move)
 

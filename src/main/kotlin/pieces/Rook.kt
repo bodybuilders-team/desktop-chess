@@ -10,8 +10,6 @@ class Rook(override val color: Color) : Piece {
     override val symbol = 'R'
 
     override fun checkMove(board: Board, move: Move): Boolean {
-        if (board.getPiece(move.from) == null || board.getPiece(move.from) !is Rook) return false
-
         //Move has to be horizontal or vertical
         if (!move.isHorizontal() && !move.isVertical()) return false
 

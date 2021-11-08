@@ -12,6 +12,7 @@ const val moveRegexFormat = "^[PKQNBR][a-h][1-8]x?[a-h][1-8](=[QNBR])?\$"
  * @property promotion new PieceType of promotion or null
  */
 data class Move(
+    val symbol: Char,
     val from: Position,
     val capture: Boolean,
     val to: Position,
@@ -23,6 +24,8 @@ data class Move(
             require(moveRegexFormat.toRegex().containsMatchIn(string)) {
                 "Use format: [<piece>][<from>][x][<to>][=<piece>]"
             }
+
+            val pieceSymbol = string[PIECE_SYMBOL_IDX]
 
             val fromPos = Position(string[FROM_COL_IDX], string[FROM_ROW_IDX].digitToInt())
 
@@ -36,6 +39,7 @@ data class Move(
             )
 
             return Move(
+                symbol = pieceSymbol,
                 from = fromPos,
                 capture = capture,
                 to = toPos,

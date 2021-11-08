@@ -8,6 +8,7 @@ const val WHITE_FIRST_ROW = 1
 
 
 // Move arguments index
+const val PIECE_SYMBOL_IDX = 0
 const val FROM_COL_IDX = 1
 const val FROM_ROW_IDX = 2
 const val TO_COL_IDX = 3
@@ -79,20 +80,23 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getInitialBoard()) {
             val toPos = move.to
             val piece = getPiece(fromPos) ?: throw Throwable("No piece in the specified position.")
 
+            //Check if the initial position is valid
+            if(!piece.validInitialPiece(this, move)) throw Throwable("Invalid initial position.")
+
             // Check if it's a valid move
             if (!piece.checkMove(this, move)) throw Throwable("Invalid move.")
 
-            // Check if it's a valid capture
+            // Check if it's a valid capture (NÃO SEI SE TÁ FIXE)
             if (move.capture || positionIsOccupied(move.to)) {
                 val captured = getPiece(toPos)
                     ?: throw Throwable("No enemy piece in the specified position. You cannot capture.")
                 if (captured.color == piece.color) throw Throwable("You cannot capture your color pieces.")
             }
 
-            // Board to return if it's a valid move
+            // Board to return if it's a valid move (FIXE)
             val newBoard = this.copy()
 
-            // Remove the piece from the original position
+            // Remove the piece from the original position (FIXE)
             newBoard.setPiece(fromPos, null)
 
 

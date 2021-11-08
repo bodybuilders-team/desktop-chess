@@ -53,6 +53,19 @@ interface Piece {
      * @return true if the move is possible
      */
     fun checkMove(board: Board, move: Move): Boolean
+
+    /**
+     * Checks if the initial position of the move is valid,
+     * by checking if the position is occupied and the piece is of the right type.
+     * @param board board where the move will happen
+     * @param move move to test
+     * @return if the the initial position is valid
+     *
+     * TODO(Use of positionIsOccupied prevents smart cast (piece != null). Currently using !! (bang operator).)
+     */
+    fun validInitialPiece(board: Board, move: Move) =
+        board.positionIsOccupied(move.from) && move.symbol == this.symbol &&
+                board.getPiece(move.from)!!.symbol == this.symbol
 }
 
 

@@ -41,44 +41,53 @@ class PieceTests {
 
     @Test
     fun `getPieceFromSymbol returns correct PieceType Pawn`() {
-        val white = Color.WHITE
-        val piece = getPieceFromSymbol('P', white)
+        val piece = getPieceFromSymbol('P', Color.WHITE)
         assertTrue(piece is Pawn)
     }
 
     @Test
     fun `getPieceFromSymbol returns correct PieceType Rook`() {
-        val white = Color.WHITE
-        val piece = getPieceFromSymbol('R', white)
+        val piece = getPieceFromSymbol('R', Color.WHITE)
         assertTrue(piece is Rook)
     }
 
     @Test
     fun `getPieceFromSymbol returns correct PieceType Bishop`() {
-        val white = Color.WHITE
-        val piece = getPieceFromSymbol('B', white)
+        val piece = getPieceFromSymbol('B', Color.WHITE)
         assertTrue(piece is Bishop)
     }
 
     @Test
     fun `getPieceFromSymbol returns correct PieceType Knight`() {
-        val white = Color.WHITE
-        val piece = getPieceFromSymbol('N', white)
+        val piece = getPieceFromSymbol('N', Color.WHITE)
         assertTrue(piece is Knight)
     }
 
     @Test
     fun `getPieceFromSymbol returns correct PieceType Queen`() {
-        val white = Color.WHITE
-        val piece = getPieceFromSymbol('Q', white)
+        val piece = getPieceFromSymbol('Q', Color.WHITE)
         assertTrue(piece is Queen)
     }
 
     @Test
     fun `getPieceFromSymbol returns correct PieceType King`() {
-        val white = Color.WHITE
-        val piece = getPieceFromSymbol('K', white)
+        val piece = getPieceFromSymbol('K', Color.WHITE)
         assertTrue(piece is King)
+    }
+
+
+    @Test
+    fun `checkMoveValidity works as expected`() {
+        val piece = getPieceFromSymbol('P', Color.WHITE)
+
+        assertTrue(piece.validInitialPiece(board = Board(), Move("Pe2e4")))
+    }
+
+    @Test
+    fun `checkMoveValidity with wrong piece symbol returns false`() {
+        val piece = getPieceFromSymbol('P', Color.WHITE)
+
+        assertFalse(piece.validInitialPiece(board = Board(), Move("Ke2e4")))
     }
 
 }

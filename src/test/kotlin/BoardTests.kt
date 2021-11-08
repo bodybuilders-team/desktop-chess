@@ -29,6 +29,21 @@ class BoardTests {
         )
     }
 
+    @Test
+    fun `Move with wrong pieceSymbol is invalid, piece doesn't move`() {
+        val sut = Board().makeMove("Ke2e3")
+        assertEquals(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR", sut.toString()
+        )
+    }
+
     
     /*
       ------------------------------Pawn tests------------------------------

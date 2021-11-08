@@ -12,7 +12,7 @@ fun main() {
 
     board = board.makeMove("Pe7e5").makeMove("Pe2e4")
 
-    board.toString().chunked(8).forEach { println(it) }
+    printBoard(board)
 
 
     /*
@@ -37,6 +37,14 @@ fun main() {
             println(err.message)
         }
     }*/
+}
+
+
+/**
+ * Prints the board, one row in each line.
+ */
+fun printBoard(board: Board){
+    board.toString().chunked(8).forEach { println(it) }
 }
 
 
