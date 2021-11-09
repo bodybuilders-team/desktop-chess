@@ -60,7 +60,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
      * @param pos position to get piece
      * @return piece in [pos]
      */
-    fun getPiece(pos: Position) = chessBoard[BOARD_SIZE - pos.row][pos.col - FIRST_COL]
+    private fun getPiece(pos: Position) = chessBoard[BOARD_SIZE - pos.row][pos.col - FIRST_COL]
 
     /**
      * Sets [newPiece] in [pos]
@@ -124,7 +124,6 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
     /**
      * Checks if the initial position of the move is valid,
      * by checking if the position is occupied and the piece is of the right type.
-     * @param board board where the move will happen
      * @param move move to test
      * @return if the the initial position is valid
      *
@@ -132,8 +131,9 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
      */
     private fun validInitialPiece(move: Move) =
         positionIsOccupied(move.from) && getPiece(move.from)!!.symbol == move.symbol
-    
-    
+
+
+    //TODO(COMMENT)
     fun checkMove(move: Move) : Boolean{
         require(validInitialPiece(move)) { "Invalid initial position." }
         require(validCapture(move)) { "Invalid capture." }
@@ -141,14 +141,15 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
         return when(move.symbol){
             'P' -> Pawn.checkMove(this, move, getPiece(move.from)!!.color) //TODO - Remove Double Bang (!!)
             'R' -> Rook.checkMove(this, move)
-            'N' -> Knight.checkMove(this, move)
+            'N' -> Knight.checkMove(move)
             'B' -> Bishop.checkMove(this, move)
             'Q' -> Queen.checkMove(this, move)
-            'K' -> King.checkMove(this, move)
+            'K' -> King.checkMove(move)
             else -> throw IllegalArgumentException("Invalid piece symbol.")
         }
     }
-    
+
+    //TODO(COMMENT)
     private fun validCapture(move: Move): Boolean{
         if (move.capture || positionIsOccupied(move.to)) {
             val captured = getPiece(move.to) ?: return false

@@ -1,19 +1,21 @@
 import commands.buildCommands
+import pieces.Color
+
 
 /**
- * TODO List:
- * - Queen checkMove
- * - Bishop checkMove
- * - substituir por rowsDistance e tal nos checkMove
- *
- * - checkMove tests for each piece
- *
- * - commands.ChessCommands
- * - MongoDBChess
+ * A game session.
+ * @property name session name
+ * @property state current session state
+ * @property color session color
+ * @property board current board
  */
+data class Session(val name: String?, val state: GameState, val color: Color?, val board: Board?)
 
-enum class GameState { LOGGING, PLAYING, WAITING_FOR_OPPONENT, ENDED }
-data class Game(val name: String?, val state: GameState, val color: String?)
+/**
+ * Game state.
+ */
+enum class GameState { LOGGING, PLAYING, WAITING_FOR_OPPONENT }
+
 
 /**
  * The application entry point.
@@ -24,84 +26,32 @@ fun main() {
     else
         createMongoClient()*/
 
-    var chess = Game(name = null, state = GameState.LOGGING, color = null)
-    var board = Board()
-
     try {
-        val dispatcher = buildCommands(chess, board)
-
+        // Set initial game
+        var curGame = Session(name = null, state = GameState.LOGGING, color = null, board = null)
 
         while (true) {
-            val (command, argument) = readCommand(if (chess.name == null) "" else "${chess.name}:${chess.color}")
+            try {
+                // Get user input.
+                val (command, parameter) = readCommand(
+                    if (curGame.name == null) ""
+                    else "${curGame.name}:${curGame.color}"
+                )
 
-            when (command) {
-                "open" -> {
-                    if (argument == null) {
-                        println("ERROR: Missing game name.")
-                        continue
-                    }
+                val dispatcher = buildCommands(curGame)
 
-                    chess = Game(name = argument, state = GameState.PLAYING, color = "White")
-                    printBoard(board)
-                    println("Game ${chess.name} opened. Play with white pieces.")
-                }
-
-                "join" -> {
-                    if (argument == null) {
-                        println("ERROR: Missing game name.")
-                        continue
-                    }
-                    /*if (chessGame.isUnknown()) {
-                        println("Unknown game.")
-                        continue
-                    }*/
-                }
-
-                "play" -> {
-                    if (chess.state == GameState.LOGGING) {
-                        println("ERROR: Can't play without a game: try open or join commands.")
-                        continue
-                    }
-                    if (chess.state == GameState.WAITING_FOR_OPPONENT) {
-                        println("ERROR: Wait for your turn: try refresh command.")
-                        continue
-                    }
-
-                    if (argument != null) {
-                        board = board.makeMove(argument)
-                        printBoard(board)
-                        chess = chess.copy(state = GameState.WAITING_FOR_OPPONENT)
-                    }
-                    else println("ERROR: Missing move.")
-                }
-
-                "refresh" -> {
-                    if (chess.state == GameState.LOGGING) {
-                        println("ERROR: Can't refresh without a game: try open or join commands.")
-                        continue
-                    }
-                    printBoard(board)
-                }
-
-                "moves" -> {
-                    if (chess.state == GameState.LOGGING) {
-                        println("No game, no moves.")
-                        continue
-                    }
-                }
-
-                "exit" -> {
-                    chess = chess.copy(state = GameState.ENDED)
-                    break
-                }
-                else -> println("Invalid command")
+                val action = dispatcher[command.lowercase()]
+                if (action != null) {
+                    val result = action(parameter)
+                    if (result.isFailure) break
+                    else curGame = result.getOrNull()!! // TODO(remove double bang)
+                } else
+                    println("Invalid command")
+            } catch (err: Throwable) {
+                println("ERROR: ${err.message}")
             }
-
         }
-    } catch (err: Throwable) {
-        //TODO("Create a specific Throwable regarding only errors from our own program")
-        //Catches any message thrown during execution and prints it on the console
-        println(err.message)
+
     } finally {
         println("BYE. \n")
         //driver.close()

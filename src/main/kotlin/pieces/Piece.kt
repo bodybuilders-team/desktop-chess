@@ -1,7 +1,5 @@
 package pieces
 
-import Board
-import Move
 
 // Constants.
 const val WHITE_PAWN_INITIAL_ROW = 2
