@@ -16,7 +16,14 @@ const val NO_MOVE = 0
 /**
  * Piece color.
  */
-enum class Color { WHITE, BLACK }
+enum class Color { WHITE, BLACK;
+
+    /**
+     * Returns the other color.
+     * @return other color
+     */
+    fun other() = if (this == WHITE) BLACK else WHITE
+}
 
 
 /**

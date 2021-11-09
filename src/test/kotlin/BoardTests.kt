@@ -1,5 +1,7 @@
-import java.lang.IllegalArgumentException
-import kotlin.test.*
+import pieces.Color
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 
 class BoardTests {
@@ -277,4 +279,24 @@ class BoardTests {
             "RNB KBNR", sut.toString()
         )
     }
+
+
+    @Test
+    fun `King in Check`() {
+        val testBoardInString =
+            "rn qkbnr" +
+            "ppp pppp" +
+            "        " +
+            "   p    " +
+            "    P b " +
+            "        " +
+            "PPPPKPPP" +
+            "RNBQ BNR"
+        
+        val sut = Board(getMatrix2DFromString(testBoardInString))
+
+        assertEquals(CHECK_BY_1, sut.kingInCheck(Color.WHITE))
+    }
+    
+    
 }

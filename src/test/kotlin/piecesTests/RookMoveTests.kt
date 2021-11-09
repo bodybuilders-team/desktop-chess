@@ -2,7 +2,7 @@ package piecesTests
 
 import Board
 import Move
-import getBoardFromString
+import getMatrix2DFromString
 import kotlin.test.*
 
 private const val testBoard =
@@ -16,7 +16,7 @@ private const val testBoard =
             "        "
 
 class RookMoveTests {
-    private val board = Board(getBoardFromString(testBoard))
+    private val board = Board(getMatrix2DFromString(testBoard))
 
     @Test
     fun `Rook vertical(up) move is valid`() {

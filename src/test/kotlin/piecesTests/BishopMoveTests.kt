@@ -2,7 +2,7 @@ package piecesTests
 
 import Board
 import Move
-import getBoardFromString
+import getMatrix2DFromString
 import kotlin.test.*
 
 // Bishop in e2
@@ -17,7 +17,7 @@ private const val testBoard =
             "        "
 
 class BishopMoveTests {
-    private val board = Board(getBoardFromString(testBoard))
+    private val board = Board(getMatrix2DFromString(testBoard))
 
     @Test
     fun `Bishop vertical not valid`() {

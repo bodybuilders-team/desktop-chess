@@ -2,7 +2,7 @@ package piecesTests
 
 import Board
 import Move
-import getBoardFromString
+import getMatrix2DFromString
 import kotlin.test.*
 
 // Knight in c3
@@ -17,7 +17,7 @@ private const val testBoard =
             "        "
 
 class KnightMoveTests {
-    private val board = Board(getBoardFromString(testBoard))
+    private val board = Board(getMatrix2DFromString(testBoard))
 
     @Test
     fun `Knight upper right with capture is valid`() {

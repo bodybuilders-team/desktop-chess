@@ -1,7 +1,8 @@
 import pieces.*
 
 // Board properties constants
-const val BOARD_SIZE = 8
+const val BOARD_SIDE_LENGTH = 8
+const val BOARD_SIZE = 64
 const val FIRST_COL = 'a'
 const val BLACK_FIRST_ROW = 8
 const val WHITE_FIRST_ROW = 1
@@ -20,6 +21,11 @@ const val PROMOTION_PIECE_TYPE_IDX = 6
 const val CAPTURE_CHAR = 'x'
 const val CAPTURE_OFFSET = 1
 const val NO_OFFSET = 0
+
+//King in check constants
+const val NOT_IN_CHECK = 0
+const val CHECK_BY_1 = 1
+const val CHECK_BY_2 = 2
 
 // Initial board in String format
 const val STRING_BOARD =
@@ -53,14 +59,14 @@ typealias Matrix2D<T> = Array<Array<T>>
  * Represents the game board with the pieces.
  * @property chessBoard 2DMatrix with the pieces
  */
-data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BOARD)) {
+data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOARD)) {
 
     /**
      * Returns the piece in [pos]
      * @param pos position to get piece
      * @return piece in [pos]
      */
-    private fun getPiece(pos: Position) = chessBoard[BOARD_SIZE - pos.row][pos.col - FIRST_COL]
+    private fun getPiece(pos: Position) = chessBoard[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL]
 
     /**
      * Sets [newPiece] in [pos]
@@ -68,7 +74,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
      * @param newPiece piece to put in [pos]
      */
     private fun setPiece(pos: Position, newPiece: Piece?) {
-        chessBoard[BOARD_SIZE - pos.row][pos.col - FIRST_COL] = newPiece
+        chessBoard[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = newPiece
     }
 
 
@@ -112,6 +118,17 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
                 if (move.promotion == null) piece
                 else doPromotion(piece, toPos, move.promotion)
             )
+
+            //After doing the move, if the same color king is in check, the move is invalid
+            if(kingInCheck(piece.color) >= CHECK_BY_1)
+                throw Throwable("Invalid move, your side's king becomes in check.")
+            
+            //See if the opponent's king is in check mate (in check by two different pieces)
+            val kingInCheck = kingInCheck(piece.color.other())
+            val kingCannotProtect = false //TODO()
+            if(kingInCheck >= CHECK_BY_2 || (kingInCheck == CHECK_BY_1 && kingCannotProtect)){
+                //TODO(CHECK MATE)
+            }
 
             return newBoard
         } catch (err: Throwable) {
@@ -164,9 +181,51 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
     private fun isValidCapture(move: Move): Boolean {
         if (move.capture || positionIsOccupied(move.to)) {
             val captured = getPiece(move.to) ?: return false
+            
             return captured.color != getPiece(move.from)!!.color //TODO - Remove Double Bang (!!)
         }
         return true
+    }
+
+
+    /**
+     * Verifies if the king of given color is in check, returning how many pieces are attacking it.
+     * @param color color of the king
+     * @return number of pieces attacking the king
+     */
+    fun kingInCheck(color: Color): Int{
+        var checkCount = NOT_IN_CHECK
+        
+        var kingPosition: Position? = null
+
+        //Find king
+        for (rowIdx in chessBoard.indices){
+            for (colIdx in chessBoard[rowIdx].indices){
+                val piece = chessBoard[rowIdx][colIdx]
+
+                val actualRow = BOARD_SIDE_LENGTH - rowIdx
+                if(piece != null && piece.color == color && piece.symbol == 'K')
+                    kingPosition = Position(FIRST_COL + colIdx, actualRow)
+            }
+        }
+
+        require(kingPosition != null) { "King wasn't found!" }
+        
+        //For each piece, if its color is different from the king, check if it can capture the king
+        for (rowIdx in chessBoard.indices) {
+            for (colIdx in chessBoard[rowIdx].indices) {
+                val piece = chessBoard[rowIdx][colIdx]
+
+                val actualRow = BOARD_SIDE_LENGTH - rowIdx
+                
+                if(piece != null && piece.color == color.other()){
+                    if(checkMove(Move(piece.symbol, Position(FIRST_COL + colIdx, actualRow), true, kingPosition, null)))
+                        checkCount++
+                }
+            }
+        }
+        
+        return checkCount
     }
 
 
@@ -232,12 +291,14 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
  * Returns initial chess board.
  * @return initial chess board
  */
-fun getBoardFromString(stringBoard: String): Matrix2D<Piece?> {
-    val chessBoard = Matrix2D<Piece?>(BOARD_SIZE) { Array(BOARD_SIZE) { null } }
+fun getMatrix2DFromString(stringBoard: String): Matrix2D<Piece?> {
+    require(stringBoard.length == BOARD_SIZE) { "Board doesn't have the correct size (BOARD_SIZE = $BOARD_SIZE)" }
+    
+    val chessBoard = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) { Array(BOARD_SIDE_LENGTH) { null } }
 
     stringBoard.forEachIndexed { idx, char ->
-        val row = idx / BOARD_SIZE
-        val col = idx % BOARD_SIZE
+        val row = idx / BOARD_SIDE_LENGTH
+        val col = idx % BOARD_SIDE_LENGTH
         chessBoard[row][col] =
             if (char == ' ') null
             else getPieceFromSymbol(char.uppercaseChar(), if (char.isUpperCase()) Color.WHITE else Color.BLACK)

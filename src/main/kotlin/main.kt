@@ -67,7 +67,7 @@ fun printBoard(board: Board) {
     println("     a b c d e f g h  ")
     println("    ----------------- ")
     board.toString().chunked(8).forEachIndexed { idx, cols ->
-        print(" ${(BOARD_SIZE - idx)} | ")
+        print(" ${(BOARD_SIDE_LENGTH - idx)} | ")
         cols.forEach { print("$it ") }
         println("|")
     }
