@@ -71,8 +71,9 @@ fun Piece.isWhite() = color == Color.WHITE
  * @return true if there are pieces between diagonal
  */
 fun checkPiecesInBetweenDiagonal(board: Board, move: Move): Boolean {
-    var rowsDistance = move.rowsDistance() + if (move.rowsDistance() > 0) -1 else 1
-    var colsDistance = move.colsDistance() + if (move.colsDistance() > 0) -1 else 1
+    var rowsDistance = distanceWithoutToPosition(move.rowsDistance())
+    var colsDistance = distanceWithoutToPosition(move.colsDistance())
+
     // Number of steps can be calculated with rows Distance or cols Distance
     var numberOfSteps = abs(move.rowsDistance()) - 1
 
@@ -84,8 +85,9 @@ fun checkPiecesInBetweenDiagonal(board: Board, move: Move): Boolean {
                 )
             )
         ) return true
-        if (colsDistance > 0) colsDistance-- else colsDistance++
-        if (rowsDistance > 0) rowsDistance-- else rowsDistance++
+
+        colsDistance = updatedDistance(colsDistance)
+        rowsDistance = updatedDistance(rowsDistance)
         numberOfSteps--
     }
     return false
@@ -99,9 +101,7 @@ fun checkPiecesInBetweenDiagonal(board: Board, move: Move): Boolean {
  * @return true if there are pieces between non-diagonal
  */
 fun checkPiecesInBetweenNonDiagonal(board: Board, move: Move): Boolean {
-    var distance = (if (move.isHorizontal()) move.to.col - move.from.col else move.to.row - move.from.row) +
-            if (move.colsDistance() > 0 || move.rowsDistance() > 0) -1 else 1
-
+    var distance = distanceWithoutToPosition(if (move.isHorizontal()) move.colsDistance() else move.rowsDistance())
 
     while (abs(distance) > 0) {
         if (move.isHorizontal() && board.positionIsOccupied(move.from.copy(col = move.from.col + distance))
@@ -109,7 +109,23 @@ fun checkPiecesInBetweenNonDiagonal(board: Board, move: Move): Boolean {
         )
             return true
 
-        if (distance > 0) distance-- else distance++
+        distance = updatedDistance(distance)
     }
     return false
 }
+
+
+/**
+ * Returns the distance received incremented if it's negative or decremented if it's positive
+ * @param distance distance to increment/decrement
+ * @return new distance incremented/decremented
+ */
+fun updatedDistance(distance: Int): Int = if (distance > 0) distance - ONE_MOVE else distance + ONE_MOVE
+
+
+/**
+ * Receives a distance represented by an Int and returns that distance without the to position.
+ * @param distance distance to remove to position
+ * @return distance without the to position.
+ */
+private fun distanceWithoutToPosition(distance: Int) = distance + if (distance > 0) -ONE_MOVE else ONE_MOVE

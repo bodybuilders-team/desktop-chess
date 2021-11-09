@@ -3,21 +3,6 @@ import pieces.Color
 
 
 /**
- * A game session.
- * @property name session name
- * @property state current session state
- * @property color session color
- * @property board current board
- */
-data class Session(val name: String?, val state: GameState, val color: Color?, val board: Board?)
-
-/**
- * Game state.
- */
-enum class GameState { LOGGING, PLAYING, WAITING_FOR_OPPONENT }
-
-
-/**
  * The application entry point.
  */
 fun main() {
@@ -44,7 +29,7 @@ fun main() {
                 if (action != null) {
                     val result = action(parameter)
                     if (result.isFailure) break
-                    else curGame = result.getOrNull()!! // TODO(remove double bang)
+                    else curGame = result.getOrNull()!! //TODO - Remove Double Bang (!!)
                 } else
                     println("Invalid command")
             } catch (err: Throwable) {
@@ -57,6 +42,21 @@ fun main() {
         //driver.close()
     }
 }
+
+
+/**
+ * A game session.
+ * @property name session name
+ * @property state current session state
+ * @property color session color
+ * @property board current board
+ */
+data class Session(val name: String?, val state: GameState, val color: Color?, val board: Board?)
+
+/**
+ * Game state.
+ */
+enum class GameState { LOGGING, PLAYING, WAITING_FOR_OPPONENT }
 
 
 /**
@@ -94,6 +94,7 @@ fun readCommand(questString: String): Pair<String, String?> {
 private fun readLn() = readLine()!!
 
 
+// ------------------------- Mongo DB Stuff -------------------------
 private const val ENV_DB_NAME = "MONGO_DB_NAME"
 private const val ENV_DB_CONNECTION = "MONGO_DB_CONNECTION"
 
