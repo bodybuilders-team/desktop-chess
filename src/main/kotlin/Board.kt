@@ -95,7 +95,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
             val fromPos = move.from
             val toPos = move.to
             val piece = getPiece(fromPos) ?: throw Throwable("No piece in the specified position.")
-            
+
             // Check if the piece specific move is valid
             if (!checkMove(move)) throw Throwable("Invalid move.")
 
@@ -133,12 +133,18 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
         positionIsOccupied(move.from) && getPiece(move.from)!!.symbol == move.symbol
 
 
-    //TODO(COMMENT)
-    fun checkMove(move: Move) : Boolean{
+    /**
+     * Checks if a move is valid.
+     * @param move move to test
+     * @return true if the move is valid
+     * @throws IllegalArgumentException if the initial position is invalid, if the capture is invalid or
+     * if the move symbol is invalid
+     */
+    fun checkMove(move: Move): Boolean {
         require(validInitialPiece(move)) { "Invalid initial position." }
-        require(validCapture(move)) { "Invalid capture." }
-        
-        return when(move.symbol){
+        require(isValidCapture(move)) { "Invalid capture." }
+
+        return when (move.symbol) {
             'P' -> Pawn.checkMove(this, move, getPiece(move.from)!!.color) //TODO - Remove Double Bang (!!)
             'R' -> Rook.checkMove(this, move)
             'N' -> Knight.checkMove(move)
@@ -149,8 +155,13 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getBoardFromString(STRING_BO
         }
     }
 
-    //TODO(COMMENT)
-    private fun validCapture(move: Move): Boolean{
+
+    /**
+     * Checks if the capture in [move] is valid.
+     * @param move move with the capture
+     * @return true if the capture is valid
+     */
+    private fun isValidCapture(move: Move): Boolean {
         if (move.capture || positionIsOccupied(move.to)) {
             val captured = getPiece(move.to) ?: return false
             return captured.color != getPiece(move.from)!!.color //TODO - Remove Double Bang (!!)

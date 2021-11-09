@@ -10,12 +10,15 @@ class Pawn(override val color: Color) : Piece {
 
     companion object {
         fun checkMove(board: Board, move: Move, color: Color): Boolean {
+            // Pawn moves one or two slots vertically or diagonally (when capturing)
+
             // Vertical
             if (move.isVertical()) return checkMoveVertical(board, move, color)
 
             // Diagonal (only capture)
             if ((move.capture || board.positionIsOccupied(move.to)) && move.colsAbsoluteDistance() == ONE_MOVE)
-                return (move.rowsDistance() == if (color == Color.WHITE) ONE_MOVE else -ONE_MOVE) && board.positionIsOccupied(move.to)
+                return (move.rowsDistance() == if (color == Color.WHITE) ONE_MOVE else -ONE_MOVE)
+                        && board.positionIsOccupied(move.to)
 
             return false
         }

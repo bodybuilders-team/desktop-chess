@@ -2,36 +2,16 @@ package pieces
 
 import Board
 import Move
-import kotlin.math.abs
 
 
 class Rook(override val color: Color) : Piece {
 
     override val symbol = 'R'
-    
-    companion object{
+
+    companion object {
         fun checkMove(board: Board, move: Move): Boolean {
-            //Move has to be horizontal or vertical
-            if (!move.isHorizontal() && !move.isVertical()) return false
-            if (checkPiecesInBetweenNonDiagonal(board, move)) return false
-            return true
+            // Queen moves horizontally, vertically or diagonally
+            return (move.isHorizontal() || move.isVertical()) && !checkPiecesInBetweenNonDiagonal(board, move)
         }
     }
 }
-
-fun checkPiecesInBetweenNonDiagonal(board: Board,move: Move): Boolean {
-    var distance = (if (move.isHorizontal()) move.to.col - move.from.col else move.to.row - move.from.row) +
-            if (move.colsDistance() > 0 || move.rowsDistance() > 0) -1 else 1
-
-
-    while (abs(distance) > 0) {
-        if (move.isHorizontal() && board.positionIsOccupied(move.from.copy(col = move.from.col + distance))
-            || move.isVertical() && board.positionIsOccupied(move.from.copy(row = move.from.row + distance))
-        )
-            return true
-
-        if (distance > 0) distance-- else distance++
-    }
-    return false
-}
-
