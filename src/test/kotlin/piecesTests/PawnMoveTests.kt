@@ -18,7 +18,7 @@ private const val testBoard =
 
 class PawnMoveTests {
     private val board = Board(getBoardFromString(testBoard))
-    
+
     @Test
     fun `Pawn vertical one move is valid`() {
         assertTrue(board.checkMove(Move("Pe2e3")))

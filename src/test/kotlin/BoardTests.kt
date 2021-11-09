@@ -227,4 +227,54 @@ class BoardTests {
             "RNBQKBNR", sut.toString()
         )
     }
+
+
+    /*
+      ------------------------------Queen tests------------------------------
+     */
+
+    @Test
+    fun `Move Queen - can´t go through ally pieces 1 `() {
+        val sut = Board().makeMove("Qd1d5")
+        assertEquals(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR", sut.toString()
+        )
+    }
+
+    @Test
+    fun `Move Queen - can´t go through ally pieces 2 `() {
+        val sut = Board().makeMove("Nd1a4")
+        assertEquals(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR", sut.toString()
+        )
+    }
+
+    @Test
+    fun `Move Queen goes as expected - `() {
+        val sut = Board().makeMove("Pe2e4").makeMove("Qd1h5").makeMove("Qh5a5").makeMove("Qa5a3")
+        assertEquals(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "    P   " +
+            "Q       " +
+            "PPPP PPP" +
+            "RNB KBNR", sut.toString()
+        )
+    }
 }
