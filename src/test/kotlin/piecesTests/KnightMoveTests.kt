@@ -21,46 +21,46 @@ class KnightMoveTests {
 
     @Test
     fun `Knight upper right with capture is valid`() {
-        assertTrue(board.checkMove(Move("Nc3d5")))
+        assertTrue(board.isValidMove(Move("Nc3d5")))
     }
 
     @Test
     fun `Knight upper left is valid`() {
-        assertTrue(board.checkMove(Move("Nc3b5")))
+        assertTrue(board.isValidMove(Move("Nc3b5")))
     }
 
     @Test
     fun `Knight down right is valid`() {
-        assertTrue(board.checkMove(Move("Nc3d1")))
+        assertTrue(board.isValidMove(Move("Nc3d1")))
     }
 
     @Test
     fun `Knight down left is valid`() {
-        assertTrue(board.checkMove(Move("Nc3b1")))
+        assertTrue(board.isValidMove(Move("Nc3b1")))
     }
 
     @Test
     fun `Knight right up is valid`() {
-        assertTrue(board.checkMove(Move("Nc3e4")))
+        assertTrue(board.isValidMove(Move("Nc3e4")))
     }
 
     @Test
     fun `Knight right down is valid`() {
-        assertTrue(board.checkMove(Move("Nc3e2")))
+        assertTrue(board.isValidMove(Move("Nc3e2")))
     }
 
     @Test
     fun `Knight left up is valid`() {
-        assertTrue(board.checkMove(Move("Nc3a4")))
+        assertTrue(board.isValidMove(Move("Nc3a4")))
     }
 
     @Test
     fun `Knight left down is valid`() {
-        assertTrue(board.checkMove(Move("Nc3a2")))
+        assertTrue(board.isValidMove(Move("Nc3a2")))
     }
 
     @Test
     fun `Knight not L shaped move is not valid`() {
-        assertFalse(board.checkMove(Move("Nc3e3")))
+        assertFalse(board.isValidMove(Move("Nc3e3")))
     }
 }

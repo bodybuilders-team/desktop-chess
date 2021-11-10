@@ -54,6 +54,14 @@ fun getPieceFromSymbol(symbol: Char, color: Color): Piece {
 interface Piece {
     val color: Color
     val symbol: Char
+
+    /**
+     * Checks if a move is possible
+     * @param board board where the move will happen
+     * @param move move to test
+     * @return true if the move is possible
+     */
+    fun isValidMove(board: Board, move: Move): Boolean
 }
 
 
@@ -70,7 +78,7 @@ fun Piece.isWhite() = color == Color.WHITE
  * @param move move with the positions to check
  * @return true if there are pieces between diagonal
  */
-fun checkPiecesInBetweenDiagonal(board: Board, move: Move): Boolean {
+fun isDiagonalOccupied(board: Board, move: Move): Boolean {
     var rowsDistance = distanceWithoutToPosition(move.rowsDistance())
     var colsDistance = distanceWithoutToPosition(move.colsDistance())
 
@@ -78,7 +86,7 @@ fun checkPiecesInBetweenDiagonal(board: Board, move: Move): Boolean {
     var numberOfSteps = abs(move.rowsDistance()) - 1
 
     while (numberOfSteps > 0) {
-        if (board.positionIsOccupied(
+        if (board.isPositionOccupied(
                 move.from.copy(
                     col = move.from.col + colsDistance,
                     row = move.from.row + rowsDistance
@@ -100,12 +108,12 @@ fun checkPiecesInBetweenDiagonal(board: Board, move: Move): Boolean {
  * @param move move with the positions to check
  * @return true if there are pieces between non-diagonal
  */
-fun checkPiecesInBetweenNonDiagonal(board: Board, move: Move): Boolean {
+fun isNonDiagonalOccupied(board: Board, move: Move): Boolean {
     var distance = distanceWithoutToPosition(if (move.isHorizontal()) move.colsDistance() else move.rowsDistance())
 
     while (abs(distance) > 0) {
-        if (move.isHorizontal() && board.positionIsOccupied(move.from.copy(col = move.from.col + distance))
-            || move.isVertical() && board.positionIsOccupied(move.from.copy(row = move.from.row + distance))
+        if (move.isHorizontal() && board.isPositionOccupied(move.from.copy(col = move.from.col + distance))
+            || move.isVertical() && board.isPositionOccupied(move.from.copy(row = move.from.row + distance))
         )
             return true
 

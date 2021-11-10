@@ -39,16 +39,6 @@ const val STRING_BOARD =
     "RNBQKBNR"
 
 
-// - Play MOVE
-// - MOVE syntax is verified using Regex
-// MOVE has PIECE_TYPE
-// MOVE has INITIAL_POSITION
-// MOVE has FINAL_POSITION
-// - Given the piecetype and an initial and final position, verify if the move is valid:
-//   - Is there a piece in the initial position?
-//   - Is the piece in the initial position of the same piecetype as MOVE.PIECE_TYPE?
-//   - The piece specific movement is valid? To test this the piece color is relevant.
-
 /**
  * 2D Matrix made with an array of arrays.
  */
@@ -57,24 +47,34 @@ typealias Matrix2D<T> = Array<Array<T>>
 
 /**
  * Represents the game board with the pieces.
- * @property chessBoard 2DMatrix with the pieces
+ * @property matrix 2DMatrix with the pieces
  */
-data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOARD)) {
+data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOARD)) {
 
     /**
      * Returns the piece in [pos]
      * @param pos position to get piece
      * @return piece in [pos]
      */
-    private fun getPiece(pos: Position) = chessBoard[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL]
+    private fun getPiece(pos: Position) = matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL]
+
 
     /**
-     * Sets [newPiece] in [pos]
+     * Sets [piece] in [pos]
      * @param pos position to set
-     * @param newPiece piece to put in [pos]
+     * @param piece piece to put in [pos]
      */
-    private fun setPiece(pos: Position, newPiece: Piece?) {
-        chessBoard[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = newPiece
+    private fun setPiece(pos: Position, piece: Piece?) {
+        matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = piece
+    }
+
+
+    /**
+     * Removes piece from [pos]
+     * @param pos position to remove the piece
+     */
+    private fun removePiece(pos: Position) {
+        setPiece(pos, null)
     }
 
 
@@ -95,46 +95,34 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
      * @return new board with piece moved
      */
     fun makeMove(moveInString: String): Board {
-        try {
-            // Get move arguments
-            val move = Move(moveInString)
-            val fromPos = move.from
-            val toPos = move.to
-            val piece = getPiece(fromPos) ?: throw Throwable("No piece in the specified position.")
+        val move = Move(moveInString)
+        val fromPos = move.from
+        val toPos = move.to
+        val piece = getPiece(fromPos) ?: throw Throwable("No piece in the specified position.")
 
-            // Check if the piece specific move is valid
-            if (!checkMove(move)) throw Throwable("Invalid move.")
+        if (!isValidMove(move)) throw Throwable("Invalid move.")
 
-            // Board to return if it's a valid move
-            val newBoard = this.copy()
+        val newBoard = this.copy()
+        newBoard.removePiece(fromPos)
 
-            // Remove the piece from the original position
-            newBoard.setPiece(fromPos, null)
+        newBoard.setPiece(
+            toPos,
+            if (move.promotion == null) piece
+            else doPromotion(piece, toPos, move.promotion)
+        )
 
+        //After doing the move, if the same color king is in check, the move is invalid
+        if (isKingInCheck(piece.color) >= CHECK_BY_1)
+            throw Throwable("Invalid move, your side's king becomes in check.")
 
-            // If it's a promotion move, do promotion, else just put the piece in the to position
-            newBoard.setPiece(
-                toPos,
-                if (move.promotion == null) piece
-                else doPromotion(piece, toPos, move.promotion)
-            )
-
-            //After doing the move, if the same color king is in check, the move is invalid
-            if(kingInCheck(piece.color) >= CHECK_BY_1)
-                throw Throwable("Invalid move, your side's king becomes in check.")
-            
-            //See if the opponent's king is in check mate (in check by two different pieces)
-            val kingInCheck = kingInCheck(piece.color.other())
-            val kingCannotProtect = false //TODO()
-            if(kingInCheck >= CHECK_BY_2 || (kingInCheck == CHECK_BY_1 && kingCannotProtect)){
-                //TODO(CHECK MATE)
-            }
-
-            return newBoard
-        } catch (err: Throwable) {
-            println(err)
-            return this
+        //See if the opponent's king is in check mate (in check by two different pieces)
+        val kingInCheck = isKingInCheck(piece.color.other())
+        val kingCannotProtect = false //TODO()
+        if (kingInCheck >= CHECK_BY_2 || (kingInCheck == CHECK_BY_1 && kingCannotProtect)) {
+            //TODO(CHECK MATE)
         }
+
+        return newBoard
     }
 
 
@@ -145,19 +133,11 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
      * @throws IllegalArgumentException if the initial position is invalid, if the capture is invalid or
      * if the move symbol is invalid
      */
-    fun checkMove(move: Move): Boolean {
+    fun isValidMove(move: Move): Boolean {
         require(isValidInitialPiece(move)) { "Invalid initial position." }
         require(isValidCapture(move)) { "Invalid capture." }
 
-        return when (move.symbol) {
-            'P' -> Pawn.checkMove(this, move, getPiece(move.from)!!.color) //TODO - Remove Double Bang (!!)
-            'R' -> Rook.checkMove(this, move)
-            'N' -> Knight.checkMove(move)
-            'B' -> Bishop.checkMove(this, move)
-            'Q' -> Queen.checkMove(this, move)
-            'K' -> King.checkMove(move)
-            else -> throw IllegalArgumentException("Invalid piece symbol.")
-        }
+        return getPiece(move.from)!!.isValidMove(this, move) //TODO - Remove Double Bang (!!)
     }
 
 
@@ -170,7 +150,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
      * TODO(Use of positionIsOccupied prevents smart cast (piece != null). Currently using !! (bang operator).)
      */
     private fun isValidInitialPiece(move: Move) =
-        positionIsOccupied(move.from) && getPiece(move.from)!!.symbol == move.symbol //TODO - Remove Double Bang (!!)
+        isPositionOccupied(move.from) && getPiece(move.from)!!.symbol == move.symbol //TODO - Remove Double Bang (!!)
 
 
     /**
@@ -179,9 +159,9 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
      * @return true if the capture is valid
      */
     private fun isValidCapture(move: Move): Boolean {
-        if (move.capture || positionIsOccupied(move.to)) {
+        if (move.capture || isPositionOccupied(move.to)) {
             val captured = getPiece(move.to) ?: return false
-            
+
             return captured.color != getPiece(move.from)!!.color //TODO - Remove Double Bang (!!)
         }
         return true
@@ -193,38 +173,47 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
      * @param color color of the king
      * @return number of pieces attacking the king
      */
-    fun kingInCheck(color: Color): Int{
+    fun isKingInCheck(color: Color): Int {
         var checkCount = NOT_IN_CHECK
-        
+
         var kingPosition: Position? = null
 
         //Find king
-        for (rowIdx in chessBoard.indices){
-            for (colIdx in chessBoard[rowIdx].indices){
-                val piece = chessBoard[rowIdx][colIdx]
+        for (rowIdx in matrix.indices) {
+            for (colIdx in matrix[rowIdx].indices) {
+                val piece = matrix[rowIdx][colIdx]
 
                 val actualRow = BOARD_SIDE_LENGTH - rowIdx
-                if(piece != null && piece.color == color && piece.symbol == 'K')
+                if (piece != null && piece.color == color && piece.symbol == 'K')
                     kingPosition = Position(FIRST_COL + colIdx, actualRow)
             }
         }
 
         require(kingPosition != null) { "King wasn't found!" }
-        
+
         //For each piece, if its color is different from the king, check if it can capture the king
-        for (rowIdx in chessBoard.indices) {
-            for (colIdx in chessBoard[rowIdx].indices) {
-                val piece = chessBoard[rowIdx][colIdx]
+        for (rowIdx in matrix.indices) {
+            for (colIdx in matrix[rowIdx].indices) {
+                val piece = matrix[rowIdx][colIdx]
 
                 val actualRow = BOARD_SIDE_LENGTH - rowIdx
-                
-                if(piece != null && piece.color == color.other()){
-                    if(checkMove(Move(piece.symbol, Position(FIRST_COL + colIdx, actualRow), true, kingPosition, null)))
+
+                if (piece != null && piece.color == color.other()) {
+                    if (isValidMove(
+                            Move(
+                                piece.symbol,
+                                Position(FIRST_COL + colIdx, actualRow),
+                                true,
+                                kingPosition,
+                                null
+                            )
+                        )
+                    )
                         checkCount++
                 }
             }
         }
-        
+
         return checkCount
     }
 
@@ -234,7 +223,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
      * @param position position to check
      * @return true if there's a piece in [position]
      */
-    fun positionIsOccupied(position: Position) = getPiece(position) != null
+    fun isPositionOccupied(position: Position) = getPiece(position) != null
 
 
     /**
@@ -253,7 +242,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
             (piece.color == Color.WHITE && toPos.row == BLACK_FIRST_ROW ||
                     piece.color == Color.BLACK && toPos.row == WHITE_FIRST_ROW)
         )
-            return getPieceFromSymbol(promotion?: 'Q', piece.color)
+            return getPieceFromSymbol(promotion ?: 'Q', piece.color)
         else
             throw Throwable("You cannot get promoted.")
     }
@@ -264,7 +253,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
      * @return string representation of the chess board
      */
     override fun toString(): String {
-        return chessBoard.joinToString("") { row ->
+        return matrix.joinToString("") { row ->
             row.map { piece ->
                 val initial = piece?.symbol ?: ' '
                 if (initial != ' ' && piece?.color == Color.BLACK) initial.lowercaseChar() else initial
@@ -278,9 +267,9 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
      * @return copied board
      */
     private fun copy(): Board {
-        val newBoard = Board(this.chessBoard.copyOf())
-        repeat(this.chessBoard.size) {
-            newBoard.chessBoard[it] = this.chessBoard[it].copyOf()
+        val newBoard = Board(this.matrix.copyOf())
+        repeat(BOARD_SIDE_LENGTH) {
+            newBoard.matrix[it] = this.matrix[it].copyOf()
         }
 
         return newBoard
@@ -294,7 +283,7 @@ data class Board(val chessBoard: Matrix2D<Piece?> = getMatrix2DFromString(STRING
  */
 fun getMatrix2DFromString(stringBoard: String): Matrix2D<Piece?> {
     require(stringBoard.length == BOARD_SIZE) { "Board doesn't have the correct size (BOARD_SIZE = $BOARD_SIZE)" }
-    
+
     val chessBoard = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) { Array(BOARD_SIDE_LENGTH) { null } }
 
     stringBoard.forEachIndexed { idx, char ->

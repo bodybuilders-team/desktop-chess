@@ -20,7 +20,7 @@ data class Move(
 ) {
     companion object {
         operator fun invoke(string: String): Move {
-            //Tests if the move is well formatted by using a regular expression (regex)
+            // Tests if the move is well formatted by using a regular expression (regex)
             require(moveRegexFormat.toRegex().containsMatchIn(string)) {
                 "Use format: [<piece>][<from>][x][<to>][=<piece>]"
             }

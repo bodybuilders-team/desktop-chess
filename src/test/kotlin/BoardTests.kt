@@ -236,7 +236,7 @@ class BoardTests {
      */
 
     @Test
-    fun `Move Queen - can´t go through ally pieces 1 `() {
+    fun `Move Queen - can't go through ally pieces 1 `() {
         val sut = Board().makeMove("Qd1d5")
         assertEquals(
             "rnbqkbnr" +
@@ -251,7 +251,7 @@ class BoardTests {
     }
 
     @Test
-    fun `Move Queen - can´t go through ally pieces 2 `() {
+    fun `Move Queen - can't go through ally pieces 2 `() {
         val sut = Board().makeMove("Nd1a4")
         assertEquals(
             "rnbqkbnr" +
@@ -295,7 +295,7 @@ class BoardTests {
         
         val sut = Board(getMatrix2DFromString(testBoardInString))
 
-        assertEquals(CHECK_BY_1, sut.kingInCheck(Color.WHITE))
+        assertEquals(CHECK_BY_1, sut.isKingInCheck(Color.WHITE))
     }
     
     

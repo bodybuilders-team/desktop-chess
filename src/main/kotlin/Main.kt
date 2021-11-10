@@ -13,23 +13,24 @@ fun main() {
 
     try {
         // Set initial game
-        var curGame = Session(name = null, state = GameState.LOGGING, color = null, board = null)
+        var curGame = Session(name = null, state = GameState.LOGGING, army = null, board = null)
 
         while (true) {
             try {
                 // Get user input.
                 val (command, parameter) = readCommand(
                     if (curGame.name == null) ""
-                    else "${curGame.name}:${curGame.color}"
+                    else "${curGame.name}:${curGame.army}"
                 )
 
-                val dispatcher = buildCommands(curGame)
+                val cmdDispatcher =
+                    buildCommands(curGame) //TODO - Modificar commands para criar o dispatcher fora do while
 
-                val action = dispatcher[command.lowercase()]
+                val action = cmdDispatcher[command.lowercase()]
                 if (action != null) {
                     val result = action(parameter)
                     if (result.isFailure) break
-                    else curGame = result.getOrNull()!! //TODO - Remove Double Bang (!!)
+                    else curGame = result.getOrNull() ?: curGame
                 } else
                     println("Invalid command")
             } catch (err: Throwable) {
@@ -48,31 +49,15 @@ fun main() {
  * A game session.
  * @property name session name
  * @property state current session state
- * @property color session color
+ * @property army session color
  * @property board current board
  */
-data class Session(val name: String?, val state: GameState, val color: Color?, val board: Board?)
+data class Session(val name: String?, val state: GameState, val army: Color?, val board: Board?)
 
 /**
  * Game state.
  */
 enum class GameState { LOGGING, PLAYING, WAITING_FOR_OPPONENT }
-
-
-/**
- * Prints the board, one row in each line.
- * @param board board to print
- */
-fun printBoard(board: Board) {
-    println("     a b c d e f g h  ")
-    println("    ----------------- ")
-    board.toString().chunked(8).forEachIndexed { idx, cols ->
-        print(" ${(BOARD_SIDE_LENGTH - idx)} | ")
-        cols.forEach { print("$it ") }
-        println("|")
-    }
-    println("    ----------------- ")
-}
 
 
 /**

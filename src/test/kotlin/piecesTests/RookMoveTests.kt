@@ -20,31 +20,31 @@ class RookMoveTests {
 
     @Test
     fun `Rook vertical(up) move is valid`() {
-        assertTrue(board.checkMove(Move("Rb2b4")))
+        assertTrue(board.isValidMove(Move("Rb2b4")))
     }
 
     @Test
     fun `Rook vertical(down) move is valid`() {
-        assertTrue(board.checkMove(Move("Rb2b1")))
+        assertTrue(board.isValidMove(Move("Rb2b1")))
     }
 
     @Test
     fun `Rook horizontal(right) move is valid`() {
-        assertTrue(board.checkMove(Move("Rb2f2")))
+        assertTrue(board.isValidMove(Move("Rb2f2")))
     }
 
     @Test
     fun `Rook horizontal(left) move is valid`() {
-        assertTrue(board.checkMove(Move("Rb2a2")))
+        assertTrue(board.isValidMove(Move("Rb2a2")))
     }
 
     @Test
     fun `Rook diagonal not valid`() {
-        assertFalse(board.checkMove(Move("Rb2c3")))
+        assertFalse(board.isValidMove(Move("Rb2c3")))
     }
 
     @Test
     fun `Rook move with capture is valid`() {
-        assertTrue(board.checkMove(Move("Rb2b5")))
+        assertTrue(board.isValidMove(Move("Rb2b5")))
     }
 }
