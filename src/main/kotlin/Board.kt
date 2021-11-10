@@ -98,9 +98,9 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         val move = Move(moveInString)
         val fromPos = move.from
         val toPos = move.to
-        val piece = getPiece(fromPos) ?: throw Throwable("No piece in the specified position.")
+        val piece = getPiece(fromPos) ?: throw NoSuchPieceThereException("No piece in the specified position.")
 
-        if (!isValidMove(move)) throw Throwable("Invalid move.")
+        if (!isValidMove(move)) throw IllegalMoveException("Invalid move.")
 
         val newBoard = this.copy()
         newBoard.removePiece(fromPos)
@@ -112,16 +112,15 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         )
 
         //After doing the move, if the same color king is in check, the move is invalid
-        if (isKingInCheck(piece.color) >= CHECK_BY_1)
-            throw Throwable("Invalid move, your side's king becomes in check.")
+        if(isKingInCheck(piece.color) >= CHECK_BY_1)
+            throw KingInCheckException("Invalid move, your side's king becomes in check.")
 
         //See if the opponent's king is in check mate (in check by two different pieces)
         val kingInCheck = isKingInCheck(piece.color.other())
         val kingCannotProtect = false //TODO()
-        if (kingInCheck >= CHECK_BY_2 || (kingInCheck == CHECK_BY_1 && kingCannotProtect)) {
+        if(kingInCheck >= CHECK_BY_2 || (kingInCheck == CHECK_BY_1 && kingCannotProtect)){
             //TODO(CHECK MATE)
         }
-
         return newBoard
     }
 
@@ -134,8 +133,8 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
      * if the move symbol is invalid
      */
     fun isValidMove(move: Move): Boolean {
-        require(isValidInitialPiece(move)) { "Invalid initial position." }
-        require(isValidCapture(move)) { "Invalid capture." }
+        require(isValidInitialPiece(move))
+        require(isValidCapture(move))
 
         return getPiece(move.from)!!.isValidMove(this, move) //TODO - Remove Double Bang (!!)
     }

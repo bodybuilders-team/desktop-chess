@@ -3,6 +3,7 @@ package piecesTests
 import Board
 import Move
 import getMatrix2DFromString
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.*
 
 //Pawn located in position e2
@@ -52,5 +53,10 @@ class PawnMoveTests {
     @Test
     fun `Pawn diagonal move backwards isn't valid`() {
         assertFalse(board.isValidMove(Move("Pe2f1")))
+    }
+
+    @Test
+    fun `Pawn move to same place does not work`() {
+        assertThrows<IllegalArgumentException> {board.isValidMove(Move("Pe2e2"))}
     }
 }

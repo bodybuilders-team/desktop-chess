@@ -3,6 +3,7 @@ package piecesTests
 import Board
 import Move
 import getMatrix2DFromString
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.*
 
 // Bishop in e2
@@ -47,5 +48,10 @@ class BishopMoveTests {
     @Test
     fun `Bishop move(down,left) is valid`() {
         assertTrue(board.isValidMove(Move("Be2d1")))
+    }
+
+    @Test
+    fun `Bishop move to same place does not work`() {
+        assertThrows<IllegalArgumentException> {board.isValidMove(Move("Be2e2"))}
     }
 }

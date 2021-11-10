@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.assertThrows
 import pieces.Color
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -33,17 +34,7 @@ class BoardTests {
 
     @Test
     fun `Move with wrong pieceSymbol is invalid, piece doesn't move`() {
-        val sut = Board().makeMove("Ke2e3")
-        assertEquals(
-            "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR", sut.toString()
-        )
+        assertThrows<IllegalArgumentException> { Board().makeMove("Ke2e3") }
     }
 
     
@@ -103,32 +94,12 @@ class BoardTests {
 
     @Test
     fun `Move Rook - stays in place if same color piece is in its path`() {
-        val sut = Board().makeMove("Pa2a3").makeMove("Ra1a4")
-        assertEquals(
-            "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "P       " +
-            " PPPPPPP" +
-            "RNBQKBNR", sut.toString()
-        )
+        assertThrows<IllegalMoveException> { Board().makeMove("Pa2a3").makeMove("Ra1a4") }
     }
 
     @Test
     fun `Move Rook - stays in place if opponent's piece is in its path`() {
-        val sut = Board().makeMove("Pa2a4").makeMove("Pb7b5").makeMove("Pb5a4").makeMove("Ra1a5")
-        assertEquals(
-            "rnbqkbnr" +
-            "p pppppp" +
-            "        " +
-            "        " +
-            "p       " +
-            "        " +
-            " PPPPPPP" +
-            "RNBQKBNR", sut.toString()
-        )
+        assertThrows<IllegalMoveException> { Board().makeMove("Pa2a4").makeMove("Pb7b5").makeMove("Pb5a4").makeMove("Ra1a5")}
     }
 
     @Test
@@ -217,17 +188,8 @@ class BoardTests {
 
     @Test
     fun `Move Bishop - stays in place if opponent's piece is in its path`() {
-        val sut = Board().makeMove("Pe2e4").makeMove("Pb7b5").makeMove("Bf1a6")
-        assertEquals(
-            "rnbqkbnr" +
-            "p pppppp" +
-            "        " +
-            " p      " +
-            "    P   " +
-            "        " +
-            "PPPP PPP" +
-            "RNBQKBNR", sut.toString()
-        )
+        assertThrows<IllegalMoveException> { Board().makeMove("Pe2e4").makeMove("Pb7b5").makeMove("Bf1a6") }
+
     }
 
 
@@ -237,32 +199,14 @@ class BoardTests {
 
     @Test
     fun `Move Queen - can't go through ally pieces 1 `() {
-        val sut = Board().makeMove("Qd1d5")
-        assertEquals(
-            "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR", sut.toString()
-        )
+        assertThrows<IllegalMoveException> { Board().makeMove("Qd1d5") }
+
     }
 
     @Test
     fun `Move Queen - can't go through ally pieces 2 `() {
-        val sut = Board().makeMove("Nd1a4")
-        assertEquals(
-            "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR", sut.toString()
-        )
+        assertThrows<IllegalMoveException> { Board().makeMove("Qd1a4") }
+
     }
 
     @Test
@@ -297,6 +241,4 @@ class BoardTests {
 
         assertEquals(CHECK_BY_1, sut.isKingInCheck(Color.WHITE))
     }
-    
-    
 }
