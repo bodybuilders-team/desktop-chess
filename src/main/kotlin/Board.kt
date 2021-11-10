@@ -24,8 +24,8 @@ const val NO_OFFSET = 0
 
 //King in check constants
 const val NOT_IN_CHECK = 0
-const val CHECK_BY_1 = 1
-const val CHECK_BY_2 = 2
+const val CHECK_BY_ONE = 1
+const val CHECK_BY_TWO = 2
 
 // Initial board in String format
 const val STRING_BOARD =
@@ -56,7 +56,7 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
      * @param pos position to get piece
      * @return piece in [pos]
      */
-    private fun getPiece(pos: Position) = matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL]
+    fun getPiece(pos: Position) = matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL]
 
 
     /**
@@ -89,6 +89,15 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         }
     }
 
+
+    /**
+     * Checks if a position is occupied by a piece.
+     * @param position position to check
+     * @return true if there's a piece in [position]
+     */
+    fun isPositionOccupied(position: Position) = getPiece(position) != null
+
+
     /**
      * Move a piece in the board.
      * @param moveInString piece move
@@ -98,7 +107,7 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         val move = Move(moveInString)
         val fromPos = move.from
         val toPos = move.to
-        val piece = getPiece(fromPos) ?: throw NoSuchPieceThereException("No piece in the specified position.")
+        val piece = getPiece(fromPos) ?: throw NoSuchPieceInSpecifiedPositionException("No piece in the specified position.")
 
         if (!isValidMove(move)) throw IllegalMoveException("Invalid move.")
 
@@ -111,139 +120,17 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
             else doPromotion(piece, toPos, move.promotion)
         )
 
-        //After doing the move, if the same color king is in check, the move is invalid
-        if(isKingInCheck(piece.color) >= CHECK_BY_1)
+        // After doing the move, if the same color king is in check, the move is invalid
+        if (isKingInCheck(piece.army) >= CHECK_BY_ONE)
             throw KingInCheckException("Invalid move, your side's king becomes in check.")
 
-        //See if the opponent's king is in check mate (in check by two different pieces)
-        val kingInCheck = isKingInCheck(piece.color.other())
+        // See if the opponent's king is in check mate (in check by two different pieces)
+        val kingInCheck = isKingInCheck(piece.army.other())
         val kingCannotProtect = false //TODO()
-        if(kingInCheck >= CHECK_BY_2 || (kingInCheck == CHECK_BY_1 && kingCannotProtect)){
+        if (kingInCheck >= CHECK_BY_TWO || (kingInCheck == CHECK_BY_ONE && kingCannotProtect)) {
             //TODO(CHECK MATE)
         }
         return newBoard
-    }
-
-
-    /**
-     * Checks if a move is valid.
-     * @param move move to test
-     * @return true if the move is valid
-     * @throws IllegalArgumentException if the initial position is invalid, if the capture is invalid or
-     * if the move symbol is invalid
-     */
-    fun isValidMove(move: Move): Boolean {
-        require(isValidInitialPiece(move))
-        require(isValidCapture(move))
-
-        return getPiece(move.from)!!.isValidMove(this, move) //TODO - Remove Double Bang (!!)
-    }
-
-
-    /**
-     * Checks if the initial position of the move is valid,
-     * by checking if the position is occupied and the piece is of the right type.
-     * @param move move to test
-     * @return if the the initial position is valid
-     *
-     * TODO(Use of positionIsOccupied prevents smart cast (piece != null). Currently using !! (bang operator).)
-     */
-    private fun isValidInitialPiece(move: Move) =
-        isPositionOccupied(move.from) && getPiece(move.from)!!.symbol == move.symbol //TODO - Remove Double Bang (!!)
-
-
-    /**
-     * Checks if the capture in [move] is valid.
-     * @param move move with the capture
-     * @return true if the capture is valid
-     */
-    private fun isValidCapture(move: Move): Boolean {
-        if (move.capture || isPositionOccupied(move.to)) {
-            val captured = getPiece(move.to) ?: return false
-
-            return captured.color != getPiece(move.from)!!.color //TODO - Remove Double Bang (!!)
-        }
-        return true
-    }
-
-
-    /**
-     * Verifies if the king of given color is in check, returning how many pieces are attacking it.
-     * @param color color of the king
-     * @return number of pieces attacking the king
-     */
-    fun isKingInCheck(color: Color): Int {
-        var checkCount = NOT_IN_CHECK
-
-        var kingPosition: Position? = null
-
-        //Find king
-        for (rowIdx in matrix.indices) {
-            for (colIdx in matrix[rowIdx].indices) {
-                val piece = matrix[rowIdx][colIdx]
-
-                val actualRow = BOARD_SIDE_LENGTH - rowIdx
-                if (piece != null && piece.color == color && piece.symbol == 'K')
-                    kingPosition = Position(FIRST_COL + colIdx, actualRow)
-            }
-        }
-
-        require(kingPosition != null) { "King wasn't found!" }
-
-        //For each piece, if its color is different from the king, check if it can capture the king
-        for (rowIdx in matrix.indices) {
-            for (colIdx in matrix[rowIdx].indices) {
-                val piece = matrix[rowIdx][colIdx]
-
-                val actualRow = BOARD_SIDE_LENGTH - rowIdx
-
-                if (piece != null && piece.color == color.other()) {
-                    if (isValidMove(
-                            Move(
-                                piece.symbol,
-                                Position(FIRST_COL + colIdx, actualRow),
-                                true,
-                                kingPosition,
-                                null
-                            )
-                        )
-                    )
-                        checkCount++
-                }
-            }
-        }
-
-        return checkCount
-    }
-
-
-    /**
-     * Checks if a position is occupied by a piece.
-     * @param position position to check
-     * @return true if there's a piece in [position]
-     */
-    fun isPositionOccupied(position: Position) = getPiece(position) != null
-
-
-    /**
-     * Checks if the promotion is valid and, if it is returns the new promoted piece.
-     * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.
-     *
-     * If no promote piece is specified, promote to queen by default.
-     * @param piece piece to promote
-     * @param toPos new piece position
-     * @param promotion new piece type to promote
-     * @return promoted piece
-     * @throws Throwable if the promotion is invalid
-     */
-    private fun doPromotion(piece: Piece, toPos: Position, promotion: Char?): Piece {
-        if (piece is Pawn &&
-            (piece.color == Color.WHITE && toPos.row == BLACK_FIRST_ROW ||
-                    piece.color == Color.BLACK && toPos.row == WHITE_FIRST_ROW)
-        )
-            return getPieceFromSymbol(promotion ?: 'Q', piece.color)
-        else
-            throw Throwable("You cannot get promoted.")
     }
 
 
@@ -255,7 +142,7 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         return matrix.joinToString("") { row ->
             row.map { piece ->
                 val initial = piece?.symbol ?: ' '
-                if (initial != ' ' && piece?.color == Color.BLACK) initial.lowercaseChar() else initial
+                if (initial != ' ' && piece?.army == Color.BLACK) initial.lowercaseChar() else initial
             }.joinToString("")
         }
     }

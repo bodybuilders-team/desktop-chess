@@ -4,7 +4,7 @@ import Board
 import Move
 
 
-class Bishop(override val color: Color) : Piece {
+class Bishop(override val army: Color) : Piece {
 
     override val symbol = 'B'
 

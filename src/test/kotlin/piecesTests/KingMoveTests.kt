@@ -3,9 +3,11 @@ package piecesTests
 import Board
 import Move
 import getMatrix2DFromString
-import org.junit.jupiter.api.assertThrows
+import isValidMove
 import kotlin.test.*
 
+
+// King in e2
 private const val testBoard =
             "        " +
             "        " +
@@ -15,6 +17,7 @@ private const val testBoard =
             "   p    " +
             "    K   " +
             "        "
+
 
 class KingMoveTests {
     private val board = Board(getMatrix2DFromString(testBoard))
@@ -66,6 +69,6 @@ class KingMoveTests {
 
     @Test
     fun `King move to same place does not work`() {
-        assertThrows<IllegalArgumentException> {board.isValidMove(Move("Ke2e2"))}
+        assertFailsWith<IllegalArgumentException> { board.isValidMove(Move("Ke2e2")) }
     }
 }

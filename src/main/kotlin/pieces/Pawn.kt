@@ -4,7 +4,7 @@ import Board
 import Move
 
 
-class Pawn(override val color: Color) : Piece {
+class Pawn(override val army: Color) : Piece {
 
     override val symbol = 'P'
 
@@ -12,11 +12,11 @@ class Pawn(override val color: Color) : Piece {
         // Pawn moves one or two slots vertically or diagonally (when capturing)
 
         // Vertical
-        if (move.isVertical()) return checkMoveVertical(board, move, color)
+        if (move.isVertical()) return checkMoveVertical(board, move, army)
 
         // Diagonal (only capture)
         if ((move.capture || board.isPositionOccupied(move.to)) && move.colsAbsoluteDistance() == ONE_MOVE)
-            return (move.rowsDistance() == if (color == Color.WHITE) ONE_MOVE else -ONE_MOVE)
+            return (move.rowsDistance() == if (army == Color.WHITE) ONE_MOVE else -ONE_MOVE)
                     && board.isPositionOccupied(move.to)
 
         return false

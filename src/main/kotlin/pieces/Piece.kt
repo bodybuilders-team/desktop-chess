@@ -49,10 +49,10 @@ fun getPieceFromSymbol(symbol: Char, color: Color): Piece {
 /**
  * Chess piece.
  * @property symbol char that represents the piece type
- * @property color piece color (White or Black)
+ * @property army piece army (White or Black)
  */
 interface Piece {
-    val color: Color
+    val army: Color
     val symbol: Char
 
     /**
@@ -69,7 +69,7 @@ interface Piece {
  * Checks if the piece color is White.
  * @return true if the piece is white
  */
-fun Piece.isWhite() = color == Color.WHITE
+fun Piece.isWhite() = army == Color.WHITE
 
 
 /**

@@ -3,6 +3,7 @@ package piecesTests
 import kotlin.test.*
 import pieces.*
 
+
 class PieceSymbolTests {
 
     @Test
@@ -76,5 +77,4 @@ class PieceSymbolTests {
         val piece = getPieceFromSymbol('K', Color.WHITE)
         assertTrue(piece is King)
     }
-
 }

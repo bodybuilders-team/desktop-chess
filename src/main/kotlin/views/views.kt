@@ -8,25 +8,64 @@ import Session
 /**
  * Representation of view
  */
-typealias View = (Result<Session>?) -> Unit
+typealias View = (Session) -> Unit
 
 
 /**
- * Returns a map of String : View
- * @param chess current game
+ * Returns a map of views
  * @return map of views
  */
-fun buildViews(chess: Session): Map<String, View> {
+fun buildViews(): Map<String, View> {
     return mapOf(
-        "open" to { },
-        "join" to { },
-        "play" to { },
-        "refresh" to { },
-        "moves" to {  },
-        "exit" to {  }
+        "open"    to ::openView,
+        "join"    to ::joinView,
+        "play"    to ::playView,
+        "refresh" to ::refreshView,
+        "moves"   to ::movesView,
+        "exit"    to { }
     )
 }
 
+
+/**
+ * Displays the result of open command executions
+ */
+private fun openView(game: Session) {
+    game.board?.let { printBoard(it) }
+    println("Game ${game.name} opened. Play with white pieces.")
+}
+
+
+/**
+ * Displays the result of join command executions
+ */
+private fun joinView(game: Session) {
+    // TODO("To be implemented")
+}
+
+
+/**
+ * Displays the result of play command executions
+ */
+private fun playView(game: Session) {
+    game.board?.let { printBoard(it) }
+}
+
+
+/**
+ * Displays the result of refresh command executions
+ */
+private fun refreshView(game: Session) {
+    game.board?.let { printBoard(it) }
+}
+
+
+/**
+ * Displays the result of moves command executions
+ */
+private fun movesView(game: Session) {
+    // TODO("To be implemented")
+}
 
 
 /**

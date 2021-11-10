@@ -1,5 +1,6 @@
 import commands.buildCommands
 import pieces.Color
+import views.buildViews
 
 
 /**
@@ -12,28 +13,29 @@ fun main() {
         createMongoClient()*/
 
     try {
-        // Set initial game
-        var curGame = Session(name = null, state = GameState.LOGGING, army = null, board = null)
+        var chess = Session(name = null, state = GameState.LOGGING, army = null, board = null)
+
+        val cmdDispatcher = buildCommands()
+        val viewDispatcher = buildViews()
 
         while (true) {
             try {
-                // Get user input.
-                val (command, parameter) = readCommand(
-                    if (curGame.name == null) ""
-                    else "${curGame.name}:${curGame.army}"
-                )
+                val (command, parameter) = readCommand(if (chess.name == null) "" else "${chess.name}:${chess.army}")
 
-                val cmdDispatcher =
-                    buildCommands(curGame) //TODO - Modificar commands para criar o dispatcher fora do while
-
-                val action = cmdDispatcher[command.lowercase()]
-                if (action != null) {
-                    val result = action(parameter)
-                    if (result.isFailure) break
-                    else curGame = result.getOrNull() ?: curGame
-                } else
+                val action = cmdDispatcher[command]
+                if (action == null) {
                     println("Invalid command")
-            } catch (err: Throwable) {
+                    continue
+                }
+
+                val result = action(chess, parameter)
+                if (result.isSuccess) {
+                    chess = result.getOrThrow()
+                    val view = viewDispatcher[command] ?: continue
+                    view(chess)
+                }
+
+            } catch (err: Exception) {
                 println("ERROR: ${err.message}")
             }
         }
@@ -67,8 +69,8 @@ enum class GameState { LOGGING, PLAYING, WAITING_FOR_OPPONENT }
 fun readCommand(questString: String): Pair<String, String?> {
     print("$questString> ")
     val input = readLn()
-    val command = input.substringBefore(' ')
-    val argument = input.substringAfter(' ')
+    val command = input.substringBefore(' ').lowercase()
+    val argument = if (' ' in input) input.substringAfter(' ') else null
     return Pair(command, argument)
 }
 

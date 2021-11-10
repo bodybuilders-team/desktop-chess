@@ -3,27 +3,26 @@ package commands
 import Board
 import Session
 import pieces.Color
-import views.printBoard
+
 
 /**
  * Representation of command
  */
-typealias Command = (String?) -> Result<Session>
+typealias Command = (Session, String?) -> Result<Session>
 
 
 /**
- * Returns a map of String : Command
- * @param chess current game
+ * Returns a map of commands
  * @return map of commands
  */
-fun buildCommands(chess: Session): Map<String, Command> {
+fun buildCommands(): Map<String, Command> {
     return mapOf(
-        "open"    to { open(chess, it) },
-        "join"    to { join(chess, it) },
-        "play"    to { play(chess, it) },
-        "refresh" to { refresh(chess) },
-        "moves"   to { moves(chess) },
-        "exit"    to { exit() }
+        "open"    to ::open,
+        "join"    to ::join,
+        "play"    to ::play,
+        "refresh" to ::refresh,
+        "moves"   to ::moves,
+        "exit"    to ::exit
     )
 }
 
@@ -34,12 +33,7 @@ fun buildCommands(chess: Session): Map<String, Command> {
 private fun open(chess: Session, parameter: String?): Result<Session> {
     requireNotNull(parameter) { "Missing game name." }
 
-    val newGame = Session(name = parameter, state = GameState.PLAYING, army = Color.WHITE, board = Board())
-
-    newGame.board?.let { printBoard(it) }
-    println("Game ${newGame.name} opened. Play with white pieces.")
-    return Result.success(newGame)
-
+    return Result.success(Session(name = parameter, state = GameState.PLAYING, army = Color.WHITE, board = Board()))
 }
 
 
@@ -63,23 +57,24 @@ private fun join(chess: Session, parameter: String?): Result<Session> {
  * @param parameter the play to be made
  */
 private fun play(chess: Session, parameter: String?): Result<Session> {
-    require(chess.state == GameState.LOGGING) { "Can't play without a game: try open or join commands." }
-    require(chess.state == GameState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
+    require(chess.state != GameState.LOGGING) { "Can't play without a game: try open or join commands." }
+    require(chess.state != GameState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
     requireNotNull(parameter) { "Missing move." }
 
-    val newGame = chess.copy(state = GameState.WAITING_FOR_OPPONENT, board = chess.board?.makeMove(parameter))
-    newGame.board?.let { printBoard(it) }
-    return Result.success(newGame)
+    return Result.success(chess.copy(
+        state = GameState.WAITING_FOR_OPPONENT,
+        board = chess.board?.makeMove(parameter),
+        army = chess.army?.other()
+    ))
 }
 
 
 /**
  * Updates the state of the game in MongoDB
  */
-private fun refresh(chess: Session): Result<Session> {
-    require(chess.state == GameState.LOGGING) { "Can't refresh without a game: try open or join commands." }
+private fun refresh(chess: Session, parameter: String?): Result<Session> {
+    require(chess.state != GameState.LOGGING) { "Can't refresh without a game: try open or join commands." }
 
-    chess.board?.let { printBoard(it) }
     return Result.success(chess)
 }
 
@@ -87,8 +82,8 @@ private fun refresh(chess: Session): Result<Session> {
 /**
  * Lists all moves made since the beginning of the game
  */
-private fun moves(chess: Session): Result<Session> {
-    require(chess.state == GameState.LOGGING) { "No game, no moves." }
+private fun moves(chess: Session, parameter: String?): Result<Session> {
+    require(chess.state != GameState.LOGGING) { "No game, no moves." }
 
     // TODO(Get all plays made)
 
@@ -99,6 +94,6 @@ private fun moves(chess: Session): Result<Session> {
 /**
  * Terminates the application by saving the actual state of the game
  */
-private fun exit(): Result<Session> {
+private fun exit(chess: Session, parameter: String?): Result<Session> {
     return Result.failure(Throwable("Exiting Game."))
 }
