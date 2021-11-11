@@ -92,4 +92,9 @@ data class Move(
      * @return distance between the columns
      */
     fun colsAbsoluteDistance(): Int = abs(colsDistance())
+
+
+    override fun toString(): String {
+        return "$symbol$from${if (capture)"x" else ""}$to${promotion?:""}"
+    }
 }

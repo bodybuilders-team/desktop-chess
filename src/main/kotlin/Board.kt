@@ -65,8 +65,7 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
      * @throws IllegalMoveException if no piece is in the specified position.
      */
     fun getPieceOrThrows(pos: Position) =
-        matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] ?:
-        throw IllegalMoveException("No piece in the specified position.")
+        getPiece(pos) ?: throw IllegalMoveException("No piece in the specified position.")
 
 
     /**
@@ -96,6 +95,10 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
     data class Position(val col: Char, val row: Int) {
         init {
             require(col in COLS_RANGE && row in ROWS_RANGE) { "Invalid Position." }
+        }
+
+        override fun toString(): String {
+            return "$col$row"
         }
     }
 
@@ -168,8 +171,8 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
      * Iterator of all pieces and respective positions.
      * @return an iterator of a piece-position pair.
      */
-    operator fun iterator() : Iterator<Pair<Piece?, Position>>{
-        return object : Iterator<Pair<Piece?, Position>>{
+    operator fun iterator(): Iterator<Pair<Piece?, Position>> {
+        return object : Iterator<Pair<Piece?, Position>> {
             var rowIdx = 0
             var colIdx = 0
 
@@ -179,7 +182,7 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
 
             override fun next(): Pair<Piece?, Position> {
                 val value = Pair(matrix[rowIdx][colIdx], Position(FIRST_COL + colIdx, BOARD_SIDE_LENGTH - rowIdx))
-                if(++colIdx % BOARD_SIDE_LENGTH == 0){
+                if (++colIdx % BOARD_SIDE_LENGTH == 0) {
                     rowIdx++
                     colIdx = 0
                 }

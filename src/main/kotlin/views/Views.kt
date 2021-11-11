@@ -40,7 +40,8 @@ private fun openView(game: Session) {
  * Displays the result of join command executions
  */
 private fun joinView(game: Session) {
-    // TODO("To be implemented")
+    game.board?.let { printBoard(it) }
+    println("Join to game ${game.name}. Play with black pieces.")
 }
 
 
@@ -64,7 +65,7 @@ private fun refreshView(game: Session) {
  * Displays the result of moves command executions
  */
 private fun movesView(game: Session) {
-    // TODO("To be implemented")
+    game.moves.forEachIndexed { index, move -> println("${index + 1}. $move") }
 }
 
 

@@ -1,4 +1,6 @@
 import commands.buildCommands
+import game_state.MongoDBGameState
+import mongodb.createMongoClient
 import pieces.Color
 import views.buildViews
 
@@ -7,13 +9,20 @@ import views.buildViews
  * The application entry point.
  */
 fun main() {
-    /*val driver = if (checkEnvironment() == DbMode.REMOTE)
+    val driver = if (checkEnvironment() == DbMode.REMOTE)
         createMongoClient(System.getenv(ENV_DB_CONNECTION))
     else
-        createMongoClient()*/
+        createMongoClient()
 
     try {
-        var chess = Session(name = null, state = GameState.LOGGING, army = null, board = null)
+        var chess = Session(
+            name = null,
+            state = SessionState.LOGGING,
+            army = null,
+            board = null,
+            moves = emptyList()
+        )
+        val dataBase = MongoDBGameState(driver.getDatabase(System.getenv(ENV_DB_NAME)))
 
         val cmdDispatcher = buildCommands()
         val viewDispatcher = buildViews()
@@ -28,7 +37,7 @@ fun main() {
                     continue
                 }
 
-                val result = action(chess, parameter)
+                val result = action(chess, parameter, dataBase)
                 if (result.isSuccess) {
                     chess = result.getOrThrow()
                     val view = viewDispatcher[command] ?: continue
@@ -42,7 +51,7 @@ fun main() {
 
     } finally {
         println("BYE. \n")
-        //driver.close()
+        driver.close()
     }
 }
 
@@ -54,12 +63,18 @@ fun main() {
  * @property army session color
  * @property board current board
  */
-data class Session(val name: String?, val state: GameState, val army: Color?, val board: Board?)
+data class Session(
+    val name: String?,
+    val state: SessionState,
+    val army: Color?,
+    val board: Board?,
+    val moves: List<Move>
+)
 
 /**
  * Game state.
  */
-enum class GameState { LOGGING, PLAYING, WAITING_FOR_OPPONENT }
+enum class SessionState { LOGGING, PLAYING, WAITING_FOR_OPPONENT }
 
 
 /**
