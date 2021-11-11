@@ -4,7 +4,7 @@ import Board
 import Move
 
 
-class Rook(override val army: Color) : Piece {
+class Rook(override val army: Army) : Piece {
 
     override val symbol = 'R'
 

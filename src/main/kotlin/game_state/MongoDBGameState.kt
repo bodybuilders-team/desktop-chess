@@ -5,6 +5,10 @@ import com.mongodb.client.MongoDatabase
 import mongodb.*
 
 
+/**
+ * Implementation of GameState with MongoDB.
+ * @property db Mongo database
+ */
 class MongoDBGameState(private val db: MongoDatabase) : GameState {
 
     override fun getLastMove(game: String): Move {

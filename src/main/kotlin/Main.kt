@@ -1,7 +1,7 @@
 import commands.buildCommands
 import game_state.MongoDBGameState
 import mongodb.createMongoClient
-import pieces.Color
+import pieces.Army
 import views.buildViews
 
 
@@ -29,7 +29,7 @@ fun main() {
 
         while (true) {
             try {
-                val (command, parameter) = readCommand(if (chess.name == null) "" else "${chess.name}:${chess.army}")
+                val (command, parameter) = readCommand(getPrompt(chess))
 
                 val action = cmdDispatcher[command]
                 if (action == null) {
@@ -42,10 +42,12 @@ fun main() {
                     chess = result.getOrThrow()
                     val view = viewDispatcher[command] ?: continue
                     view(chess)
-                }
+                } else break
 
             } catch (err: Exception) {
-                println("ERROR: ${err.message}")
+                if (err is IllegalMoveException) {
+                    println("Illegal move \"${err.move}\". ${err.message}")
+                } else println("ERROR: ${err.message}")
             }
         }
 
@@ -57,6 +59,20 @@ fun main() {
 
 
 /**
+ * Returns the prompt
+ * @param chess current session
+ * @return prompt
+ */
+private fun getPrompt(chess: Session) =
+    if (chess.name == null) ""
+    else {
+        val turn = (if (chess.state == SessionState.WAITING_FOR_OPPONENT) chess.army?.other() else chess.army).toString()
+        "${chess.name}:${turn.first() + turn.substring(1).lowercase()}"
+    }
+
+
+// TODO(Remove !! in commands and views)
+/**
  * A game session.
  * @property name session name
  * @property state current session state
@@ -66,7 +82,7 @@ fun main() {
 data class Session(
     val name: String?,
     val state: SessionState,
-    val army: Color?,
+    val army: Army?,
     val board: Board?,
     val moves: List<Move>
 )

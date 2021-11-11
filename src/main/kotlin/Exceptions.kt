@@ -1,3 +1,3 @@
 
 
-class IllegalMoveException(message: String) : Exception(message)
+class IllegalMoveException(val move: String, message: String) : Exception(message)

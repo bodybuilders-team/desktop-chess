@@ -16,7 +16,7 @@ const val NO_MOVE = 0
 /**
  * Piece color.
  */
-enum class Color { WHITE, BLACK;
+enum class Army { WHITE, BLACK;
 
     /**
      * Returns the other color.
@@ -29,18 +29,18 @@ enum class Color { WHITE, BLACK;
 /**
  * Returns a Piece from its representative [symbol]
  * @param symbol char that represents the Piece type
- * @param color color of the piece
+ * @param army color of the piece
  * @return piece from its representative
  * @throws IllegalArgumentException if [symbol] is invalid
  */
-fun getPieceFromSymbol(symbol: Char, color: Color): Piece {
+fun getPieceFromSymbol(symbol: Char, army: Army): Piece {
     return when (symbol) {
-        'R' -> Rook(color)
-        'P' -> Pawn(color)
-        'K' -> King(color)
-        'Q' -> Queen(color)
-        'B' -> Bishop(color)
-        'N' -> Knight(color)
+        'R' -> Rook(army)
+        'P' -> Pawn(army)
+        'K' -> King(army)
+        'Q' -> Queen(army)
+        'B' -> Bishop(army)
+        'N' -> Knight(army)
         else -> throw IllegalArgumentException("Invalid piece symbol.")
     }
 }
@@ -52,7 +52,7 @@ fun getPieceFromSymbol(symbol: Char, color: Color): Piece {
  * @property army piece army (White or Black)
  */
 interface Piece {
-    val army: Color
+    val army: Army
     val symbol: Char
 
     /**
@@ -69,7 +69,7 @@ interface Piece {
  * Checks if the piece color is White.
  * @return true if the piece is white
  */
-fun Piece.isWhite() = army == Color.WHITE
+fun Piece.isWhite() = army == Army.WHITE
 
 
 /**

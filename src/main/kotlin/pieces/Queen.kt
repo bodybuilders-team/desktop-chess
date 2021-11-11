@@ -4,7 +4,7 @@ import Board
 import Move
 
 
-class Queen(override val army: Color) : Piece {
+class Queen(override val army: Army) : Piece {
 
     override val symbol = 'Q'
 

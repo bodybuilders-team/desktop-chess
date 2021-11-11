@@ -58,15 +58,6 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
      */
     fun getPiece(pos: Position) = matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL]
 
-    /**
-     * Returns the piece in [pos] or throws if no piece in the specified position.
-     * @param pos position to get piece
-     * @return piece in [pos]
-     * @throws IllegalMoveException if no piece is in the specified position.
-     */
-    fun getPieceOrThrows(pos: Position) =
-        getPiece(pos) ?: throw IllegalMoveException("No piece in the specified position.")
-
 
     /**
      * Sets [piece] in [pos]
@@ -120,9 +111,9 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         val move = Move(moveInString)
         val fromPos = move.from
         val toPos = move.to
-        val piece = getPieceOrThrows(fromPos)
+        val piece = getPiece(fromPos)?: throw IllegalMoveException(moveInString, "No piece in the specified position.")
 
-        if (!isValidMove(piece, move)) throw IllegalMoveException("Invalid move.")
+        if (!isValidMove(move)) throw IllegalMoveException(moveInString, "Illegal move.")
 
         val newBoard = this.copy()
         newBoard.removePiece(fromPos)
@@ -147,7 +138,7 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         return matrix.joinToString("") { row ->
             row.map { piece ->
                 val initial = piece?.symbol ?: ' '
-                if (initial != ' ' && piece?.army == Color.BLACK) initial.lowercaseChar() else initial
+                if (initial != ' ' && piece?.army == Army.BLACK) initial.lowercaseChar() else initial
             }.joinToString("")
         }
     }
@@ -209,7 +200,7 @@ fun getMatrix2DFromString(stringBoard: String): Matrix2D<Piece?> {
         val col = idx % BOARD_SIDE_LENGTH
         chessBoard[row][col] =
             if (char == ' ') null
-            else getPieceFromSymbol(char.uppercaseChar(), if (char.isUpperCase()) Color.WHITE else Color.BLACK)
+            else getPieceFromSymbol(char.uppercaseChar(), if (char.isUpperCase()) Army.WHITE else Army.BLACK)
     }
     return chessBoard
 }

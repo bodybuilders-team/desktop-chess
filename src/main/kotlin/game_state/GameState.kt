@@ -2,6 +2,9 @@ package game_state
 
 import Move
 
+/**
+ * The GameState contract
+ */
 interface GameState {
     /**
      * Returns the last move from game [game]

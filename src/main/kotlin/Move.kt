@@ -22,7 +22,7 @@ data class Move(
         operator fun invoke(string: String): Move {
             // Tests if the move is well formatted by using a regular expression (regex)
             require(moveRegexFormat.toRegex().containsMatchIn(string)) {
-                "Use format: [<piece>][<from>][x][<to>][=<piece>]"
+                "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
             }
 
             val pieceSymbol = string[PIECE_SYMBOL_IDX]
