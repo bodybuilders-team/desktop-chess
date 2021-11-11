@@ -68,7 +68,7 @@ class KingMoveTests {
     }
 
     @Test
-    fun `King move to same place does not work`() {
-        assertFailsWith<IllegalArgumentException> { board.isValidMove(Move("Ke2e2")) }
+    fun `King move to same place is not valid`() {
+        assertFalse(board.isValidMove(Move("Ke2e2")))
     }
 }

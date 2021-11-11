@@ -67,7 +67,7 @@ class QueenMoveTests {
     }
 
     @Test
-    fun `Queen move to same place does not work`() {
-        assertFailsWith<IllegalArgumentException> { board.isValidMove(Move("Qb2b2")) }
+    fun `Queen move to same place is not valid`() {
+        assertFalse(board.isValidMove(Move("Qb2b2")))
     }
 }

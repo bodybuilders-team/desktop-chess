@@ -42,17 +42,17 @@ class RookMoveTests {
     }
 
     @Test
-    fun `Rook diagonal not valid`() {
-        assertFalse(board.isValidMove(Move("Rb2c3")))
-    }
-
-    @Test
     fun `Rook move with capture is valid`() {
         assertTrue(board.isValidMove(Move("Rb2b5")))
     }
 
     @Test
-    fun `Rook move to same place does not work`() {
-        assertFailsWith<IllegalArgumentException> { board.isValidMove(Move("Rb2b2")) }
+    fun `Rook diagonal not valid`() {
+        assertFalse(board.isValidMove(Move("Rb2c3")))
+    }
+
+    @Test
+    fun `Rook move to same place is not valid`() {
+        assertFalse(board.isValidMove(Move("Rb2b2")))
     }
 }

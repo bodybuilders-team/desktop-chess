@@ -58,6 +58,16 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
      */
     fun getPiece(pos: Position) = matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL]
 
+    /**
+     * Returns the piece in [pos] or throws if no piece in the specified position.
+     * @param pos position to get piece
+     * @return piece in [pos]
+     * @throws IllegalMoveException if no piece is in the specified position.
+     */
+    fun getPieceOrThrows(pos: Position) =
+        matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] ?:
+        throw IllegalMoveException("No piece in the specified position.")
+
 
     /**
      * Sets [piece] in [pos]
@@ -107,9 +117,9 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         val move = Move(moveInString)
         val fromPos = move.from
         val toPos = move.to
-        val piece = getPiece(fromPos) ?: throw NoSuchPieceInSpecifiedPositionException("No piece in the specified position.")
+        val piece = getPieceOrThrows(fromPos)
 
-        if (!isValidMove(move)) throw IllegalMoveException("Invalid move.")
+        if (!isValidMove(piece, move)) throw IllegalMoveException("Invalid move.")
 
         val newBoard = this.copy()
         newBoard.removePiece(fromPos)
@@ -120,16 +130,8 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
             else doPromotion(piece, toPos, move.promotion)
         )
 
-        // After doing the move, if the same color king is in check, the move is invalid
-        if (isKingInCheck(piece.army) >= CHECK_BY_ONE)
-            throw KingInCheckException("Invalid move, your side's king becomes in check.")
+        //areKingsInCheck(piece.army) //TODO("Kings in check".)
 
-        // See if the opponent's king is in check mate (in check by two different pieces)
-        val kingInCheck = isKingInCheck(piece.army.other())
-        val kingCannotProtect = false //TODO()
-        if (kingInCheck >= CHECK_BY_TWO || (kingInCheck == CHECK_BY_ONE && kingCannotProtect)) {
-            //TODO(CHECK MATE)
-        }
         return newBoard
     }
 
@@ -159,6 +161,33 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         }
 
         return newBoard
+    }
+
+
+    /**
+     * Iterator of all pieces and respective positions.
+     * @return an iterator of a piece-position pair.
+     */
+    operator fun iterator() : Iterator<Pair<Piece?, Position>>{
+        return object : Iterator<Pair<Piece?, Position>>{
+            var rowIdx = 0
+            var colIdx = 0
+
+            override fun hasNext(): Boolean {
+                return rowIdx != BOARD_SIDE_LENGTH - 1 && colIdx != BOARD_SIDE_LENGTH - 1
+            }
+
+            override fun next(): Pair<Piece?, Position> {
+                val value = Pair(matrix[rowIdx][colIdx], Position(FIRST_COL + colIdx, BOARD_SIDE_LENGTH - rowIdx))
+                if(++colIdx % BOARD_SIDE_LENGTH == 0){
+                    rowIdx++
+                    colIdx = 0
+                }
+
+                return value
+            }
+
+        }
     }
 }
 

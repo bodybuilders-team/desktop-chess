@@ -22,12 +22,12 @@ class BishopMoveTests {
     private val board = Board(getMatrix2DFromString(testBoard))
 
     @Test
-    fun `Bishop vertical not valid`() {
+    fun `Bishop vertical move is not valid`() {
         assertFalse(board.isValidMove(Move("Be2e3")))
     }
 
     @Test
-    fun `Bishop horizontal not valid`() {
+    fun `Bishop horizontal move is not valid`() {
         assertFalse(board.isValidMove(Move("Be2d2")))
     }
 
@@ -52,7 +52,7 @@ class BishopMoveTests {
     }
 
     @Test
-    fun `Bishop move to same place does not work`() {
-        assertFailsWith<IllegalArgumentException> {board.isValidMove(Move("Be2e2"))}
+    fun `Bishop move to same place is not valid`() {
+        assertFalse(board.isValidMove(Move("Be2e2")))
     }
 }

@@ -68,7 +68,7 @@ class KnightMoveTests {
     }
 
     @Test
-    fun `Knight move to same place does not work`() {
-        assertFailsWith<IllegalArgumentException> { board.isValidMove(Move("Nc3c3")) }
+    fun `Knight move to same place is not valid`() {
+        assertFalse(board.isValidMove(Move("Nc3c3")))
     }
 }

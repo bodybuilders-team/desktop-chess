@@ -58,7 +58,7 @@ class PawnMoveTests {
     }
 
     @Test
-    fun `Pawn move to same place does not work`() {
-        assertFailsWith<IllegalArgumentException> { board.isValidMove(Move("Pe2e2")) }
+    fun `Pawn move to same place is not valid`() {
+        assertFalse(board.isValidMove(Move("Pe2e2")))
     }
 }

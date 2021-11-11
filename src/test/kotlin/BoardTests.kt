@@ -30,8 +30,8 @@ class BoardTests {
     }
 
     @Test
-    fun `Move with wrong pieceSymbol is invalid, piece doesn't move`() {
-        assertFailsWith<IllegalArgumentException> { Board().makeMove("Ke2e3") }
+    fun `Move with wrong pieceSymbol is invalid`() {
+        assertFalse(Board().isValidMove(Move("Ke2e3")))
     }
 
     
@@ -219,6 +219,7 @@ class BoardTests {
     }
 
 
+    /*
     @Test
     fun `King in Check`() {
         val testBoardInString =
@@ -235,4 +236,5 @@ class BoardTests {
 
         assertEquals(CHECK_BY_ONE, sut.isKingInCheck(Color.WHITE))
     }
+    */
 }
