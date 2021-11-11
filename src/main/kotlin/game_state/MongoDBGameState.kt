@@ -11,8 +11,8 @@ class MongoDBGameState(private val db: MongoDatabase) : GameState {
         return getAllMoves(game).last()
     }
 
-    override fun getAllMoves(game: String): Iterable<Move> {
-        return db.getCollectionWithId<Move>(game).getAll()
+    override fun getAllMoves(game: String): List<Move> {
+        return db.getCollectionWithId<Move>(game).getAll().toList()
     }
 
     override fun postMove(game: String, move: Move): Boolean {

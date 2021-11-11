@@ -37,18 +37,16 @@ fun buildCommands(): Map<String, Command> {
 private fun open(chess: Session, parameter: String?, db: GameState): Result<Session> {
     requireNotNull(parameter) { "Missing game name." }
 
-    var newSession = chess.copy(name = parameter, state = SessionState.PLAYING, army = Color.WHITE, board = Board())
+    val newSession = chess.copy(name = parameter, state = SessionState.PLAYING, army = Color.WHITE, board = Board())
 
-    if (db.getGame(parameter) == null)
+    return if (db.getGame(parameter) == null) {
         db.createGame(parameter)
-    else {
-        val moves = db.getAllMoves(parameter).toList()
-        var newBoard = Board()
-        moves.forEach { move -> newBoard = newBoard.makeMove(move.toString()) }
-        newSession = newSession.copy(board = newBoard, moves = moves)
+        Result.success(newSession)
     }
-
-    return Result.success(newSession)
+    else {
+        val moves = db.getAllMoves(parameter)
+        Result.success(newSession.copy(board = boardWithMoves(moves), moves = moves))
+    }
 }
 
 
@@ -61,15 +59,13 @@ private fun join(chess: Session, parameter: String?, db: GameState): Result<Sess
     requireNotNull(parameter) { "Missing game name." }
     requireNotNull(db.getGame(parameter)) { "Unknown game." }
 
-    val moves = db.getAllMoves(parameter).toList()
-    var newBoard = Board()
-    moves.forEach { move -> newBoard = newBoard.makeMove(move.toString()) }
+    val moves = db.getAllMoves(parameter)
 
     return Result.success(chess.copy(
         name = db.getGame(parameter),
-        state = if (moves.count() % 2 == 0) SessionState.WAITING_FOR_OPPONENT else SessionState.PLAYING,
+        state = if (isWhiteTurn(moves)) SessionState.WAITING_FOR_OPPONENT else SessionState.PLAYING,
         army = Color.BLACK,
-        board = newBoard,
+        board = boardWithMoves(moves),
         moves = moves
     ))
 }
@@ -107,15 +103,13 @@ private fun refresh(chess: Session, parameter: String?, db: GameState): Result<S
     require(chess.state != SessionState.LOGGING) { "Can't refresh without a game: try open or join commands." }
 
     val moves = db.getAllMoves(chess.name!!)
-    var newBoard = Board()
-    moves.forEach { move -> newBoard = newBoard.makeMove(move.toString()) }
 
     return Result.success(chess.copy(
         name = db.getGame(chess.name),
-        state = if (moves.count() % 2 == 0 && chess.army == Color.BLACK) SessionState.WAITING_FOR_OPPONENT else SessionState.PLAYING,
+        state = if (isWhiteTurn(moves) && chess.army == Color.BLACK) SessionState.WAITING_FOR_OPPONENT else SessionState.PLAYING,
         army = chess.army,
-        board = newBoard,
-        moves = moves.toList()
+        board = boardWithMoves(moves),
+        moves = moves
     ))
 }
 
@@ -127,11 +121,7 @@ private fun refresh(chess: Session, parameter: String?, db: GameState): Result<S
 private fun moves(chess: Session, parameter: String?, db: GameState): Result<Session> {
     require(chess.state != SessionState.LOGGING) { "No game, no moves." }
 
-    val moves = db.getAllMoves(chess.name!!)
-
-    return Result.success(chess.copy(
-        moves = moves.toList()
-    ))
+    return Result.success(chess.copy(moves = db.getAllMoves(chess.name!!)))
 }
 
 
@@ -140,4 +130,23 @@ private fun moves(chess: Session, parameter: String?, db: GameState): Result<Ses
  */
 private fun exit(chess: Session, parameter: String?, db: GameState): Result<Session> {
     return Result.failure(Throwable("Exiting Game."))
+}
+
+
+/**
+ * Returns true if it's the white player turn in the game
+ * @param moves all game moves
+ */
+private fun isWhiteTurn(moves: List<Move>) = moves.size % 2 == 0
+
+
+/**
+ * Returns a new board with all the moves in [moves]
+ * @param moves moves to make
+ * @return board with moves
+ */
+private fun boardWithMoves(moves: List<Move>): Board {
+    var newBoard = Board()
+    moves.forEach { move -> newBoard = newBoard.makeMove(move.toString()) }
+    return newBoard
 }

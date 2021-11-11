@@ -13,9 +13,9 @@ interface GameState {
     /**
      * Returns all the moves from game [game]
      * @param game game name
-     * @return iterable of moves in string
+     * @return list of moves in string
      */
-    fun getAllMoves(game: String): Iterable<Move>
+    fun getAllMoves(game: String): List<Move>
 
     /**
      * Post a move in the game [game]
