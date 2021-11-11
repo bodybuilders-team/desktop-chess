@@ -99,9 +99,9 @@ enum class SessionState { LOGGING, PLAYING, WAITING_FOR_OPPONENT }
  */
 fun readCommand(questString: String): Pair<String, String?> {
     print("$questString> ")
-    val input = readLn()
+    val input = readLn().trim()
     val command = input.substringBefore(' ').lowercase()
-    val argument = if (' ' in input) input.substringAfter(' ') else null
+    val argument = if (' ' in input) input.substringAfterLast(' ') else null
     return Pair(command, argument)
 }
 

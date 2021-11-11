@@ -36,8 +36,13 @@ fun buildCommands(): Map<String, Command> {
  */
 private fun open(chess: Session, parameter: String?, db: GameState): Result<Session> {
     requireNotNull(parameter) { "Missing game name." }
-
-    val moves = if (db.getGame(parameter) != null) db.getAllMoves(parameter) else emptyList()
+    
+    val moves =
+        if (db.getGame(parameter) != null) db.getAllMoves(parameter) 
+        else {
+            db.createGame(parameter)
+            emptyList()
+        }
 
     return Result.success(
         Session(
