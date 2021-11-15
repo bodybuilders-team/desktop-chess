@@ -9,8 +9,8 @@ const val ENV_DB_CONNECTION = "MONGO_DB_CONNECTION"
 
 /**
  * Represents the supported execution modes:
- *  @property LOCAL   - The database server is running locally
- *  @property REMOTE  - The database server is running remotely
+ *  @property LOCAL The database server is running locally
+ *  @property REMOTE The database server is running remotely
  */
 enum class DbMode { LOCAL, REMOTE }
 

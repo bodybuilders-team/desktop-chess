@@ -9,7 +9,7 @@ import domain.pieces.*
  * Representation of command
  */
 typealias Command = (Session, String?, GameState) -> Result<Session>
-
+// TODO(Aks: is there a way to create a function typealias with optional parameters?)
 
 /**
  * Opens a new game with a new name unless a game with that name already exists.
@@ -119,6 +119,14 @@ fun moves(chess: Session, parameter: String?, db: GameState): Result<Session> {
  */
 fun exit(chess: Session, parameter: String?, db: GameState): Result<Session> {
     return Result.failure(Throwable("Exiting Game."))
+}
+
+
+/**
+ * Prints all the commands of the application.
+ */
+fun help(chess: Session, parameter: String?, db: GameState): Result<Session> {
+    return Result.success(chess)
 }
 
 

@@ -59,6 +59,22 @@ fun movesView(game: Session) {
 
 
 /**
+ * Prints all the possible commands.
+ * @param game game where the play happens
+ */
+fun helpView(game: Session) {
+    println("These are the application commands you can use:\n" +
+            "open <game> - Opens or joins the game named <game> to play with the White pieces\n" +
+            "join <game> - Joins the game named <game> to play with the Black pieces\n" +
+            "play <move> - Makes the <move> play\n" +
+            "refresh     - Refreshes the game\n" +
+            "moves       - Prints all moves made\n" +
+            "exit        - Ends the application"
+    )
+}
+
+
+/**
  * Prints the board, one row in each line.
  * @param board board to print
  */

@@ -21,6 +21,7 @@ fun buildCommandsHandler(): Map<String, CommandHandler> {
         "play"    to CommandHandler(::play, ::playView),
         "refresh" to CommandHandler(::refresh, ::refreshView),
         "moves"   to CommandHandler(::moves, ::movesView),
-        "exit"    to CommandHandler(::exit) { }
+        "exit"    to CommandHandler(::exit) { },
+        "help"    to CommandHandler(::help, ::helpView)
     )
 }

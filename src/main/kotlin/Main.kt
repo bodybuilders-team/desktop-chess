@@ -9,12 +9,13 @@ import ui.console.*
  * The application entry point.
  *
  * The application supports the following commands:
- * open <game> - Opens or joins the game named <game> to play with the White pieces
- * join <game> - Joins the game named <game> to play with the Black pieces
- * play <move> - Makes the <move> play
- * refresh - Refreshes the game
- * moves - Prints all moves made
- * exit - Ends the application
+ * - open <game> - Opens or joins the game named <game> to play with the White pieces
+ * - join <game> - Joins the game named <game> to play with the Black pieces
+ * - play <move> - Makes the <move> play
+ * - refresh - Refreshes the game
+ * - moves - Prints all moves made
+ * - exit - Ends the application
+ * - help - Prints all the commands above.
  *
  * Execution is parameterized through the following environment variables:
  * - MONGO_DB_NAME, bearing the name of the database to be used
@@ -55,9 +56,10 @@ fun main() {
                 } else break
 
             } catch (err: Exception) {
-                if (err is IllegalMoveException) {
+                if (err is IllegalMoveException)
                     println("Illegal move \"${err.move}\". ${err.message}")
-                } else println("ERROR: ${err.message}")
+                else
+                    println("ERROR: ${err.message}")
             }
         }
 
