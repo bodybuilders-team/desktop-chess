@@ -8,8 +8,7 @@ import domain.pieces.*
  * Checks if a move is valid.
  * @param move move to test
  * @return true if the move is valid
- * @throws IllegalMoveException if the initial position is invalid, if the capture is invalid or
- * if the move symbol is invalid
+ * @throws IllegalMoveException if there is no piece in the specified position
  */
 fun Board.isValidMove(move: Move): Boolean {
     val piece =
@@ -106,15 +105,16 @@ fun Board.isKingInCheck(army: Army): Int {
  * @param piece piece to promote
  * @param toPos new piece position
  * @param promotion new piece type to promote
+ * @param move Move String representation
  * @return promoted piece
  * @throws Throwable if the promotion is invalid
  */
-fun doPromotion(piece: Piece, toPos: Position, promotion: Char?): Piece {
+fun doPromotion(piece: Piece, toPos: Position, promotion: Char?, move: String): Piece {
     if (piece is Pawn &&
         (piece.army == Army.WHITE && toPos.row == BLACK_FIRST_ROW ||
                 piece.army == Army.BLACK && toPos.row == WHITE_FIRST_ROW)
     )
         return getPieceFromSymbol(promotion ?: 'Q', piece.army)
     else
-        throw Throwable("You cannot get promoted.")
+        throw IllegalMoveException(move, "You cannot get promoted.")
 }

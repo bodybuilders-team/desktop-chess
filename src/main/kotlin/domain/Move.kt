@@ -3,16 +3,29 @@ package domain
 import kotlin.math.abs
 import domain.Board.Position
 
+// Move arguments index
+const val PIECE_SYMBOL_IDX = 0
+const val FROM_COL_IDX = 1
+const val FROM_ROW_IDX = 2
+const val TO_COL_IDX = 3
+const val TO_ROW_IDX = 4
+const val PROMOTION_IDX = 5
+const val PROMOTION_PIECE_TYPE_IDX = 6
+const val CAPTURE_CHAR = 'x'
+const val CAPTURE_OFFSET = 1
+const val NO_OFFSET = 0
 
 // Move Regex Format
 const val moveRegexFormat = "^[PKQNBR][a-h][1-8]x?[a-h][1-8](=[QNBR])?\$"
 
 /**
  * Chess move
+ * @property symbol Piece Moving
  * @property from original piece position
  * @property capture true if the piece will capture enemy piece
  * @property to new piece position
  * @property promotion new PieceType of promotion or null
+ * @throws IllegalArgumentException if move string is not well formatted
  */
 data class Move(
     val symbol: Char,

@@ -15,6 +15,7 @@ typealias Command = (Session, String?, GameState) -> Result<Session>
  * Opens a new game with a new name unless a game with that name already exists.
  * @param parameter new game name
  * @param db database where the moves are stored
+ * @throws IllegalArgumentException if game name not specified
  */
 fun open(chess: Session, parameter: String?, db: GameState): Result<Session> {
     requireNotNull(parameter) { "Missing game name." }
@@ -41,6 +42,8 @@ fun open(chess: Session, parameter: String?, db: GameState): Result<Session> {
  * Used by a second user to open the game with the name.
  * @param parameter the game´s name
  * @param db database where the moves are stored
+ * @throws IllegalArgumentException if game name not specified
+ * @throws IllegalArgumentException if game name not recognized
  */
 fun join(chess: Session, parameter: String?, db: GameState): Result<Session> {
     requireNotNull(parameter) { "Missing game name." }
@@ -64,6 +67,9 @@ fun join(chess: Session, parameter: String?, db: GameState): Result<Session> {
  * Executes a move command if it corresponds to the rules
  * @param parameter the play to be made
  * @param db database where the moves are stored
+ * @throws IllegalArgumentException if game has not been initialized yet
+ * @throws IllegalArgumentException if it is not the user's turn
+ * @throws IllegalArgumentException if move to be made not specified
  */
 fun play(chess: Session, parameter: String?, db: GameState): Result<Session> {
     require(chess.state != SessionState.LOGGING) { "Can't play without a game: try open or join commands." }
@@ -87,6 +93,7 @@ fun play(chess: Session, parameter: String?, db: GameState): Result<Session> {
 /**
  * Updates the state of the game in MongoDB
  * @param db database where the moves are stored
+ * @throws IllegalArgumentException if game has not been opened yet
  */
 fun refresh(chess: Session, parameter: String?, db: GameState): Result<Session> {
     require(chess.state != SessionState.LOGGING) { "Can't refresh without a game: try open or join commands." }
@@ -106,6 +113,7 @@ fun refresh(chess: Session, parameter: String?, db: GameState): Result<Session> 
 /**
  * Gets all moves made since the beginning of the game
  * @param db database where the moves are stored
+ * @throws IllegalArgumentException if game has not been opened yet
  */
 fun moves(chess: Session, parameter: String?, db: GameState): Result<Session> {
     require(chess.state != SessionState.LOGGING) { "No game, no moves." }

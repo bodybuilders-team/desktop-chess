@@ -13,18 +13,6 @@ val COLS_RANGE = 'a'..'h'
 val ROWS_RANGE = 1..8
 
 
-// Move arguments index
-const val PIECE_SYMBOL_IDX = 0
-const val FROM_COL_IDX = 1
-const val FROM_ROW_IDX = 2
-const val TO_COL_IDX = 3
-const val TO_ROW_IDX = 4
-const val PROMOTION_IDX = 5
-const val PROMOTION_PIECE_TYPE_IDX = 6
-const val CAPTURE_CHAR = 'x'
-const val CAPTURE_OFFSET = 1
-const val NO_OFFSET = 0
-
 //King in check constants
 const val NOT_IN_CHECK = 0
 const val CHECK_BY_ONE = 1
@@ -109,6 +97,7 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
      * Move a piece in the board.
      * @param moveInString piece move
      * @return new board with piece moved
+     * @throws IllegalMoveException if there is no piece in the specified position or if the move is invalid
      */
     fun makeMove(moveInString: String): Board {
         val move = Move(moveInString)
@@ -121,10 +110,10 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
         val newBoard = this.copy()
         newBoard.removePiece(fromPos)
 
-        newBoard.setPiece(
+        newBoard.setPiece (
             toPos,
             if (move.promotion == null) piece
-            else doPromotion(piece, toPos, move.promotion)
+            else doPromotion(piece, toPos, move.promotion, move.toString())
         )
 
         //areKingsInCheck(piece.army) //TODO("Kings in check".)

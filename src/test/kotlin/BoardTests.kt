@@ -1,5 +1,11 @@
 import domain.*
-import kotlin.test.*
+import domain.pieces.Army
+import domain.pieces.Pawn
+import domain.pieces.Piece
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 
 
 class BoardTests {
@@ -204,7 +210,7 @@ class BoardTests {
     }
 
     @Test
-    fun `Move Queen goes as expected - `() {
+    fun `Move Queen goes as expected `() {
         val sut = Board().makeMove("Pe2e4").makeMove("Qd1h5").makeMove("Qh5a5").makeMove("Qa5a3")
         assertEquals(
             "rnbqkbnr" +
@@ -237,4 +243,23 @@ class BoardTests {
         assertEquals(CHECK_BY_ONE, sut.isKingInCheck(Color.WHITE))
     }
     */
+
+    @Test
+    fun `getMatrix2DFromString returns a Matrix containing the respective pieces`() {
+        val sut =   "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp"
+
+        val expected = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) {
+            Array(BOARD_SIDE_LENGTH) { Pawn(Army.BLACK) }
+        }
+        //assertTrue(expected.all { it.contentDeepEquals( getMatrix2DFromString(sut)[expected.indexOf(it)] )})
+        assertEquals(getMatrix2DFromString(sut).toString(), expected.toString())
+        // TODO() functional test of getMatrix2DFromString
+    }
 }
