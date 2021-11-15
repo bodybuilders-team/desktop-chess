@@ -16,7 +16,7 @@ const val CAPTURE_OFFSET = 1
 const val NO_OFFSET = 0
 
 // Move Regex Format
-const val moveRegexFormat = "^[PKQNBR][a-h][1-8]x?[a-h][1-8](=[QNBR])?\$"
+const val moveRegexFormat = "^[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?\$"
 
 /**
  * Chess move
@@ -36,7 +36,6 @@ data class Move(
 ) {
     companion object {
         operator fun invoke(string: String): Move {
-            // Tests if the move is well formatted by using a regular expression (regex)
             require(moveRegexFormat.toRegex().containsMatchIn(string)) {
                 "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
             }

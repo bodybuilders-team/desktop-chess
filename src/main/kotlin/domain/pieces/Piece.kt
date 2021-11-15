@@ -56,6 +56,13 @@ interface Piece {
     val symbol: Char
 
     /**
+     * Returns character representation of the piece as seen in game
+     * @return character representation of the piece
+     */
+    fun toChar(): Char =
+        if(army == Army.BLACK) symbol.lowercaseChar() else symbol
+
+    /**
      * Checks if a move is possible
      * @param board board where the move will happen
      * @param move move to test

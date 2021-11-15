@@ -40,7 +40,7 @@ typealias Matrix2D<T> = Array<Array<T>>
  * Represents the game board with the pieces.
  * @property matrix 2DMatrix with the pieces
  */
-data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOARD)) {
+class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOARD)) {
 
     /**
      * Returns the piece in [pos]
@@ -129,8 +129,7 @@ data class Board(val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOA
     override fun toString(): String {
         return matrix.joinToString("") { row ->
             row.map { piece ->
-                val initial = piece?.symbol ?: ' '
-                if (initial != ' ' && piece?.army == Army.BLACK) initial.lowercaseChar() else initial
+                piece?.toChar() ?: ' '
             }.joinToString("")
         }
     }

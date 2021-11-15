@@ -258,8 +258,11 @@ class BoardTests {
         val expected = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) {
             Array(BOARD_SIDE_LENGTH) { Pawn(Army.BLACK) }
         }
-        //assertTrue(expected.all { it.contentDeepEquals( getMatrix2DFromString(sut)[expected.indexOf(it)] )})
-        assertEquals(getMatrix2DFromString(sut).toString(), expected.toString())
-        // TODO() functional test of getMatrix2DFromString
+        
+        val matrix = getMatrix2DFromString(sut)
+        
+        expected.forEachIndexed { rowIdx, arrayOfPieces ->
+            assertEquals(arrayOfPieces.map { it?.toChar() }, matrix[rowIdx].map { it?.toChar() })
+        }
     }
 }
