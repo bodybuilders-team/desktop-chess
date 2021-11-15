@@ -3,20 +3,13 @@ package domain
 import kotlin.math.abs
 import domain.Board.Position
 
-// Move arguments index
-const val PIECE_SYMBOL_IDX = 0
-const val FROM_COL_IDX = 1
-const val FROM_ROW_IDX = 2
-const val TO_COL_IDX = 3
-const val TO_ROW_IDX = 4
-const val PROMOTION_IDX = 5
-const val PROMOTION_PIECE_TYPE_IDX = 6
 const val CAPTURE_CHAR = 'x'
-const val CAPTURE_OFFSET = 1
-const val NO_OFFSET = 0
+const val PROMOTION_CHAR = '='
+
 
 // Move Regex Format
 const val moveRegexFormat = "^[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?\$"
+
 
 /**
  * Chess move
@@ -35,35 +28,89 @@ data class Move(
     val promotion: Char?
 ) {
     companion object {
-        operator fun invoke(string: String): Move {
-            require(moveRegexFormat.toRegex().containsMatchIn(string)) {
+        operator fun invoke(string: String, board: Board): Move {
+            require(isCorrectlyFormatted(string)) {
                 "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
             }
 
-            val pieceSymbol = string[PIECE_SYMBOL_IDX]
+            var str = string
 
-            val fromPos = Position(string[FROM_COL_IDX], string[FROM_ROW_IDX].digitToInt())
+            val capture = CAPTURE_CHAR in str
 
-            val capture = CAPTURE_CHAR in string
+            val promotion = if (PROMOTION_CHAR in str) str.last() else null
+            if (promotion != null) str = str.dropLast(2)
 
-            val captureOffset = if (capture) CAPTURE_OFFSET else NO_OFFSET
+            val toPos = Position(str[str.lastIndex - 1], str.last().digitToInt())
+            str = str.dropLast(if (capture) 3 else 2)
 
-            val toPos = Position(
-                string[TO_COL_IDX + captureOffset],
-                string[TO_ROW_IDX + captureOffset].digitToInt()
-            )
 
-            return Move(
-                symbol = pieceSymbol,
-                from = fromPos,
-                capture = capture,
-                to = toPos,
-                promotion = if (string.length > PROMOTION_IDX + captureOffset)
-                    string[PROMOTION_PIECE_TYPE_IDX + captureOffset]
-                else null
-            )
+            /**
+             * Searches for a valid move given [pieceSymbol], [row] and [col].
+             * If [row] is null, all rows are searched. The same applies to [col]
+             * @param pieceSymbol piece symbol of the move
+             * @param row row to search
+             * @param col col to search
+             * @return the valid move or null if it wasn't found
+             */
+            fun searchMove(pieceSymbol: Char, row: Int?, col: Char?): Move? {
+                for (pairPiecePosition in board) {
+                    val (piece, pos) = pairPiecePosition
+                    piece ?: continue
+                    if (piece.symbol != pieceSymbol || (row != null && row != pos.row) || (col != null && col != pos.col)) continue
+
+                    val move = Move(pieceSymbol, pos, capture, toPos, promotion)
+                    if (piece.isValidMove(board, move))
+                        return move.copy(capture = board.isPositionOccupied(toPos))
+                }
+                return null
+            }
+
+
+            var pieceSymbol = 'P'
+            var fromRow: Int? = null
+            var fromCol: Char? = null
+
+
+            when (str.length) {
+                1 ->
+                    when {
+                        str.first().isUpperCase() -> pieceSymbol = str.first()
+                        str.first().isDigit()     -> fromRow = str.first().digitToInt()
+                        str.first().isLowerCase() -> fromCol = str.first()
+                    }
+
+                2 ->
+                    when {
+                        str.first().isUpperCase() -> {
+                            pieceSymbol = str.first()
+                            if (str.last().isLowerCase()) fromCol = str.last()
+                            else fromRow = str.last().digitToInt()
+                        }
+
+                        str.first().isLowerCase() -> {
+                            fromCol = str.first()
+                            fromRow = str.last().digitToInt()
+                        }
+                    }
+
+                3 -> {
+                    pieceSymbol = str.first()
+                    fromCol = str[1]
+                    fromRow = str[2].digitToInt()
+                }
+            }
+
+            return searchMove(pieceSymbol, fromRow, fromCol) ?: throw IllegalMoveException(string, "")
+        }
+
+
+        fun isCorrectlyFormatted(stringMove: String): Boolean{
+            return moveRegexFormat.toRegex().containsMatchIn(stringMove)
         }
     }
+
+
+
 
     /**
      * Return true if the movement is vertical
@@ -110,6 +157,6 @@ data class Move(
 
 
     override fun toString(): String {
-        return "$symbol$from${if (capture)"x" else ""}$to${promotion?:""}"
+        return "$symbol$from${if (capture) "x" else ""}$to${promotion ?: ""}"
     }
 }

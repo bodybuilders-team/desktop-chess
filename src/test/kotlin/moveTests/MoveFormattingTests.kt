@@ -1,80 +1,66 @@
 package moveTests
 
 import domain.*
-import java.lang.IllegalArgumentException
 import kotlin.test.*
 
 
 class MoveFormattingTests {
+    private val sut = Board()
+
+    //TODO("Add tests to test all optional fields in the move")
+
     @Test
-    fun `valid simple move returns no errors`() {
-        Move("Pe2e4")
+    fun `Valid simple move is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("Pe2e4"))
     }
 
     @Test
-    fun `valid capture returns no errors`() {
-        Move("Pe2xd3")
+    fun `Valid capture is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("Pe2xd3"))
     }
 
     @Test
-    fun `valid promotion returns no errors`() {
-        Move("Pe7e8=Q")
+    fun `Valid promotion is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("Pe7e8=Q"))
     }
 
     @Test
-    fun `empty throws error`() {
-        assertFailsWith<IllegalArgumentException> {
-            Move("")
-        }
+    fun `Empty is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted(""))
     }
 
     @Test
-    fun `invalid piece type throws error`() {
-        assertFailsWith<IllegalArgumentException> {
-            Move("Ae2e4")
-        }
+    fun `Invalid piece type is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted("Ae2e4"))
     }
 
     @Test
-    fun `invalid 'from position' throws error`() {
-        assertFailsWith<IllegalArgumentException> {
-            Move("P92e4")
-        }
+    fun `Invalid 'from position' is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted("P92e4"))
     }
 
     @Test
-    fun `invalid 'capture char' throws error`() {
-        assertFailsWith<IllegalArgumentException> {
-            Move("Pe2fe4")
-        }
+    fun `Invalid 'capture char' is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted("Pe2fe4"))
     }
 
     @Test
-    fun `invalid 'to position' throws error`() {
-        assertFailsWith<IllegalArgumentException> {
-            Move("Pe2e9")
-        }
+    fun `Invalid 'to position' is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted("Pe2e9"))
     }
 
     @Test
-    fun `invalid promotion symbol throws error`() {
-        assertFailsWith<IllegalArgumentException> {
-            Move("Pe2e9+Q")
-        }
+    fun `Invalid promotion symbol is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted("Pe2e9+Q"))
     }
 
     @Test
-    fun `invalid promotion piece throws error`() {
-        assertFailsWith<IllegalArgumentException> {
-            Move("Pe2e9=L")
-        }
+    fun `Invalid promotion piece is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted("Pe2e9=L"))
     }
 
     @Test
-    fun `too lengthy throws error`() {
-        assertFailsWith<IllegalArgumentException> {
-            Move("Pe2e9aaaaaa")
-        }
+    fun `Too lengthy is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted("Pe2e9aaaaaa"))
     }
-
 }

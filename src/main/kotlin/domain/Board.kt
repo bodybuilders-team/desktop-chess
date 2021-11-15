@@ -100,12 +100,10 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * @throws IllegalMoveException if there is no piece in the specified position or if the move is invalid
      */
     fun makeMove(moveInString: String): Board {
-        val move = Move(moveInString)
+        val move = Move(moveInString, this)
         val fromPos = move.from
         val toPos = move.to
         val piece = getPiece(fromPos)?: throw IllegalMoveException(moveInString, "No piece in the specified position.")
-
-        if (!isValidMove(move)) throw IllegalMoveException(moveInString, "Illegal move.")
 
         val newBoard = this.copy()
         newBoard.removePiece(fromPos)
@@ -159,12 +157,12 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
             var colIdx = 0
 
             override fun hasNext(): Boolean {
-                return rowIdx != BOARD_SIDE_LENGTH - 1 && colIdx != BOARD_SIDE_LENGTH - 1
+                return rowIdx != BOARD_SIDE_LENGTH - 1 || colIdx != BOARD_SIDE_LENGTH - 1
             }
 
             override fun next(): Pair<Piece?, Position> {
                 val value = Pair(matrix[rowIdx][colIdx], Position(FIRST_COL + colIdx, BOARD_SIDE_LENGTH - rowIdx))
-                if (++colIdx % BOARD_SIDE_LENGTH == 0) {
+                if (++colIdx == BOARD_SIDE_LENGTH) {
                     rowIdx++
                     colIdx = 0
                 }

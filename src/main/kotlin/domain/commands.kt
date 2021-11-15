@@ -76,8 +76,8 @@ fun play(chess: Session, parameter: String?, db: GameState): Result<Session> {
     require(chess.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
     requireNotNull(parameter) { "Missing move." }
 
-    val move = Move(parameter)
-    val newBoard = chess.board?.makeMove(parameter)
+    val move = Move(parameter, chess.board!!)
+    val newBoard = chess.board.makeMove(parameter)
     db.postMove(chess.name!!, move)
 
     return Result.success(

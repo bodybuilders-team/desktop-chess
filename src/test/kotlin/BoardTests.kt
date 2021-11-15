@@ -1,14 +1,11 @@
 import domain.*
-import domain.pieces.Army
-import domain.pieces.Pawn
-import domain.pieces.Piece
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
+import domain.pieces.*
+import kotlin.test.*
 
 
 class BoardTests {
+    private val sut = Board()
+
     @Test
     fun `Position with collum outside bounds throws`() {
         assertFailsWith<IllegalArgumentException> {
@@ -25,7 +22,6 @@ class BoardTests {
 
     @Test
     fun `Initial position Board`() {
-        val sut = Board()
         assertEquals(
             "rnbqkbnr" +
             "pppppppp" +
@@ -37,7 +33,7 @@ class BoardTests {
 
     @Test
     fun `Move with wrong pieceSymbol is invalid`() {
-        assertFalse(Board().isValidMove(Move("Ke2e3")))
+        assertFalse(sut.isValidMove("Ke2e3"))
     }
 
     

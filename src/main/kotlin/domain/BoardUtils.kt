@@ -4,44 +4,16 @@ import domain.Board.*
 import domain.pieces.*
 
 
-/**
- * Checks if a move is valid.
- * @param move move to test
- * @return true if the move is valid
- * @throws IllegalMoveException if there is no piece in the specified position
- */
-fun Board.isValidMove(move: Move): Boolean {
-    val piece =
-        getPiece(move.from) ?: throw IllegalMoveException(move.toString(), "No piece in the specified position.")
-    return isValidInitialPiece(piece, move) &&
-            isValidCapture(piece, move) &&
-            piece.isValidMove(this, move)
-}
-
-
-/**
- * Checks if the initial position of the move is valid,
- * by checking if piece is of the right type.
- * @param move move to test
- * @return if the the initial position is valid
- */
-fun Board.isValidInitialPiece(piece: Piece, move: Move) =
-    piece.symbol == move.symbol
-
-
-/**
- * Checks if the capture in [move] is valid.
- * @param move move with the capture
- * @return true if the capture is valid
- */
-fun Board.isValidCapture(piece: Piece, move: Move): Boolean {
-    if (move.capture || isPositionOccupied(move.to)) {
-        val captured = getPiece(move.to) ?: return false
-
-        return captured.army != piece.army
+fun Board.isValidMove(stringMove: String): Boolean {
+    try {
+        Move(stringMove, this)
+    }
+    catch (err: IllegalMoveException){
+        return false
     }
     return true
 }
+
 
 /**
  * Verifies if the kings are in check after the move.
@@ -88,7 +60,7 @@ fun Board.isKingInCheck(army: Army): Int {
         val position = pairPiecePosition.second
 
         if (piece != null && piece.army == army.other()) {
-            if (isValidMove(Move(piece.symbol, position, capture = true, kingPosition, promotion = null)))
+            //if (isValidMove(Move(piece.symbol, position, capture = true, kingPosition, promotion = null)))
                 checkCount++
         }
     }

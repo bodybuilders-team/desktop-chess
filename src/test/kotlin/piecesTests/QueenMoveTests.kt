@@ -4,7 +4,8 @@ import domain.*
 import kotlin.test.*
 
 
-private const val testBoard =
+class QueenMoveTests {
+    private val sut = Board(getMatrix2DFromString(
             "        " +
             "        " +
             "        " +
@@ -13,58 +14,55 @@ private const val testBoard =
             "        " +
             " Q      " +
             "        "
-
-
-class QueenMoveTests {
-    private val board = Board(getMatrix2DFromString(testBoard))
+    ))
 
     @Test
     fun `Queen vertical(up) move is valid`() {
-        assertTrue(board.isValidMove(Move("Qb2b4")))
+        assertTrue(sut.isValidMove("Qb2b4"))
     }
 
     @Test
     fun `Queen vertical(down) move is valid`() {
-        assertTrue(board.isValidMove(Move("Qb2b1")))
+        assertTrue(sut.isValidMove("Qb2b1"))
     }
 
     @Test
     fun `Queen horizontal(right) move is valid`() {
-        assertTrue(board.isValidMove(Move("Qb2f2")))
+        assertTrue(sut.isValidMove("Qb2f2"))
     }
 
     @Test
     fun `Queen horizontal(left) move is valid`() {
-        assertTrue(board.isValidMove(Move("Qb2a2")))
+        assertTrue(sut.isValidMove("Qb2a2"))
     }
 
     @Test
     fun `Queen move with capture is valid`() {
-        assertTrue(board.isValidMove(Move("Qb2b5")))
+        assertTrue(sut.isValidMove("Qb2b5"))
     }
 
     @Test
     fun `Queen move(up,right) with capture is valid`() {
-        assertTrue(board.isValidMove(Move("Qb2c3")))
+        assertTrue(sut.isValidMove("Qb2c3"))
     }
 
     @Test
     fun `Queen move(up,left) is valid`() {
-        assertTrue(board.isValidMove(Move("Qb2a3")))
+        assertTrue(sut.isValidMove("Qb2a3"))
     }
 
     @Test
     fun `Queen move(down,right) is valid`() {
-        assertTrue(board.isValidMove(Move("Qb2c1")))
+        assertTrue(sut.isValidMove("Qb2c1"))
     }
 
     @Test
     fun `Queen move(down,left) is valid`() {
-        assertTrue(board.isValidMove(Move("Qb2a1")))
+        assertTrue(sut.isValidMove("Qb2a1"))
     }
 
     @Test
     fun `Queen move to same place is not valid`() {
-        assertFalse(board.isValidMove(Move("Qb2b2")))
+        assertFalse(sut.isValidMove("Qb2b2"))
     }
 }
