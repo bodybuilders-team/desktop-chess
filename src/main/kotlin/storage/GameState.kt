@@ -1,6 +1,6 @@
-package game_state
+package storage
 
-import Move
+import domain.Move
 
 /**
  * The GameState contract

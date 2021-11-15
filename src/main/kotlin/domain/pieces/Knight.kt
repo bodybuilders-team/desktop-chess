@@ -1,7 +1,7 @@
-package pieces
+package domain.pieces
 
-import Board
-import Move
+import domain.Board
+import domain.Move
 
 
 class Knight(override val army: Army) : Piece {

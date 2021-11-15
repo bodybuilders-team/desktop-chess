@@ -1,5 +1,7 @@
-import pieces.*
-import Board.*
+package domain
+
+import domain.Board.*
+import domain.pieces.*
 
 
 /**
@@ -49,7 +51,7 @@ fun Board.isValidCapture(piece: Piece, move: Move): Boolean {
 fun Board.areKingsInCheck(army: Army) {
     /*// After doing the move, if the same army's king is in check, the move is invalid
     if (isKingInCheck(army) >= CHECK_BY_ONE)
-        throw IllegalMoveException("Invalid move, your army's king becomes in check.")
+        throw domain.IllegalMoveException("Invalid move, your army's king becomes in check.")
 
     // See if the opponent army's king is in check mate
     val kingInCheck = isKingInCheck(army.other())
@@ -70,7 +72,7 @@ fun Board.isKingInCheck(army: Army): Int {
 
     var kingPosition: Position? = null
 
-    //Find king
+    // Find king
     for (pairPiecePosition in this) {
         val piece = pairPiecePosition.first
         val position = pairPiecePosition.second
@@ -81,7 +83,7 @@ fun Board.isKingInCheck(army: Army): Int {
 
     require(kingPosition != null) { "King wasn't found!" }
 
-    //For each piece, if its army is different from the king, check if it can capture the king
+    // For each piece, if its army is different from the king, check if it can capture the king
     for (pairPiecePosition in this) {
         val piece = pairPiecePosition.first
         val position = pairPiecePosition.second

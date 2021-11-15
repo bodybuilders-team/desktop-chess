@@ -1,7 +1,8 @@
 package piecesTests
 
+import domain.pieces.*
 import kotlin.test.*
-import pieces.*
+
 
 
 class PieceSymbolTests {

@@ -1,4 +1,4 @@
-package mongodb
+package storage.mongodb
 
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection

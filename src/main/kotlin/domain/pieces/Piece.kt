@@ -1,7 +1,7 @@
-package pieces
+package domain.pieces
 
-import Board
-import Move
+import domain.Board
+import domain.Move
 import kotlin.math.abs
 
 

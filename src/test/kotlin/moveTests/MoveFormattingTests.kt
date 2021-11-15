@@ -1,6 +1,6 @@
 package moveTests
 
-import Move
+import domain.*
 import java.lang.IllegalArgumentException
 import kotlin.test.*
 

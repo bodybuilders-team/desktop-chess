@@ -1,8 +1,10 @@
-package game_state
+package storage
 
-import Move
+import domain.Move
 import com.mongodb.client.MongoDatabase
-import mongodb.*
+import storage.mongodb.createDocument
+import storage.mongodb.getAll
+import storage.mongodb.getCollectionWithId
 
 
 /**

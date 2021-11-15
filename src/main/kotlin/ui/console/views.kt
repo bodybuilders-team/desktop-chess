@@ -1,7 +1,7 @@
-package views
+package ui.console
 
-import BOARD_SIDE_LENGTH
-import Board
+import domain.BOARD_SIDE_LENGTH
+import domain.Board
 import Session
 
 
@@ -12,59 +12,48 @@ typealias View = (Session) -> Unit
 
 
 /**
- * Returns a map of views
- * @return map of views
+ * Prints the board of the opened game.
+ * @param game opened game
  */
-fun buildViews(): Map<String, View> {
-    return mapOf(
-        "open"    to ::openView,
-        "join"    to ::joinView,
-        "play"    to ::playView,
-        "refresh" to ::refreshView,
-        "moves"   to ::movesView,
-        "exit"    to { }
-    )
-}
-
-
-/**
- * Displays the result of open command executions
- */
-private fun openView(game: Session) {
+fun openView(game: Session) {
     game.board?.let { printBoard(it) }
     println("Game ${game.name} opened. Play with white pieces.")
 }
 
 
 /**
- * Displays the result of join command executions
+ * Prints the board of the joined game.
+ * @param game joined game
  */
-private fun joinView(game: Session) {
+fun joinView(game: Session) {
     game.board?.let { printBoard(it) }
     println("Join to game ${game.name}. Play with black pieces.")
 }
 
 
 /**
- * Displays the result of play command executions
+ * Prints the board after the play is made.
+ * @param game game where the play happens
  */
-private fun playView(game: Session) {
+fun playView(game: Session) {
     game.board?.let { printBoard(it) }
 }
 
 
 /**
- * Displays the result of refresh command executions
+ * Prints the board refreshed.
+ * @param game current game
  */
-private fun refreshView(game: Session) {
+fun refreshView(game: Session) {
     game.board?.let { printBoard(it) }
 }
 
 
 /**
- * Displays the result of moves command executions
+ * Prints all the moves made in the game
+ * @param game game where the play happens
  */
-private fun movesView(game: Session) {
+fun movesView(game: Session) {
     game.moves.forEachIndexed { index, move -> println("${index + 1}. $move") }
 }
 

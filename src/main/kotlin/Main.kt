@@ -1,18 +1,31 @@
-import commands.buildCommands
-import game_state.MongoDBGameState
-import mongodb.createMongoClient
-import pieces.Army
-import views.buildViews
+import domain.*
+import domain.pieces.Army
+import storage.*
+import storage.mongodb.createMongoClient
+import ui.console.*
 
 
 /**
  * The application entry point.
+ *
+ * The application supports the following commands:
+ * open <game> - Opens or joins the game named <game> to play with the White pieces
+ * join <game> - Joins the game named <game> to play with the Black pieces
+ * play <move> - Makes the <move> play
+ * refresh - Refreshes the game
+ * moves - Prints all moves made
+ * exit - Ends the application
+ *
+ * Execution is parameterized through the following environment variables:
+ * - MONGO_DB_NAME, bearing the name of the database to be used
+ * - MONGO_DB_CONNECTION, bearing the connection string to the database server. If absent, the application
+ * uses a local server instance (it must be already running)
  */
 fun main() {
-    val driver = if (checkEnvironment() == DbMode.REMOTE)
-        createMongoClient(System.getenv(ENV_DB_CONNECTION))
-    else
-        createMongoClient()
+    val dbInfo = getDBConnectionInfo()
+    val driver =
+        if (dbInfo.mode == DbMode.REMOTE) createMongoClient(dbInfo.connectionString)
+        else createMongoClient()
 
     try {
         var chess = Session(
@@ -23,25 +36,22 @@ fun main() {
             moves = emptyList()
         )
         val dataBase = MongoDBGameState(driver.getDatabase(System.getenv(ENV_DB_NAME)))
-
-        val cmdDispatcher = buildCommands()
-        val viewDispatcher = buildViews()
+        val dispatcher = buildCommandsHandler()
 
         while (true) {
             try {
                 val (command, parameter) = readCommand(getPrompt(chess))
 
-                val action = cmdDispatcher[command]
-                if (action == null) {
+                val handler = dispatcher[command]
+                if (handler == null) {
                     println("Invalid command")
                     continue
                 }
 
-                val result = action(chess, parameter, dataBase)
+                val result = handler.action(chess, parameter, dataBase)
                 if (result.isSuccess) {
                     chess = result.getOrThrow()
-                    val view = viewDispatcher[command] ?: continue
-                    view(chess)
+                    handler.display(chess)
                 } else break
 
             } catch (err: Exception) {
@@ -56,19 +66,6 @@ fun main() {
         driver.close()
     }
 }
-
-
-/**
- * Returns the prompt
- * @param chess current session
- * @return prompt
- */
-private fun getPrompt(chess: Session) =
-    if (chess.name == null) ""
-    else {
-        val turn = (if (chess.state == SessionState.WAITING_FOR_OPPONENT) chess.army?.other() else chess.army).toString()
-        "${chess.name}:${turn.first() + turn.substring(1).lowercase()}"
-    }
 
 
 // TODO(Remove !! in commands and views)
@@ -90,41 +87,4 @@ data class Session(
 /**
  * Game state.
  */
-enum class SessionState { LOGGING, PLAYING, WAITING_FOR_OPPONENT }
-
-
-/**
- * Reads the command entered by the user
- * @return Pair of command and its arguments
- */
-fun readCommand(questString: String): Pair<String, String?> {
-    print("$questString> ")
-    val input = readLn().trim()
-    val command = input.substringBefore(' ').lowercase()
-    val argument = if (' ' in input) input.substringAfterLast(' ') else null
-    return Pair(command, argument)
-}
-
-
-/**
- * Let's use this while we don't get to Kotlin v1.6
- */
-private fun readLn() = readLine()!!
-
-
-// ------------------------- Mongo DB Stuff -------------------------
-private const val ENV_DB_NAME = "MONGO_DB_NAME"
-private const val ENV_DB_CONNECTION = "MONGO_DB_CONNECTION"
-
-private enum class DbMode { LOCAL, REMOTE }
-
-private fun checkEnvironment(): DbMode {
-    requireNotNull(System.getenv(ENV_DB_NAME)) {
-        "You must specify the environment variable $ENV_DB_NAME"
-    }
-
-    return if (System.getenv(ENV_DB_CONNECTION) != null)
-        DbMode.REMOTE
-    else
-        DbMode.LOCAL
-}
+enum class SessionState { LOGGING, YOUR_TURN, WAITING_FOR_OPPONENT }

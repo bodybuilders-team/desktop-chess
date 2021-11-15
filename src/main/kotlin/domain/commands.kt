@@ -1,10 +1,8 @@
-package commands
+package domain
 
-import Board
-import game_state.GameState
-import Move
+import storage.GameState
 import Session
-import pieces.Army
+import domain.pieces.*
 
 
 /**
@@ -14,27 +12,11 @@ typealias Command = (Session, String?, GameState) -> Result<Session>
 
 
 /**
- * Returns a map of commands
- * @return map of commands
- */
-fun buildCommands(): Map<String, Command> {
-    return mapOf(
-        "open" to ::open,
-        "join" to ::join,
-        "play" to ::play,
-        "refresh" to ::refresh,
-        "moves" to ::moves,
-        "exit" to ::exit
-    )
-}
-
-
-/**
  * Opens a new game with a new name unless a game with that name already exists.
  * @param parameter new game name
  * @param db database where the moves are stored
  */
-private fun open(chess: Session, parameter: String?, db: GameState): Result<Session> {
+fun open(chess: Session, parameter: String?, db: GameState): Result<Session> {
     requireNotNull(parameter) { "Missing game name." }
     
     val moves =
@@ -47,7 +29,7 @@ private fun open(chess: Session, parameter: String?, db: GameState): Result<Sess
     return Result.success(
         Session(
             name = parameter,
-            state = if (isWhiteTurn(moves)) SessionState.PLAYING else SessionState.WAITING_FOR_OPPONENT,
+            state = if (isWhiteTurn(moves)) SessionState.YOUR_TURN else SessionState.WAITING_FOR_OPPONENT,
             army = Army.WHITE,
             board = boardWithMoves(moves),
             moves = moves
@@ -60,7 +42,7 @@ private fun open(chess: Session, parameter: String?, db: GameState): Result<Sess
  * @param parameter the game´s name
  * @param db database where the moves are stored
  */
-private fun join(chess: Session, parameter: String?, db: GameState): Result<Session> {
+fun join(chess: Session, parameter: String?, db: GameState): Result<Session> {
     requireNotNull(parameter) { "Missing game name." }
     requireNotNull(db.getGame(parameter)) { "Unknown game." }
 
@@ -69,7 +51,7 @@ private fun join(chess: Session, parameter: String?, db: GameState): Result<Sess
     return Result.success(
         chess.copy(
             name = db.getGame(parameter),
-            state = if (isWhiteTurn(moves)) SessionState.WAITING_FOR_OPPONENT else SessionState.PLAYING,
+            state = if (isWhiteTurn(moves)) SessionState.WAITING_FOR_OPPONENT else SessionState.YOUR_TURN,
             army = Army.BLACK,
             board = boardWithMoves(moves),
             moves = moves
@@ -83,7 +65,7 @@ private fun join(chess: Session, parameter: String?, db: GameState): Result<Sess
  * @param parameter the play to be made
  * @param db database where the moves are stored
  */
-private fun play(chess: Session, parameter: String?, db: GameState): Result<Session> {
+fun play(chess: Session, parameter: String?, db: GameState): Result<Session> {
     require(chess.state != SessionState.LOGGING) { "Can't play without a game: try open or join commands." }
     require(chess.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
     requireNotNull(parameter) { "Missing move." }
@@ -106,14 +88,14 @@ private fun play(chess: Session, parameter: String?, db: GameState): Result<Sess
  * Updates the state of the game in MongoDB
  * @param db database where the moves are stored
  */
-private fun refresh(chess: Session, parameter: String?, db: GameState): Result<Session> {
+fun refresh(chess: Session, parameter: String?, db: GameState): Result<Session> {
     require(chess.state != SessionState.LOGGING) { "Can't refresh without a game: try open or join commands." }
 
     val moves = db.getAllMoves(chess.name!!)
 
     return Result.success(
         chess.copy(
-            state = if (turnArmy(moves) == chess.army) SessionState.PLAYING else SessionState.WAITING_FOR_OPPONENT,
+            state = if (turnArmy(moves) == chess.army) SessionState.YOUR_TURN else SessionState.WAITING_FOR_OPPONENT,
             board = boardWithMoves(moves),
             moves = moves
         )
@@ -125,7 +107,7 @@ private fun refresh(chess: Session, parameter: String?, db: GameState): Result<S
  * Gets all moves made since the beginning of the game
  * @param db database where the moves are stored
  */
-private fun moves(chess: Session, parameter: String?, db: GameState): Result<Session> {
+fun moves(chess: Session, parameter: String?, db: GameState): Result<Session> {
     require(chess.state != SessionState.LOGGING) { "No game, no moves." }
 
     return Result.success(chess.copy(moves = db.getAllMoves(chess.name!!)))
@@ -135,7 +117,7 @@ private fun moves(chess: Session, parameter: String?, db: GameState): Result<Ses
 /**
  * Terminates the application by saving the actual state of the game
  */
-private fun exit(chess: Session, parameter: String?, db: GameState): Result<Session> {
+fun exit(chess: Session, parameter: String?, db: GameState): Result<Session> {
     return Result.failure(Throwable("Exiting Game."))
 }
 

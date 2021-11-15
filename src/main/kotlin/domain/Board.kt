@@ -1,4 +1,7 @@
-import pieces.*
+package domain
+
+import domain.pieces.*
+
 
 // Board properties constants
 const val BOARD_SIDE_LENGTH = 8

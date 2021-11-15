@@ -1,9 +1,6 @@
 package piecesTests
 
-import Board
-import Move
-import getMatrix2DFromString
-import isValidMove
+import domain.*
 import kotlin.test.*
 
 
