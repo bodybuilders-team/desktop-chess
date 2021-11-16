@@ -36,6 +36,11 @@ class BoardTests {
         assertFalse(sut.isValidMove("Ke2e3"))
     }
 
+    @Test
+    fun `Illegal move if destination is a piece of same army`() {
+        assertFailsWith<IllegalMoveException> { Board().makeMove("Ra1a2")}
+    }
+
     
     /*
       ------------------------------Pawn tests------------------------------

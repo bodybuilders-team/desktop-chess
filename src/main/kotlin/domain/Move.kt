@@ -59,7 +59,7 @@ data class Move(
                     if (piece.symbol != pieceSymbol || (row != null && row != pos.row) || (col != null && col != pos.col)) continue
 
                     val move = Move(pieceSymbol, pos, capture, toPos, promotion)
-                    if (piece.isValidMove(board, move))
+                    if (pos != toPos && piece.isValidMove(board, move) && board.isValidCapture(piece, move))
                         return move.copy(capture = board.isPositionOccupied(toPos))
                 }
                 return null

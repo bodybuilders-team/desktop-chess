@@ -14,13 +14,13 @@ const val NO_MOVE = 0
 
 
 /**
- * Piece color.
+ * Piece army.
  */
 enum class Army { WHITE, BLACK;
 
     /**
-     * Returns the other color.
-     * @return other color
+     * Returns the other army.
+     * @return other army
      */
     fun other() = if (this == WHITE) BLACK else WHITE
 }
@@ -63,20 +63,13 @@ interface Piece {
         if(army == Army.BLACK) symbol.lowercaseChar() else symbol
 
     /**
-     * Checks if a move is possible
+     * Checks if a move is possible regarding this specific piece type
      * @param board board where the move will happen
      * @param move move to test
      * @return true if the move is possible
      */
     fun isValidMove(board: Board, move: Move): Boolean
 }
-
-
-/**
- * Checks if the piece color is White.
- * @return true if the piece is white
- */
-fun Piece.isWhite() = army == Army.WHITE
 
 
 /**
@@ -89,7 +82,6 @@ fun isDiagonalOccupied(board: Board, move: Move): Boolean {
     var rowsDistance = distanceWithoutToPosition(move.rowsDistance())
     var colsDistance = distanceWithoutToPosition(move.colsDistance())
 
-    // Number of steps can be calculated with rows Distance or cols Distance
     var numberOfSteps = abs(move.rowsDistance()) - 1
 
     while (numberOfSteps > 0) {

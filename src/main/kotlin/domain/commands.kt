@@ -102,7 +102,7 @@ fun refresh(chess: Session, parameter: String?, db: GameState): Result<Session> 
 
     return Result.success(
         chess.copy(
-            state = if (turnArmy(moves) == chess.army) SessionState.YOUR_TURN else SessionState.WAITING_FOR_OPPONENT,
+            state = if (currentTurnArmy(moves) == chess.army) SessionState.YOUR_TURN else SessionState.WAITING_FOR_OPPONENT,
             board = boardWithMoves(moves),
             moves = moves
         )
@@ -142,14 +142,14 @@ fun help(chess: Session, parameter: String?, db: GameState): Result<Session> {
  * Returns the army playing in the current turn
  * @param moves all game moves
  */
-private fun turnArmy(moves: List<Move>) = if (moves.size % 2 == 0) Army.WHITE else Army.BLACK
+private fun currentTurnArmy(moves: List<Move>) = if (moves.size % 2 == 0) Army.WHITE else Army.BLACK
 
 
 /**
  * Returns true if it's the white army turn
  * @param moves all game moves
  */
-private fun isWhiteTurn(moves: List<Move>) = turnArmy(moves) == Army.WHITE
+private fun isWhiteTurn(moves: List<Move>) = currentTurnArmy(moves) == Army.WHITE
 
 
 /**

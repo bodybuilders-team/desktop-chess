@@ -4,12 +4,31 @@ import domain.Board.*
 import domain.pieces.*
 
 
+/**
+ * Checks if a move [stringMove] is valid.
+ * Returns false when an [IllegalMoveException] is thrown.
+ * @return true if the move is valid
+ */
 fun Board.isValidMove(stringMove: String): Boolean {
     try {
         Move(stringMove, this)
     }
     catch (err: IllegalMoveException){
         return false
+    }
+    return true
+}
+
+/**
+ * Checks if the capture in [move] is valid.
+ * @param move move with the capture
+ * @return true if the capture is valid
+ */
+fun Board.isValidCapture(piece: Piece, move: Move): Boolean {
+    if (move.capture || isPositionOccupied(move.to)) {
+        val captured = getPiece(move.to) ?: return false
+
+        return captured.army != piece.army
     }
     return true
 }
