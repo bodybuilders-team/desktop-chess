@@ -13,11 +13,6 @@ val COLS_RANGE = 'a'..'h'
 val ROWS_RANGE = 1..8
 
 
-//King in check constants
-const val NOT_IN_CHECK = 0
-const val CHECK_BY_ONE = 1
-const val CHECK_BY_TWO = 2
-
 // Initial board in String format
 const val STRING_BOARD =
     "rnbqkbnr" +
@@ -113,8 +108,6 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
             if (move.promotion == null) piece
             else doPromotion(piece, toPos, move.promotion, move.toString())
         )
-
-        //areKingsInCheck(piece.army) //TODO("Kings in check".)
 
         return newBoard
     }

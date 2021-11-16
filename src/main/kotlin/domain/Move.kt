@@ -3,13 +3,6 @@ package domain
 import kotlin.math.abs
 import domain.Board.Position
 
-const val CAPTURE_CHAR = 'x'
-const val PROMOTION_CHAR = '='
-
-
-// Move Regex Format
-const val moveRegexFormat = "^[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?\$"
-
 
 /**
  * Chess move
@@ -18,7 +11,6 @@ const val moveRegexFormat = "^[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?\$"
  * @property capture true if the piece will capture enemy piece
  * @property to new piece position
  * @property promotion new PieceType of promotion or null
- * @throws IllegalMoveException if move string is not well formatted
  */
 data class Move(
     val symbol: Char,
@@ -28,6 +20,24 @@ data class Move(
     val promotion: Char?
 ) {
     companion object {
+
+        private const val moveRegexFormat = "^[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?\$"
+        private const val CAPTURE_CHAR = 'x'
+        private const val PROMOTION_CHAR = '='
+        private const val MIN_STRING_LEN = 1
+        private const val TWO_STRING_LEN = 2
+        private const val THREE_STRING_LEN = 3
+
+
+        /**
+         * Move constructor that receives a String and a Board.
+         *
+         * Move properties are extracted from the [string], and searching the [board], it's verified if the move is possible.
+         * @param string move in string format
+         * @param board board where the move will happen
+         * @return the move
+         * @throws IllegalMoveException if move string is not well formatted or if the move is not possible in [board]
+         */
         operator fun invoke(string: String, board: Board): Move {
             if (!isCorrectlyFormatted(string))
                 throw IllegalMoveException(
@@ -74,14 +84,14 @@ data class Move(
 
 
             when (str.length) {
-                1 ->
+                MIN_STRING_LEN ->
                     when {
                         str.first().isUpperCase() -> pieceSymbol = str.first()
-                        str.first().isDigit() -> fromRow = str.first().digitToInt()
+                        str.first().isDigit()     -> fromRow = str.first().digitToInt()
                         str.first().isLowerCase() -> fromCol = str.first()
                     }
 
-                2 ->
+                TWO_STRING_LEN ->
                     when {
                         str.first().isUpperCase() -> {
                             pieceSymbol = str.first()
@@ -95,7 +105,7 @@ data class Move(
                         }
                     }
 
-                3 -> {
+                THREE_STRING_LEN -> {
                     pieceSymbol = str.first()
                     fromCol = str[1]
                     fromRow = str[2].digitToInt()
@@ -106,8 +116,13 @@ data class Move(
         }
 
 
-        fun isCorrectlyFormatted(stringMove: String): Boolean {
-            return moveRegexFormat.toRegex().containsMatchIn(stringMove)
+        /**
+         * Checks if a move in String is correctly formatted.
+         * @param moveInString piece move
+         * @return true if the move in String is correctly formatted
+         */
+        fun isCorrectlyFormatted(moveInString: String): Boolean{
+            return moveRegexFormat.toRegex().containsMatchIn(moveInString)
         }
     }
 

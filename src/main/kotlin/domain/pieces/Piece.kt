@@ -16,7 +16,8 @@ const val NO_MOVE = 0
 /**
  * Piece army.
  */
-enum class Army { WHITE, BLACK;
+enum class Army {
+    WHITE, BLACK;
 
     /**
      * Returns the other army.
@@ -60,7 +61,7 @@ interface Piece {
      * @return character representation of the piece
      */
     fun toChar(): Char =
-        if(army == Army.BLACK) symbol.lowercaseChar() else symbol
+        if (army == Army.BLACK) symbol.lowercaseChar() else symbol
 
     /**
      * Checks if a move is possible regarding this specific piece type
@@ -82,21 +83,17 @@ fun isDiagonalPathOccupied(board: Board, move: Move): Boolean {
     var rowsDistance = distanceWithoutToPosition(move.rowsDistance())
     var colsDistance = distanceWithoutToPosition(move.colsDistance())
 
-    var numberOfSteps = abs(move.rowsDistance()) - 1
-
-    while (numberOfSteps > 0) {
-        if (board.isPositionOccupied(
-                move.from.copy(
+    for (step in abs(move.rowsDistance()) - 1 downTo 1) {
+        if (board.isPositionOccupied(move.from.copy(
                     col = move.from.col + colsDistance,
                     row = move.from.row + rowsDistance
-                )
-            )
+            ))
         ) return true
 
         colsDistance = updatedDistance(colsDistance)
         rowsDistance = updatedDistance(rowsDistance)
-        numberOfSteps--
     }
+
     return false
 }
 
