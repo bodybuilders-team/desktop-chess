@@ -7,11 +7,12 @@ import domain.pieces.*
 /**
  * Checks if a move [stringMove] is valid.
  * Returns false when an [IllegalMoveException] is thrown.
+ * @param moveInString piece move in string
  * @return true if the move is valid
  */
-fun Board.isValidMove(stringMove: String): Boolean {
+fun Board.isValidMove(moveInString: String): Boolean {
     try {
-        Move(stringMove, this)
+        Move(moveInString, this)
     }
     catch (err: IllegalMoveException){
         return false

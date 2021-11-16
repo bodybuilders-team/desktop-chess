@@ -10,6 +10,6 @@ class Rook(override val army: Army) : Piece {
 
     override fun isValidMove(board: Board, move: Move): Boolean {
         // Rook moves horizontally or vertically
-        return (move.isHorizontal() || move.isVertical()) && !isNonDiagonalOccupied(board, move)
+        return (move.isHorizontal() || move.isVertical()) && !isStraightPathOccupied(board, move)
     }
 }

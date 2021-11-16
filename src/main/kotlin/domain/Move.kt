@@ -18,7 +18,7 @@ const val moveRegexFormat = "^[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?\$"
  * @property capture true if the piece will capture enemy piece
  * @property to new piece position
  * @property promotion new PieceType of promotion or null
- * @throws IllegalArgumentException if move string is not well formatted
+ * @throws IllegalMoveException if move string is not well formatted
  */
 data class Move(
     val symbol: Char,
@@ -29,9 +29,10 @@ data class Move(
 ) {
     companion object {
         operator fun invoke(string: String, board: Board): Move {
-            require(isCorrectlyFormatted(string)) {
-                "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
-            }
+            if (!isCorrectlyFormatted(string))
+                throw IllegalMoveException(
+                    string, "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
+                )
 
             var str = string
 
@@ -56,7 +57,8 @@ data class Move(
                 for (pairPiecePosition in board) {
                     val (piece, pos) = pairPiecePosition
                     piece ?: continue
-                    if (piece.symbol != pieceSymbol || (row != null && row != pos.row) || (col != null && col != pos.col)) continue
+                    if (piece.symbol != pieceSymbol || (row != null && row != pos.row) || (col != null && col != pos.col))
+                        continue
 
                     val move = Move(pieceSymbol, pos, capture, toPos, promotion)
                     if (pos != toPos && piece.isValidMove(board, move) && board.isValidCapture(piece, move))
@@ -75,7 +77,7 @@ data class Move(
                 1 ->
                     when {
                         str.first().isUpperCase() -> pieceSymbol = str.first()
-                        str.first().isDigit()     -> fromRow = str.first().digitToInt()
+                        str.first().isDigit() -> fromRow = str.first().digitToInt()
                         str.first().isLowerCase() -> fromCol = str.first()
                     }
 
@@ -104,12 +106,10 @@ data class Move(
         }
 
 
-        fun isCorrectlyFormatted(stringMove: String): Boolean{
+        fun isCorrectlyFormatted(stringMove: String): Boolean {
             return moveRegexFormat.toRegex().containsMatchIn(stringMove)
         }
     }
-
-
 
 
     /**

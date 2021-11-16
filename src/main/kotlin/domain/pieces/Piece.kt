@@ -73,12 +73,12 @@ interface Piece {
 
 
 /**
- * Returns true if there are pieces between diagonal made in [move].
+ * Returns true if there are pieces in the diagonal path between fromPos and toPos of [move].
  * @param board board where [move] will happen
  * @param move move with the positions to check
  * @return true if there are pieces between diagonal
  */
-fun isDiagonalOccupied(board: Board, move: Move): Boolean {
+fun isDiagonalPathOccupied(board: Board, move: Move): Boolean {
     var rowsDistance = distanceWithoutToPosition(move.rowsDistance())
     var colsDistance = distanceWithoutToPosition(move.colsDistance())
 
@@ -102,12 +102,14 @@ fun isDiagonalOccupied(board: Board, move: Move): Boolean {
 
 
 /**
- * Returns true if there are pieces between non-diagonal made in [move].
+ * Returns true if there are pieces in the straight path between fromPos and toPos of [move].
+ * 
+ * The straight path might be horizontal or vertical.
  * @param board board where [move] will happen
  * @param move move with the positions to check
- * @return true if there are pieces between non-diagonal
+ * @return true if there are pieces between straight path
  */
-fun isNonDiagonalOccupied(board: Board, move: Move): Boolean {
+fun isStraightPathOccupied(board: Board, move: Move): Boolean {
     var distance = distanceWithoutToPosition(if (move.isHorizontal()) move.colsDistance() else move.rowsDistance())
 
     while (abs(distance) > 0) {

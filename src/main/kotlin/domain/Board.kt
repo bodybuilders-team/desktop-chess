@@ -95,7 +95,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
 
     /**
      * Move a piece in the board.
-     * @param moveInString piece move
+     * @param moveInString piece move in string
      * @return new board with piece moved
      * @throws IllegalMoveException if there is no piece in the specified position or if the move is invalid
      */

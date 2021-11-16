@@ -10,6 +10,6 @@ class Bishop(override val army: Army) : Piece {
 
     override fun isValidMove(board: Board, move: Move): Boolean {
         // Bishop moves diagonally
-        return move.isDiagonal() && !isDiagonalOccupied(board, move)
+        return move.isDiagonal() && !isDiagonalPathOccupied(board, move)
     }
 }
