@@ -13,7 +13,6 @@ const val ONE_MOVE = 1
 const val NO_MOVE = 0
 
 
-//TODO(Test!)
 /**
  * Piece army.
  */
