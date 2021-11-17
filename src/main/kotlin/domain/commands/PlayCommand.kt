@@ -23,9 +23,9 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
         requireNotNull(parameter) { "Missing move." }
 
         val move = Move(parameter, chess.board)
-        if(chess.board.getPiece(move.from)!!.army == chess.army.other())
+        if (chess.board.getPiece(move.from)!!.army == chess.army.other())
             throw IllegalMoveException(parameter, "You cannot move an opponent's piece.")
-                
+
         val newBoard = chess.board.makeMove(move)
         db.postMove(chess.name, move)
 

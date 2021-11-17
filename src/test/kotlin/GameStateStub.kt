@@ -1,8 +1,12 @@
 import domain.Move
 import storage.GameState
 
+
+/**
+ * [GameState] implementation for testing.
+ */
 class GameStateStub : GameState {
-    private val moves : MutableMap<String, MutableList<Move>> = mutableMapOf()
+    private val moves: MutableMap<String, MutableList<Move>> = mutableMapOf()
 
     override fun getLastMove(game: String): Move {
         require(moves[game] != null)
