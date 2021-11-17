@@ -5,9 +5,6 @@ import kotlin.test.*
 
 
 class MoveFormattingTests {
-    private val sut = Board()
-
-    //TODO("Add tests to test all optional fields in the move")
 
     @Test
     fun `Valid simple move is correctly formatted`() {
@@ -62,5 +59,30 @@ class MoveFormattingTests {
     @Test
     fun `Too lengthy is incorrectly formatted`() {
         assertFalse(Move.isCorrectlyFormatted("Pe2e9aaaaaa"))
+    }
+
+    @Test
+    fun `Valid simple move (optional piece) is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("e2e4"))
+    }
+
+    @Test
+    fun `Valid simple move (optional fromCol) is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("P2e4"))
+    }
+
+    @Test
+    fun `Valid simple move (optional fromRow) is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("Pee4"))
+    }
+
+    @Test
+    fun `Move with optional fromPos is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("Pe4"))
+    }
+
+    @Test
+    fun `Move with optional piece and optional fromPos is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("e4"))
     }
 }

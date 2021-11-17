@@ -1,21 +1,15 @@
 package moveTests
 
 import domain.*
-import domain.Board.*
 import kotlin.test.*
 
 
 class MoveMethodsTests {
 
-    // TODO(Comment)
-    private fun getMove(string: String) =
-        Move(
-            'P',
-            Position(string[0], string[1].digitToInt()),
-            capture = false,
-            Position(string[2], string[3].digitToInt()),
-            promotion = null
-        )
+    private fun getMove(string: String) : Move{
+        return Move('P', Board.Position(string[0], string[1].digitToInt()), false,
+                         Board.Position(string[2], string[3].digitToInt()), null)
+    }
 
 
     @Test

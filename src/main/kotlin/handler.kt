@@ -20,7 +20,7 @@ data class CommandHandler(val action: Command, val display: View)
 fun buildCommandsHandler(chess: Session, db: GameState): Map<String, CommandHandler> {
     return mapOf(
         "open"    to CommandHandler(OpenCommand(db), ::openView),
-        "join"    to CommandHandler(JoinCommand(db, chess), ::joinView),
+        "join"    to CommandHandler(JoinCommand(db), ::joinView),
         "play"    to CommandHandler(PlayCommand(db, chess), ::playView),
         "refresh" to CommandHandler(RefreshCommand(db, chess), ::refreshView),
         "moves"   to CommandHandler(MovesCommand(db, chess), ::movesView),

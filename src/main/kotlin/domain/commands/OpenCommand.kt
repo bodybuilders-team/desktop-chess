@@ -6,7 +6,7 @@ import storage.GameState
 
 
 /**
- * Opens a new game with a new name unless a game with that name already exists.
+ * Opens a game with the name or creates a new game if it doesn't exist
  * @param db database where the moves are stored
  * @throws IllegalArgumentException if game name not specified
  */

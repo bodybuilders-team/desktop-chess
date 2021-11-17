@@ -39,6 +39,54 @@ data class Move(
          * @throws IllegalMoveException if move string is not well formatted or if the move is not possible in [board]
          */
         operator fun invoke(string: String, board: Board): Move {
+            val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(string)
+
+            return searchMove(move, optionalFromCol, optionalFromRow, board) ?: throw IllegalMoveException(string, "")
+        }
+
+
+        /**
+         * Searches for a valid move given a move and if the search is in a specific column or row.
+         * If [optionalFromCol] is true, all columns are searched. The same applies to [optionalFromRow]
+         * @param move move to search for
+         * @param optionalFromCol if the search isn't in a specific column
+         * @param optionalFromRow if the search isn't in a specific row
+         * @return the valid move or null if it wasn't found
+         */
+        private fun searchMove(move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, board: Board): Move? {
+            for (pairPiecePosition in board) {
+                val (piece, pos) = pairPiecePosition
+                piece ?: continue
+                if (piece.symbol != move.symbol ||
+                    (!optionalFromCol && move.from.col != pos.col) ||
+                    (!optionalFromRow && move.from.row != pos.row))
+                    continue
+
+                val newMove = move.copy(from = pos)
+                if (pos != newMove.to && piece.isValidMove(board, newMove) && board.isValidCapture(piece, newMove))
+                    return newMove.copy(capture = board.isPositionOccupied(newMove.to))
+            }
+            return null
+        }
+
+
+        /**
+         * Move extraction
+         * @param move extracted move
+         * @param optionalFromCol if the from column is optional
+         * @param optionalFromRow if the from row is optional
+         */
+        data class MoveExtraction(val move: Move, val optionalFromCol: Boolean, val optionalFromRow: Boolean)
+
+
+        /**
+         * Extracts move info from a stringMove.
+         * This move is unvalidated in the context of a board.
+         * @param string move in string
+         * @return MoveExtraction containing the move, and the if the column or row are optional
+         * @throws IllegalMoveException if move string is not well formatted
+         */
+        fun extractMoveInfo(string: String) : MoveExtraction{
             if (!isCorrectlyFormatted(string))
                 throw IllegalMoveException(
                     string, "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
@@ -54,33 +102,9 @@ data class Move(
             val toPos = Position(str[str.lastIndex - 1], str.last().digitToInt())
             str = str.dropLast(if (capture) 3 else 2)
 
-
-            /**
-             * Searches for a valid move given [pieceSymbol], [row] and [col].
-             * If [row] is null, all rows are searched. The same applies to [col]
-             * @param pieceSymbol piece symbol of the move
-             * @param row row to search
-             * @param col col to search
-             * @return the valid move or null if it wasn't found
-             */
-            fun searchMove(pieceSymbol: Char,col: Char?, row: Int?): Move? {
-                for (pairPiecePosition in board) {
-                    val (piece, pos) = pairPiecePosition
-                    piece ?: continue
-                    if (piece.symbol != pieceSymbol || (row != null && row != pos.row) || (col != null && col != pos.col))
-                        continue
-
-                    val move = Move(pieceSymbol, pos, capture, toPos, promotion)
-                    if (pos != toPos && piece.isValidMove(board, move) && board.isValidCapture(piece, move))
-                        return move.copy(capture = board.isPositionOccupied(toPos))
-                }
-                return null
-            }
-
-
             var pieceSymbol = 'P'
-            var fromRow: Int? = null
-            var fromCol: Char? = null
+            var fromRow: Int? = 1
+            var fromCol: Char? = 'a'
 
 
             when (str.length) {
@@ -112,7 +136,10 @@ data class Move(
                 }
             }
 
-            return searchMove(pieceSymbol,fromCol, fromRow) ?: throw IllegalMoveException(string, "")
+            return MoveExtraction(
+                Move(pieceSymbol, Position(fromCol ?: 'a', fromRow ?: 1), capture, toPos, promotion),
+                fromCol == null, fromRow == null
+            )
         }
 
 
