@@ -37,10 +37,10 @@ fun main() {
             moves = emptyList()
         )
         val dataBase = MongoDBGameState(driver.getDatabase(System.getenv(ENV_DB_NAME)))
-        val dispatcher = buildCommandsHandler()
 
         while (true) {
             try {
+                val dispatcher = buildCommandsHandler(chess, dataBase)
                 val (command, parameter) = readCommand(getPrompt(chess))
 
                 val handler = dispatcher[command]
@@ -49,7 +49,7 @@ fun main() {
                     continue
                 }
 
-                val result = handler.action(chess, parameter, dataBase)
+                val result = handler.action(parameter)
                 if (result.isSuccess) {
                     chess = result.getOrThrow()
                     handler.display(chess)

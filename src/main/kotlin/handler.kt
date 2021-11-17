@@ -1,4 +1,5 @@
 import domain.*
+import storage.GameState
 import ui.console.*
 
 
@@ -14,14 +15,14 @@ data class CommandHandler(val action: Command, val display: View)
  * Gets the container bearing the associations between user entered strings and the corresponding CommandHandler.
  * @return the container with the command handler mappings
  */
-fun buildCommandsHandler(): Map<String, CommandHandler> {
+fun buildCommandsHandler(chess: Session, db: GameState): Map<String, CommandHandler> {
     return mapOf(
-        "open"    to CommandHandler(::open, ::openView),
-        "join"    to CommandHandler(::join, ::joinView),
-        "play"    to CommandHandler(::play, ::playView),
-        "refresh" to CommandHandler(::refresh, ::refreshView),
-        "moves"   to CommandHandler(::moves, ::movesView),
-        "exit"    to CommandHandler(::exit) { },
-        "help"    to CommandHandler(::help, ::helpView)
+        "open"    to CommandHandler(OpenCommand(db), ::openView),
+        "join"    to CommandHandler(JoinCommand(db, chess), ::joinView),
+        "play"    to CommandHandler(PlayCommand(db, chess), ::playView),
+        "refresh" to CommandHandler(RefreshCommand(db, chess), ::refreshView),
+        "moves"   to CommandHandler(MovesCommand(db, chess), ::movesView),
+        "exit"    to CommandHandler(ExitCommand()) { },
+        "help"    to CommandHandler(HelpCommand(chess), ::helpView)
     )
 }

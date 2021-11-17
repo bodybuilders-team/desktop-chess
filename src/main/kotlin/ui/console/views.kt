@@ -63,7 +63,7 @@ fun movesView(game: Session) {
  * @param game game where the play happens
  */
 fun helpView(game: Session) {
-    println("These are the application commands you can use:\n" +
+    println("${game.name} -> These are the application commands you can use:\n" +
             "open <game> - Opens or joins the game named <game> to play with the White pieces\n" +
             "join <game> - Joins the game named <game> to play with the Black pieces\n" +
             "play <move> - Makes the <move> play\n" +
