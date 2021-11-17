@@ -102,12 +102,11 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
     }
 
 
-    //TODO(Test!)
     /**
      * Returns a copy board, using the array function copyOf() for each array in the matrix.
      * @return copied board
      */
-    private fun copy(): Board {
+    fun copy(): Board {
         val newBoard = Board(this.matrix.copyOf())
         repeat(BOARD_SIDE_LENGTH) {
             newBoard.matrix[it] = this.matrix[it].copyOf()
@@ -122,7 +121,6 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      */
     data class Slot(val piece: Piece?, val position: Position)
 
-    //TODO(Test!)
     /**
      * Iterator of all pieces and respective positions.
      * @return an iterator of a piece-position pair.

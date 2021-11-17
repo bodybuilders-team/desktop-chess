@@ -97,4 +97,57 @@ class BoardMethodsTests {
             assertEquals(arrayOfPieces.map { it?.toChar() }, matrix[rowIdx].map { it?.toChar() })
         }
     }
+
+    @Test
+    fun `Board copy works as expected`() {
+
+        val sut =   "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp" +
+                    "pppppppp"
+
+        val board = Board(getMatrix2DFromString(sut))
+        val stringBoard = board.toString()
+        val stringCopy = board.copy().toString()
+
+        assertEquals(stringBoard, stringCopy)
+    }
+
+    //TODO() Are these even a good test?
+
+    @Test
+    fun `Board iterator hasNext returns true on a empty Board`() {
+
+        val sut =   "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        "
+
+        val board = Board(getMatrix2DFromString(sut))
+        assertEquals(board.iterator().hasNext(), true)
+    }
+
+    @Test
+    fun `Board iterator next works as expected`() {
+
+        val sut =   "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        "
+
+        val board = Board(getMatrix2DFromString(sut))
+        assertEquals(board.iterator().next(), Board.Slot(null, Board.Position('a',8)))
+    }
 }
