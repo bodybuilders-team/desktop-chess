@@ -1,6 +1,5 @@
 package uiTests
 
-import Session
 import domain.*
 import domain.pieces.Army
 import ui.console.getPrompt
@@ -9,8 +8,8 @@ import kotlin.test.*
 
 class UserInputTests {
     @Test
-    fun `getPrompt with null session name returns empty string`() {
-        val session = Session(null, SessionState.LOGGING, null, null, emptyList())
+    fun `getPrompt with logging session name returns empty string`() {
+        val session = Session("", SessionState.LOGGING, Army.WHITE, Board(), emptyList())
         assertEquals("", getPrompt(session))
     }
 

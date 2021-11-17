@@ -1,12 +1,11 @@
 package domain.commands
 
-import Session
+import domain.Session
 import domain.Board
 import domain.Move
 import domain.pieces.*
 
 
-//TODO(Test!)
 /**
  * Representation of command
  */
@@ -25,7 +24,6 @@ fun interface Command {
 }
 
 
-//TODO(Test!)
 /**
  * Returns the army playing in the current turn
  * @param moves all game moves
@@ -33,7 +31,6 @@ fun interface Command {
 fun currentTurnArmy(moves: List<Move>) = if (moves.size % 2 == 0) Army.WHITE else Army.BLACK
 
 
-//TODO(Test!)
 /**
  * Returns true if it's the white army turn
  * @param moves all game moves
@@ -41,7 +38,6 @@ fun currentTurnArmy(moves: List<Move>) = if (moves.size % 2 == 0) Army.WHITE els
 fun isWhiteTurn(moves: List<Move>) = currentTurnArmy(moves) == Army.WHITE
 
 
-//TODO(Test!)
 /**
  * Returns a new board with all the moves in [moves]
  * @param moves moves to make
@@ -49,6 +45,6 @@ fun isWhiteTurn(moves: List<Move>) = currentTurnArmy(moves) == Army.WHITE
  */
 fun boardWithMoves(moves: List<Move>): Board {
     var newBoard = Board()
-    moves.forEach { move -> newBoard = newBoard.makeMove(move.toString()) }
+    moves.forEach { move -> newBoard = newBoard.makeMove(move) }
     return newBoard
 }

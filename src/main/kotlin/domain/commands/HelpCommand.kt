@@ -1,6 +1,6 @@
 package domain.commands
 
-import Session
+import domain.Session
 
 
 /**

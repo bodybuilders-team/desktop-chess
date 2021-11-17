@@ -41,7 +41,9 @@ data class Move(
         operator fun invoke(string: String, board: Board): Move {
             val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(string)
 
-            return searchMove(move, optionalFromCol, optionalFromRow, board) ?: throw IllegalMoveException(string, "")
+            return searchMove(move, optionalFromCol, optionalFromRow, board) ?: throw IllegalMoveException(
+                string, if (optionalFromCol || optionalFromRow) "Try with origin column and row." else "Illegal move."
+            )
         }
 
 
@@ -54,19 +56,23 @@ data class Move(
          * @return the valid move or null if it wasn't found
          */
         private fun searchMove(move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, board: Board): Move? {
+            var foundMove: Move? = null
             for (pairPiecePosition in board) {
                 val (piece, pos) = pairPiecePosition
                 piece ?: continue
                 if (piece.symbol != move.symbol ||
                     (!optionalFromCol && move.from.col != pos.col) ||
-                    (!optionalFromRow && move.from.row != pos.row))
+                    (!optionalFromRow && move.from.row != pos.row)
+                )
                     continue
 
                 val newMove = move.copy(from = pos)
-                if (pos != newMove.to && piece.isValidMove(board, newMove) && board.isValidCapture(piece, newMove))
-                    return newMove.copy(capture = board.isPositionOccupied(newMove.to))
+                if (pos != newMove.to && piece.isValidMove(board, newMove) && board.isValidCapture(piece, newMove)) {
+                    if (foundMove != null) return null
+                    foundMove = newMove.copy(capture = board.isPositionOccupied(newMove.to))
+                }
             }
-            return null
+            return foundMove
         }
 
 
@@ -80,13 +86,13 @@ data class Move(
 
 
         /**
-         * Extracts move info from a stringMove.
-         * This move is unvalidated in the context of a board.
+         * Extracts move information from a string.
+         * This move is still unvalidated in the context of a board.
          * @param string move in string
          * @return MoveExtraction containing the move, and the if the column or row are optional
          * @throws IllegalMoveException if move string is not well formatted
          */
-        fun extractMoveInfo(string: String) : MoveExtraction{
+        fun extractMoveInfo(string: String): MoveExtraction {
             if (!isCorrectlyFormatted(string))
                 throw IllegalMoveException(
                     string, "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
@@ -103,15 +109,15 @@ data class Move(
             str = str.dropLast(if (capture) 3 else 2)
 
             var pieceSymbol = 'P'
-            var fromRow: Int? = 1
-            var fromCol: Char? = 'a'
+            var fromRow: Int? = null
+            var fromCol: Char? = null
 
 
             when (str.length) {
                 MIN_STRING_LEN ->
                     when {
                         str.first().isUpperCase() -> pieceSymbol = str.first()
-                        str.first().isDigit()     -> fromRow = str.first().digitToInt()
+                        str.first().isDigit() -> fromRow = str.first().digitToInt()
                         str.first().isLowerCase() -> fromCol = str.first()
                     }
 
@@ -148,7 +154,7 @@ data class Move(
          * @param moveInString piece move
          * @return true if the move in String is correctly formatted
          */
-        fun isCorrectlyFormatted(moveInString: String): Boolean{
+        fun isCorrectlyFormatted(moveInString: String): Boolean {
             return moveRegexFormat.toRegex().containsMatchIn(moveInString)
         }
     }

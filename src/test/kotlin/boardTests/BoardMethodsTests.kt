@@ -117,8 +117,6 @@ class BoardMethodsTests {
         assertEquals(stringBoard, stringCopy)
     }
 
-    //TODO() Are these even a good test?
-
     @Test
     fun `Board iterator hasNext returns true on a empty Board`() {
 
@@ -148,6 +146,6 @@ class BoardMethodsTests {
                     "        "
 
         val board = Board(getMatrix2DFromString(sut))
-        assertEquals(board.iterator().next(), Board.Slot(null, Board.Position('a',8)))
+        assertEquals(board.iterator().next(), Board.Slot(null, Board.Position('a', 8)))
     }
 }

@@ -1,6 +1,7 @@
 package domain.commands
 
-import Session
+import domain.Session
+import domain.SessionState
 import storage.GameState
 
 
@@ -15,6 +16,6 @@ class MovesCommand(private val db: GameState, private val chess: Session) : Comm
     override fun execute(parameter: String?): Result<Session> {
         require(chess.state != SessionState.LOGGING) { "No game, no moves." }
 
-        return Result.success(chess.copy(moves = db.getAllMoves(chess.name!!)))
+        return Result.success(chess.copy(moves = db.getAllMoves(chess.name)))
     }
 }

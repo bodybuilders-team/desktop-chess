@@ -30,10 +30,10 @@ fun main() {
 
     try {
         var chess = Session(
-            name = null,
+            name = "",
             state = SessionState.LOGGING,
-            army = null,
-            board = null,
+            army = Army.WHITE,
+            board = Board(),
             moves = emptyList()
         )
         val dataBase = MongoDBGameState(driver.getDatabase(System.getenv(ENV_DB_NAME)))
@@ -68,25 +68,3 @@ fun main() {
         driver.close()
     }
 }
-
-
-// TODO(Remove !! in commands and views)
-/**
- * A game session.
- * @property name session name
- * @property state current session state
- * @property army session color
- * @property board current board
- */
-data class Session(
-    val name: String?,
-    val state: SessionState,
-    val army: Army?,
-    val board: Board?,
-    val moves: List<Move>
-)
-
-/**
- * Game state.
- */
-enum class SessionState { LOGGING, YOUR_TURN, WAITING_FOR_OPPONENT }

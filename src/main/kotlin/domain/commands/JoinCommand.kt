@@ -1,6 +1,7 @@
 package domain.commands
 
-import Session
+import domain.Session
+import domain.SessionState
 import domain.pieces.Army
 import storage.GameState
 
@@ -21,7 +22,7 @@ class JoinCommand(private val db: GameState) : Command {
 
         return Result.success(
             Session(
-                name = db.getGame(parameter),
+                name = parameter,
                 state = if (isWhiteTurn(moves)) SessionState.WAITING_FOR_OPPONENT else SessionState.YOUR_TURN,
                 army = Army.BLACK,
                 board = boardWithMoves(moves),

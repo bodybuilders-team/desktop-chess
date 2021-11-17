@@ -1,6 +1,8 @@
 package domain.commands
 
-import Session
+import domain.IllegalMoveException
+import domain.Session
+import domain.SessionState
 import domain.Move
 import storage.GameState
 
@@ -20,9 +22,12 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
         require(chess.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
         requireNotNull(parameter) { "Missing move." }
 
-        val move = Move(parameter, chess.board!!)
-        val newBoard = chess.board.makeMove(parameter)
-        db.postMove(chess.name!!, move)
+        val move = Move(parameter, chess.board)
+        if(chess.board.getPiece(move.from)!!.army == chess.army.other())
+            throw IllegalMoveException(parameter, "You cannot move an opponent's piece.")
+                
+        val newBoard = chess.board.makeMove(move)
+        db.postMove(chess.name, move)
 
         return Result.success(
             chess.copy(

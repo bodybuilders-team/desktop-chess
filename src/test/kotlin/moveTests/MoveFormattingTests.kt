@@ -12,13 +12,8 @@ class MoveFormattingTests {
     }
 
     @Test
-    fun `Valid capture is correctly formatted`() {
+    fun `Valid capture symbol is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("Pe2xd3"))
-    }
-
-    @Test
-    fun `Valid promotion is correctly formatted`() {
-        assertTrue(Move.isCorrectlyFormatted("Pe7e8=Q"))
     }
 
     @Test
@@ -47,13 +42,18 @@ class MoveFormattingTests {
     }
 
     @Test
+    fun `Valid promotion symbol and piece is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("Pe7e8=Q"))
+    }
+    
+    @Test
     fun `Invalid promotion symbol is incorrectly formatted`() {
-        assertFalse(Move.isCorrectlyFormatted("Pe2e9+Q"))
+        assertFalse(Move.isCorrectlyFormatted("Pe7e8+Q"))
     }
 
     @Test
     fun `Invalid promotion piece is incorrectly formatted`() {
-        assertFalse(Move.isCorrectlyFormatted("Pe2e9=L"))
+        assertFalse(Move.isCorrectlyFormatted("Pe7e8=L"))
     }
 
     @Test
@@ -62,23 +62,33 @@ class MoveFormattingTests {
     }
 
     @Test
-    fun `Valid simple move (optional piece) is correctly formatted`() {
+    fun `Move with optional piece symbol is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("e2e4"))
     }
 
     @Test
-    fun `Valid simple move (optional fromCol) is correctly formatted`() {
+    fun `Move with optional fromCol is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("P2e4"))
     }
 
     @Test
-    fun `Valid simple move (optional fromRow) is correctly formatted`() {
+    fun `Move with optional fromRow is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("Pee4"))
     }
 
     @Test
     fun `Move with optional fromPos is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("Pe4"))
+    }
+
+    @Test
+    fun `Move with optional piece and optional fromCol is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("2e4"))
+    }
+
+    @Test
+    fun `Move with optional piece and optional fromRow is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("ee4"))
     }
 
     @Test

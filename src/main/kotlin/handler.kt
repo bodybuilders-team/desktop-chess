@@ -1,4 +1,5 @@
 import domain.commands.*
+import domain.Session
 import storage.GameState
 import ui.console.*
 

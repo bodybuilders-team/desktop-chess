@@ -1,6 +1,7 @@
 package domain.commands
 
-import Session
+import domain.Session
+import domain.SessionState
 import storage.GameState
 
 
@@ -13,9 +14,10 @@ import storage.GameState
 class RefreshCommand(private val db: GameState, private val chess: Session) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
+        require(chess.state != SessionState.YOUR_TURN) { "It's your turn: try play." }
         require(chess.state != SessionState.LOGGING) { "Can't refresh without a game: try open or join commands." }
 
-        val moves = db.getAllMoves(chess.name!!)
+        val moves = db.getAllMoves(chess.name)
 
         return Result.success(
             chess.copy(

@@ -1,6 +1,7 @@
 package domain.commands
 
-import Session
+import domain.Session
+import domain.SessionState
 import domain.pieces.Army
 import storage.GameState
 

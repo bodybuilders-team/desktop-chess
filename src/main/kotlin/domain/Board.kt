@@ -65,27 +65,36 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
 
 
     /**
-     * Move a piece in the board.
-     * @param moveInString piece move in string
-     * @return new board with piece moved
-     * @throws IllegalMoveException if there is no piece in the specified position or if the move is invalid
+     * Makes a move in the board.
+     * @param move move to make
+     * @return new board with the move made
      */
-    fun makeMove(moveInString: String): Board {
-        val move = Move(moveInString, this)
+    fun makeMove(move: Move): Board {
         val fromPos = move.from
         val toPos = move.to
-        val piece = getPiece(fromPos) ?: throw IllegalMoveException(moveInString, "No piece in the specified position.")
+        val piece = getPiece(fromPos)
 
         val newBoard = this.copy()
+        
         newBoard.removePiece(fromPos)
 
         newBoard.setPiece(
             toPos,
             if (move.promotion == null) piece
-            else doPromotion(piece, toPos, move.promotion, move.toString())
+            else doPromotion(piece!!, toPos, move.promotion, move.toString())
         )
 
         return newBoard
+    }
+
+
+    /**
+     * Makes a move in the board.
+     * @param moveInString move to make in string
+     * @return new board with the move made
+     */
+    fun makeMove(moveInString: String): Board {
+        return makeMove(Move(moveInString, this))
     }
 
 

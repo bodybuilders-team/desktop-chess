@@ -2,7 +2,7 @@ package ui.console
 
 import domain.BOARD_SIDE_LENGTH
 import domain.Board
-import Session
+import domain.Session
 
 
 /**
@@ -16,7 +16,7 @@ typealias View = (Session) -> Unit
  * @param game opened game
  */
 fun openView(game: Session) {
-    printBoard(game)
+    printBoard(game.board)
     println("Game ${game.name} opened. Play with white pieces.")
 }
 
@@ -26,7 +26,7 @@ fun openView(game: Session) {
  * @param game joined game
  */
 fun joinView(game: Session) {
-    printBoard(game)
+    printBoard(game.board)
     println("Join to game ${game.name}. Play with black pieces.")
 }
 
@@ -36,7 +36,7 @@ fun joinView(game: Session) {
  * @param game game where the play happens
  */
 fun playView(game: Session) {
-    printBoard(game)
+    printBoard(game.board)
 }
 
 
@@ -45,7 +45,7 @@ fun playView(game: Session) {
  * @param game current game
  */
 fun refreshView(game: Session) {
-    printBoard(game)
+    printBoard(game.board)
 }
 
 
@@ -87,13 +87,4 @@ fun printBoard(board: Board) {
         println("|")
     }
     println("    ----------------- ")
-}
-
-
-/**
- * Applies the printBoard function to the game session's board
- * @param game - game session containing the board that will be printed
- */
-fun printBoard(game:Session) {
-    game.board?.let { printBoard(it) }
 }
