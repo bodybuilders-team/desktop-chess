@@ -63,7 +63,7 @@ data class Move(
              * @param col col to search
              * @return the valid move or null if it wasn't found
              */
-            fun searchMove(pieceSymbol: Char, row: Int?, col: Char?): Move? {
+            fun searchMove(pieceSymbol: Char,col: Char?, row: Int?): Move? {
                 for (pairPiecePosition in board) {
                     val (piece, pos) = pairPiecePosition
                     piece ?: continue
@@ -112,7 +112,7 @@ data class Move(
                 }
             }
 
-            return searchMove(pieceSymbol, fromRow, fromCol) ?: throw IllegalMoveException(string, "")
+            return searchMove(pieceSymbol,fromCol, fromRow) ?: throw IllegalMoveException(string, "")
         }
 
 

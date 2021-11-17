@@ -4,7 +4,7 @@ import Session
 
 
 /**
- * Returns the prompt
+ * Returns the prompt indicating the game´s turn to the user
  * @param chess current session
  * @return prompt
  */
