@@ -7,7 +7,6 @@ import ui.console.getPrompt
 import kotlin.test.*
 
 
-// TODO("Ask: It's possible to simulate inputs for testability?")
 class UserInputTests {
     @Test
     fun `getPrompt with null session name returns empty string`() {

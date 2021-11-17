@@ -3,34 +3,6 @@ package domain
 import domain.pieces.*
 
 
-// Board properties constants
-const val BOARD_SIDE_LENGTH = 8
-const val BOARD_SIZE = 64
-const val FIRST_COL = 'a'
-const val BLACK_FIRST_ROW = 8
-const val WHITE_FIRST_ROW = 1
-val COLS_RANGE = 'a'..'h'
-val ROWS_RANGE = 1..8
-
-
-// Initial board in String format
-const val STRING_BOARD =
-    "rnbqkbnr" +
-    "pppppppp" +
-    "        " +
-    "        " +
-    "        " +
-    "        " +
-    "PPPPPPPP" +
-    "RNBQKBNR"
-
-
-/**
- * 2D Matrix made with an array of arrays.
- */
-typealias Matrix2D<T> = Array<Array<T>>
-
-
 /**
  * Represents the game board with the pieces.
  * @property matrix 2DMatrix with the pieces
@@ -50,7 +22,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * @param pos position to set
      * @param piece piece to put in [pos]
      */
-    private fun setPiece(pos: Position, piece: Piece?) {
+    fun setPiece(pos: Position, piece: Piece?) {
         matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = piece
     }
 
@@ -59,7 +31,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * Removes piece from [pos]
      * @param pos position to remove the piece
      */
-    private fun removePiece(pos: Position) {
+    fun removePiece(pos: Position) {
         setPiece(pos, null)
     }
 
@@ -70,8 +42,12 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * @property row int in range [1..8]
      */
     data class Position(val col: Char, val row: Int) {
+        private val COLS_RANGE = 'a'..'h'
+        private val ROWS_RANGE = 1..8
+
         init {
-            require(col in COLS_RANGE && row in ROWS_RANGE) { "Invalid Position." }
+            require(col in COLS_RANGE) { "Invalid Position: Column $col out of range ('a' .. 'h')." }
+            require(row in ROWS_RANGE) { "Invalid Position: Row $row out of range (1 .. 8)." }
         }
 
         override fun toString(): String {
@@ -98,12 +74,12 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
         val move = Move(moveInString, this)
         val fromPos = move.from
         val toPos = move.to
-        val piece = getPiece(fromPos)?: throw IllegalMoveException(moveInString, "No piece in the specified position.")
+        val piece = getPiece(fromPos) ?: throw IllegalMoveException(moveInString, "No piece in the specified position.")
 
         val newBoard = this.copy()
         newBoard.removePiece(fromPos)
 
-        newBoard.setPiece (
+        newBoard.setPiece(
             toPos,
             if (move.promotion == null) piece
             else doPromotion(piece, toPos, move.promotion, move.toString())
@@ -126,6 +102,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
     }
 
 
+    //TODO(Test!)
     /**
      * Returns a copy board, using the array function copyOf() for each array in the matrix.
      * @return copied board
@@ -141,11 +118,17 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
 
 
     /**
+     * Represents a pair between a piece and a position in the board.
+     */
+    data class Slot(val piece: Piece?, val position: Position)
+
+    //TODO(Test!)
+    /**
      * Iterator of all pieces and respective positions.
      * @return an iterator of a piece-position pair.
      */
-    operator fun iterator(): Iterator<Pair<Piece?, Position>> {
-        return object : Iterator<Pair<Piece?, Position>> {
+    operator fun iterator(): Iterator<Slot> {
+        return object : Iterator<Slot> {
             var rowIdx = 0
             var colIdx = 0
 
@@ -153,8 +136,8 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
                 return rowIdx != BOARD_SIDE_LENGTH - 1 || colIdx != BOARD_SIDE_LENGTH - 1
             }
 
-            override fun next(): Pair<Piece?, Position> {
-                val value = Pair(matrix[rowIdx][colIdx], Position(FIRST_COL + colIdx, BOARD_SIDE_LENGTH - rowIdx))
+            override fun next(): Slot {
+                val value = Slot(matrix[rowIdx][colIdx], Position(FIRST_COL + colIdx, BOARD_SIDE_LENGTH - rowIdx))
                 if (++colIdx == BOARD_SIDE_LENGTH) {
                     rowIdx++
                     colIdx = 0
@@ -162,27 +145,6 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
 
                 return value
             }
-
         }
     }
-}
-
-
-/**
- * Returns initial chess board.
- * @return initial chess board
- */
-fun getMatrix2DFromString(stringBoard: String): Matrix2D<Piece?> {
-    require(stringBoard.length == BOARD_SIZE) { "Board doesn't have the correct size (BOARD_SIZE = $BOARD_SIZE)" }
-
-    val chessBoard = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) { Array(BOARD_SIDE_LENGTH) { null } }
-
-    stringBoard.forEachIndexed { idx, char ->
-        val row = idx / BOARD_SIDE_LENGTH
-        val col = idx % BOARD_SIDE_LENGTH
-        chessBoard[row][col] =
-            if (char == ' ') null
-            else getPieceFromSymbol(char.uppercaseChar(), if (char.isUpperCase()) Army.WHITE else Army.BLACK)
-    }
-    return chessBoard
 }

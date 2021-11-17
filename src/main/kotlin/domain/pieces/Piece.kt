@@ -13,6 +13,7 @@ const val ONE_MOVE = 1
 const val NO_MOVE = 0
 
 
+//TODO(Test!)
 /**
  * Piece army.
  */
@@ -126,7 +127,7 @@ fun isStraightPathOccupied(board: Board, move: Move): Boolean {
  * @param distance distance to increment/decrement
  * @return new distance incremented/decremented
  */
-fun updatedDistance(distance: Int): Int = if (distance > 0) distance - ONE_MOVE else distance + ONE_MOVE
+private fun updatedDistance(distance: Int): Int = if (distance > 0) distance - ONE_MOVE else distance + ONE_MOVE
 
 
 /**

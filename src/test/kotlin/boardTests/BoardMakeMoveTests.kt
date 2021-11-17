@@ -1,50 +1,19 @@
-import domain.*
-import domain.pieces.*
+package boardTests
+
+import domain.Board
+import domain.IllegalMoveException
 import kotlin.test.*
 
 
-class BoardTests {
-    private val sut = Board()
-
-    @Test
-    fun `Position with collum outside bounds throws`() {
-        assertFailsWith<IllegalArgumentException> {
-            Board.Position(col = 'x', row = 2)
-        }
-    }
-
-    @Test
-    fun `Position with row outside bounds throws`() {
-        assertFailsWith<IllegalArgumentException> {
-            Board.Position(col = 'a', row = 9)
-        }
-    }
-
-    @Test
-    fun `Initial position Board`() {
-        assertEquals(
-            "rnbqkbnr" +
-            "pppppppp" +
-            "        ".repeat(4) +
-            "PPPPPPPP" +
-            "RNBQKBNR", sut.toString()
-        )
-    }
-
-    @Test
-    fun `Move with wrong pieceSymbol is invalid`() {
-        assertFalse(sut.isValidMove("Ke2e3"))
-    }
+class BoardMakeMoveTests {
 
     @Test
     fun `Illegal move if destination is a piece of same army`() {
         assertFailsWith<IllegalMoveException> { Board().makeMove("Ra1a2")}
     }
 
-    
-    /*
-      ------------------------------Pawn tests------------------------------
-     */
+
+    // ------------------------------Pawn tests------------------------------
 
     @Test
     fun `Move pawn (pawn's first move, can walk 1 square)`() {
@@ -92,9 +61,8 @@ class BoardTests {
         )
     }
 
-    /*
-      ------------------------------Rook tests------------------------------
-     */
+
+    // ------------------------------Rook tests------------------------------
 
     @Test
     fun `Move Rook - stays in place if same color piece is in its path`() {
@@ -136,10 +104,9 @@ class BoardTests {
         )
     }
 
-    /*
-      ------------------------------King tests------------------------------
-     */
-    
+
+    // ------------------------------King tests------------------------------
+
     @Test
     fun `Move King goes as expected`() {
         val sut = Board().makeMove("Pe2e4").makeMove("Ke1e2")
@@ -171,9 +138,7 @@ class BoardTests {
     }
 
 
-    /*
-      ------------------------------Bishop tests------------------------------
-     */
+    // ------------------------------Bishop tests------------------------------
 
     @Test
     fun `Move Bishop goes as expected`() {
@@ -196,9 +161,7 @@ class BoardTests {
     }
 
 
-    /*
-      ------------------------------Queen tests------------------------------
-     */
+    // ------------------------------Queen tests------------------------------
 
     @Test
     fun `Move Queen - can't go through ally pieces 1 `() {
@@ -223,47 +186,5 @@ class BoardTests {
             "PPPP PPP" +
             "RNB KBNR", sut.toString()
         )
-    }
-
-
-    /*
-    @Test
-    fun `King in Check`() {
-        val testBoardInString =
-            "rn qkbnr" +
-            "ppp pppp" +
-            "        " +
-            "   p    " +
-            "    P b " +
-            "        " +
-            "PPPPKPPP" +
-            "RNBQ BNR"
-        
-        val sut = Board(getMatrix2DFromString(testBoardInString))
-
-        assertEquals(CHECK_BY_ONE, sut.isKingInCheck(Color.WHITE))
-    }
-    */
-
-    @Test
-    fun `getMatrix2DFromString returns a Matrix containing the respective pieces`() {
-        val sut =   "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp"
-
-        val expected = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) {
-            Array(BOARD_SIDE_LENGTH) { Pawn(Army.BLACK) }
-        }
-        
-        val matrix = getMatrix2DFromString(sut)
-        
-        expected.forEachIndexed { rowIdx, arrayOfPieces ->
-            assertEquals(arrayOfPieces.map { it?.toChar() }, matrix[rowIdx].map { it?.toChar() })
-        }
     }
 }

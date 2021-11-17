@@ -5,7 +5,6 @@ import kotlin.test.*
 
 
 class MoveMethodsTests {
-    private val sut = Board()
     
     private fun getMove(string: String) : Move{
         return Move('P', Board.Position(string[0], string[1].digitToInt()), false,
@@ -81,5 +80,11 @@ class MoveMethodsTests {
     @Test
     fun `colsAbsoluteDistance with no distance works`() {
         assertEquals(0 , getMove("h2h7").colsAbsoluteDistance())
+    }
+
+    @Test
+    fun `Move toString works`() {
+        val moveInString = "Pe2e4"
+        assertEquals(moveInString , Move(moveInString, Board()).toString())
     }
 }
