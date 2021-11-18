@@ -46,6 +46,21 @@ class BoardMakeMoveTests {
     }
 
     @Test
+    fun `Move black pawn (pawn's first move, can walk 2 squares)`() {
+        val sut = Board().makeMove("Pe7e5")
+        assertEquals(
+            "rnbqkbnr" +
+            "pppp ppp" +
+            "        " +
+            "    p   " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR", sut.toString()
+        )
+    }
+
+    @Test
     fun `Move pawn to promotion`() {
         val sut = Board().makeMove("Pf2f4").makeMove("Pg7g5").makeMove("Pf4xg5").makeMove("Pg5g6").makeMove("Pg6g7")
             .makeMove("Ng8f6").makeMove("Pg7g8=Q")

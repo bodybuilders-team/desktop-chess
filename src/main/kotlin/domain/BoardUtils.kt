@@ -8,8 +8,12 @@ import domain.pieces.*
 const val BOARD_SIDE_LENGTH = 8
 const val BOARD_SIZE = 64
 const val FIRST_COL = 'a'
+const val FIRST_ROW = 1
 const val BLACK_FIRST_ROW = 8
 const val WHITE_FIRST_ROW = 1
+
+val COLS_RANGE = 'a'..'h'
+val ROWS_RANGE = 1..8
 
 // Initial board in String format
 const val STRING_BOARD =

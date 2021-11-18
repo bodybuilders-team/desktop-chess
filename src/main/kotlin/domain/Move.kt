@@ -58,19 +58,19 @@ data class Move(
         private fun searchMove(move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, board: Board): Move? {
             var foundMove: Move? = null
 
-            val colSearchRange =
-                if (optionalFromCol) FIRST_COL until FIRST_COL + BOARD_SIDE_LENGTH else move.from.col..move.from.col
-            val rowSearchRange = if (optionalFromRow) 0 until BOARD_SIDE_LENGTH else move.from.row..move.from.row
+            val colSearchRange = if (optionalFromCol) COLS_RANGE else move.from.col..move.from.col
+            val rowSearchRange = if (optionalFromRow) ROWS_RANGE else move.from.row..move.from.row
 
             for (row in rowSearchRange) {
                 for (col in colSearchRange) {
                     val pos = Position(col, row)
-                    val piece = board.getPiece(pos)!!
+                    val piece = board.getPiece(pos) ?: continue
 
-                    if(piece.symbol != move.symbol) continue
+                    if (piece.symbol != move.symbol) continue
 
                     val newMove = move.copy(from = pos)
-                    if (pos != newMove.to && piece.isValidMove(board, newMove) && board.isValidCapture(piece, newMove)) {
+                    if (pos != newMove.to && piece.isValidMove(board, newMove) && board.isValidCapture(piece, newMove))
+                    {
                         if (foundMove != null) return null
                         foundMove = newMove.copy(capture = board.isPositionOccupied(newMove.to))
                     }

@@ -9,18 +9,21 @@ class GameStateStub : GameState {
     private val moves: MutableMap<String, MutableList<Move>> = mutableMapOf()
 
     override fun getLastMove(game: String): Move {
-        require(moves[game] != null)
-        return moves[game]!!.last()
+        val moves = moves[game]
+        requireNotNull(moves)
+        return moves.last()
     }
 
     override fun getAllMoves(game: String): List<Move> {
-        require(moves[game] != null)
-        return moves[game]!!
+        val moves = moves[game]
+        requireNotNull(moves)
+        return moves
     }
 
     override fun postMove(game: String, move: Move): Boolean {
-        require(moves[game] != null)
-        moves[game]!!.add(move)
+        val moves = moves[game]
+        requireNotNull(moves)
+        moves.add(move)
 
         return true
     }

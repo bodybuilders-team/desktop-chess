@@ -15,9 +15,6 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * @property row int in range [1..8]
      */
     data class Position(val col: Char, val row: Int) {
-        private val COLS_RANGE = 'a'..'h'
-        private val ROWS_RANGE = 1..8
-
         init {
             require(col in COLS_RANGE) { "Invalid Position: Column $col out of range ('a' .. 'h')." }
             require(row in ROWS_RANGE) { "Invalid Position: Row $row out of range (1 .. 8)." }
@@ -73,6 +70,8 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
         val fromPos = move.from
         val toPos = move.to
         val piece = getPiece(fromPos)
+        
+        requireNotNull(piece) { "Move.invoke() is not throwing IllegalMoveException in case of invalid from position." }
 
         val newBoard = this.copy()
         
@@ -81,7 +80,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
         newBoard.setPiece(
             toPos,
             if (move.promotion == null) piece
-            else doPromotion(piece!!, toPos, move.promotion, move.toString())
+            else doPromotion(piece, toPos, move.promotion, move.toString())
         )
 
         return newBoard
