@@ -10,6 +10,26 @@ import domain.pieces.*
 class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOARD)) {
 
     /**
+     * Position of each board tile
+     * @property col char in range ['a', 'h']
+     * @property row int in range [1..8]
+     */
+    data class Position(val col: Char, val row: Int) {
+        private val COLS_RANGE = 'a'..'h'
+        private val ROWS_RANGE = 1..8
+
+        init {
+            require(col in COLS_RANGE) { "Invalid Position: Column $col out of range ('a' .. 'h')." }
+            require(row in ROWS_RANGE) { "Invalid Position: Row $row out of range (1 .. 8)." }
+        }
+
+        override fun toString(): String {
+            return "$col$row"
+        }
+    }
+
+
+    /**
      * Returns the piece in [pos]
      * @param pos position to get piece
      * @return piece in [pos]
@@ -33,26 +53,6 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      */
     fun removePiece(pos: Position) {
         setPiece(pos, null)
-    }
-
-
-    /**
-     * Position of each board tile
-     * @property col char in range ['a', 'h']
-     * @property row int in range [1..8]
-     */
-    data class Position(val col: Char, val row: Int) {
-        private val COLS_RANGE = 'a'..'h'
-        private val ROWS_RANGE = 1..8
-
-        init {
-            require(col in COLS_RANGE) { "Invalid Position: Column $col out of range ('a' .. 'h')." }
-            require(row in ROWS_RANGE) { "Invalid Position: Row $row out of range (1 .. 8)." }
-        }
-
-        override fun toString(): String {
-            return "$col$row"
-        }
     }
 
 
@@ -122,36 +122,5 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
         }
 
         return newBoard
-    }
-
-
-    /**
-     * Represents a pair between a piece and a position in the board.
-     */
-    data class Slot(val piece: Piece?, val position: Position)
-
-    /**
-     * Iterator of all pieces and respective positions.
-     * @return an iterator of a piece-position pair.
-     */
-    operator fun iterator(): Iterator<Slot> {
-        return object : Iterator<Slot> {
-            var rowIdx = 0
-            var colIdx = 0
-
-            override fun hasNext(): Boolean {
-                return rowIdx != BOARD_SIDE_LENGTH - 1 || colIdx != BOARD_SIDE_LENGTH - 1
-            }
-
-            override fun next(): Slot {
-                val value = Slot(matrix[rowIdx][colIdx], Position(FIRST_COL + colIdx, BOARD_SIDE_LENGTH - rowIdx))
-                if (++colIdx == BOARD_SIDE_LENGTH) {
-                    rowIdx++
-                    colIdx = 0
-                }
-
-                return value
-            }
-        }
     }
 }

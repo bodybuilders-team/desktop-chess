@@ -116,36 +116,4 @@ class BoardMethodsTests {
 
         assertEquals(stringBoard, stringCopy)
     }
-
-    @Test
-    fun `Board iterator hasNext returns true on a empty Board`() {
-
-        val sut =   "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        "
-
-        val board = Board(getMatrix2DFromString(sut))
-        assertEquals(board.iterator().hasNext(), true)
-    }
-
-    @Test
-    fun `Board iterator next works as expected`() {
-
-        val sut =   "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        "
-
-        val board = Board(getMatrix2DFromString(sut))
-        assertEquals(board.iterator().next(), Board.Slot(null, Board.Position('a', 8)))
-    }
 }

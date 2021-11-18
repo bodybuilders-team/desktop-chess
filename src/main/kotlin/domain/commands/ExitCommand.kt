@@ -4,7 +4,7 @@ import domain.Session
 
 
 /**
- * Terminates the application by saving the actual state of the game
+ * Terminates the application
  */
 class ExitCommand : Command {
 
