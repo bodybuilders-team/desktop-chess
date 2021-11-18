@@ -1,7 +1,6 @@
 package ui.console
 
-import domain.Session
-import domain.SessionState
+import domain.*
 
 
 /**
@@ -9,8 +8,8 @@ import domain.SessionState
  * @param chess current session
  * @return prompt
  */
-fun getPrompt(chess: Session) : String{
-    if(chess.name.isEmpty()) return ""
+fun getPrompt(chess: Session): String {
+    if (chess.name.isEmpty()) return ""
     val turn = (if (chess.state == SessionState.WAITING_FOR_OPPONENT) chess.army.other() else chess.army).toString()
     return "${chess.name}:${turn.first() + turn.substring(1).lowercase()}"
 }

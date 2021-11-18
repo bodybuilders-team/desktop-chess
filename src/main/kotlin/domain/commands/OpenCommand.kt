@@ -1,13 +1,12 @@
 package domain.commands
 
-import domain.Session
-import domain.SessionState
+import domain.*
 import domain.pieces.Army
 import storage.GameState
 
 
 /**
- * Opens a game with the name or creates a new game if it doesn't exist
+ * Opens a game with the received name or creates a new game if it doesn't exist
  * @param db database where the moves are stored
  * @throws IllegalArgumentException if game name not specified
  */
@@ -17,7 +16,7 @@ class OpenCommand(private val db: GameState) : Command {
         requireNotNull(parameter) { "Missing game name." }
 
         val moves =
-            if (db.getGame(parameter) != null) db.getAllMoves(parameter)
+            if (db.gameExists(parameter)) db.getAllMoves(parameter)
             else {
                 db.createGame(parameter)
                 emptyList()

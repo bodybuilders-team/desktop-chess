@@ -2,9 +2,7 @@ package storage
 
 import domain.Move
 import com.mongodb.client.MongoDatabase
-import storage.mongodb.createDocument
-import storage.mongodb.getAll
-import storage.mongodb.getCollectionWithId
+import storage.mongodb.*
 
 
 /**
@@ -12,10 +10,6 @@ import storage.mongodb.getCollectionWithId
  * @property db Mongo database
  */
 class MongoDBGameState(private val db: MongoDatabase) : GameState {
-
-    override fun getLastMove(game: String): Move {
-        return getAllMoves(game).last()
-    }
 
     override fun getAllMoves(game: String): List<Move> {
         return db.getCollectionWithId<Move>(game).getAll().toList()
@@ -25,12 +19,12 @@ class MongoDBGameState(private val db: MongoDatabase) : GameState {
         return db.createDocument(game, move)
     }
 
-    override fun createGame(game: String): Boolean {
+    override fun createGame(game: String) {
+        require(!gameExists(game))
         db.createCollection(game)
-        return true
     }
 
-    override fun getGame(game: String): String? {
-        return if (game !in db.listCollectionNames()) null else game
+    override fun gameExists(game: String): Boolean {
+        return game in db.getRootCollectionsIds()
     }
 }

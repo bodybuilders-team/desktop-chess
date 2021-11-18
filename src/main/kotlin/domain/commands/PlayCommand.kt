@@ -1,9 +1,6 @@
 package domain.commands
 
-import domain.IllegalMoveException
-import domain.Session
-import domain.SessionState
-import domain.Move
+import domain.*
 import storage.GameState
 
 
@@ -18,15 +15,15 @@ import storage.GameState
 class PlayCommand(private val db: GameState, private val chess: Session) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
-        require(chess.state != SessionState.LOGGING) { "Can't play without a game: try open or join commands." }
+        require(!chess.isLogging()) { "Can't play without a game: try open or join commands." }
         require(chess.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
         requireNotNull(parameter) { "Missing move." }
 
         val move = Move(parameter, chess.board)
+
         val piece = chess.board.getPiece(move.from)
-        
         requireNotNull(piece) { "Move.invoke() is not throwing IllegalMoveException in case of invalid from position." }
-        
+
         if (piece.army == chess.army.other())
             throw IllegalMoveException(parameter, "You cannot move an opponent's piece.")
 

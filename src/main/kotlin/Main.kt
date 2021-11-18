@@ -24,9 +24,7 @@ import ui.console.*
  */
 fun main() {
     val dbInfo = getDBConnectionInfo()
-    val driver =
-        if (dbInfo.mode == DbMode.REMOTE) createMongoClient(dbInfo.connectionString)
-        else createMongoClient()
+    val driver = createMongoClient(if (dbInfo.mode == DbMode.REMOTE) dbInfo.connectionString else null)
 
     try {
         var chess = Session(
@@ -56,15 +54,23 @@ fun main() {
                 } else break
 
             } catch (err: Exception) {
-                if (err is IllegalMoveException)
-                    println("Illegal move \"${err.move}\". ${err.message}")
-                else
-                    println("ERROR: ${err.message}")
+                println(
+                    when (err) {
+                        is IllegalMoveException -> "Illegal move \"${err.move}\". ${err.message}"
+                        else -> "ERROR: ${err.message}"
+                    }
+                )
             }
         }
 
+    } catch (err: GameStateAccessException) {
+        println(
+            "An unknown error occurred while trying to reach the database. " +
+            if (dbInfo.mode == DbMode.REMOTE) "Check your network connection."
+            else "Is your local database started?"
+        )
     } finally {
-        println("BYE. \n")
+        println("BYE.\n")
         driver.close()
     }
 }

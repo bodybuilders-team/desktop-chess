@@ -35,8 +35,8 @@ data class Move(
          * Move properties are extracted from the [string], and searching the [board], it's verified if the move is possible.
          * @param string move in string format
          * @param board board where the move will happen
-         * @return the move
-         * @throws IllegalMoveException if move string is not well formatted or if the move is not possible in [board]
+         * @return the validated move
+         * @throws IllegalMoveException if move is not possible in [board]
          */
         operator fun invoke(string: String, board: Board): Move {
             val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(string)
@@ -66,7 +66,7 @@ data class Move(
                     val pos = Position(col, row)
                     val piece = board.getPiece(pos) ?: continue
 
-                    if (piece.symbol != move.symbol) continue
+                    if (piece.type.symbol != move.symbol) continue
 
                     val newMove = move.copy(from = pos)
                     if (pos != newMove.to && piece.isValidMove(board, newMove) && board.isValidCapture(piece, newMove))
@@ -84,8 +84,8 @@ data class Move(
         /**
          * Move extraction
          * @param move extracted move
-         * @param optionalFromCol if the from column is optional
-         * @param optionalFromRow if the from row is optional
+         * @param optionalFromCol if from column is optional
+         * @param optionalFromRow if from row is optional
          */
         data class MoveExtraction(val move: Move, val optionalFromCol: Boolean, val optionalFromRow: Boolean)
 
@@ -122,7 +122,7 @@ data class Move(
                 MIN_STRING_LEN ->
                     when {
                         str.first().isUpperCase() -> pieceSymbol = str.first()
-                        str.first().isDigit() -> fromRow = str.first().digitToInt()
+                        str.first().isDigit()     -> fromRow = str.first().digitToInt()
                         str.first().isLowerCase() -> fromCol = str.first()
                     }
 
@@ -148,8 +148,9 @@ data class Move(
             }
 
             return MoveExtraction(
-                Move(pieceSymbol, Position(fromCol ?: 'a', fromRow ?: 1), capture, toPos, promotion),
-                fromCol == null, fromRow == null
+                Move(pieceSymbol, Position(fromCol ?: FIRST_COL, fromRow ?: FIRST_ROW), capture, toPos, promotion),
+                optionalFromCol = fromCol == null,
+                optionalFromRow = fromRow == null
             )
         }
 
@@ -210,6 +211,6 @@ data class Move(
 
 
     override fun toString(): String {
-        return "$symbol$from${if (capture) "x" else ""}$to${promotion ?: ""}"
+        return "$symbol$from${if (capture) "x" else ""}$to${promotion ?: ""}" // ( ͡° ͜ʖ ͡°)
     }
 }

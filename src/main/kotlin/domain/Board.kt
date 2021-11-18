@@ -7,10 +7,10 @@ import domain.pieces.*
  * Represents the game board with the pieces.
  * @property matrix 2DMatrix with the pieces
  */
-class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_BOARD)) {
+class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_DEFAULT_BOARD)) {
 
     /**
-     * Position of each board tile
+     * Position of each board slot
      * @property col char in range ['a', 'h']
      * @property row int in range [1..8]
      */
@@ -70,17 +70,17 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
         val fromPos = move.from
         val toPos = move.to
         val piece = getPiece(fromPos)
-        
+
         requireNotNull(piece) { "Move.invoke() is not throwing IllegalMoveException in case of invalid from position." }
 
         val newBoard = this.copy()
-        
+
         newBoard.removePiece(fromPos)
 
         newBoard.setPiece(
             toPos,
             if (move.promotion == null) piece
-            else doPromotion(piece, toPos, move.promotion, move.toString())
+            else getPromotedPiece(piece, toPos, move.promotion, move.toString())
         )
 
         return newBoard

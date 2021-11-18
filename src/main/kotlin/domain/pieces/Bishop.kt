@@ -1,15 +1,19 @@
 package domain.pieces
 
-import domain.Board
-import domain.Move
+import domain.*
 
 
+/**
+ * Bishop piece with [type] 'B'.
+ *
+ * Moves diagonally.
+ * @param army piece army
+ */
 class Bishop(override val army: Army) : Piece {
 
-    override val symbol = 'B'
+    override val type = PieceType.BISHOP
 
     override fun isValidMove(board: Board, move: Move): Boolean {
-        // Bishop moves diagonally
-        return move.isDiagonal() && !isDiagonalPathOccupied(board, move)
+        return isValidDiagonalMove(board, move)
     }
 }

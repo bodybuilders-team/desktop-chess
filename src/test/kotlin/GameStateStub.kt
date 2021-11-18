@@ -6,34 +6,28 @@ import storage.GameState
  * [GameState] implementation for testing.
  */
 class GameStateStub : GameState {
-    private val moves: MutableMap<String, MutableList<Move>> = mutableMapOf()
-
-    override fun getLastMove(game: String): Move {
-        val moves = moves[game]
-        requireNotNull(moves)
-        return moves.last()
-    }
+    private val database: MutableMap<String, MutableList<Move>> = mutableMapOf()
 
     override fun getAllMoves(game: String): List<Move> {
-        val moves = moves[game]
+        val moves = database[game]
         requireNotNull(moves)
         return moves
     }
 
     override fun postMove(game: String, move: Move): Boolean {
-        val moves = moves[game]
+        val moves = database[game]
         requireNotNull(moves)
         moves.add(move)
 
         return true
     }
 
-    override fun createGame(game: String): Boolean {
-        moves[game] = mutableListOf()
-        return true
+    override fun createGame(game: String) {
+        require(!gameExists(game))
+        database[game] = mutableListOf()
     }
 
-    override fun getGame(game: String): String? {
-        return if (game !in moves) null else game
+    override fun gameExists(game: String): Boolean {
+        return game in database
     }
 }

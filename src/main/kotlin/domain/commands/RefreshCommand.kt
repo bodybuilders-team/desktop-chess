@@ -1,12 +1,11 @@
 package domain.commands
 
-import domain.Session
-import domain.SessionState
+import domain.*
 import storage.GameState
 
 
 /**
- * Updates the state of the game in MongoDB
+ * Updates the state of the game.
  * @param chess current chess game
  * @param db database where the moves are stored
  * @throws IllegalArgumentException if game has not been opened yet
@@ -15,7 +14,7 @@ class RefreshCommand(private val db: GameState, private val chess: Session) : Co
 
     override fun execute(parameter: String?): Result<Session> {
         require(chess.state != SessionState.YOUR_TURN) { "It's your turn: try play." }
-        require(chess.state != SessionState.LOGGING) { "Can't refresh without a game: try open or join commands." }
+        require(!chess.isLogging()) { "Can't refresh without a game: try open or join commands." }
 
         val moves = db.getAllMoves(chess.name)
 

@@ -1,8 +1,6 @@
 package ui.console
 
-import domain.BOARD_SIDE_LENGTH
-import domain.Board
-import domain.Session
+import domain.*
 
 
 /**

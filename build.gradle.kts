@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.litote.kmongo:kmongo:4.3.0") // tu és mongo sem db
+    implementation("org.litote.kmongo:kmongo:4.3.0") // tu és mongo sem db ( ͡° ͜ʖ ͡°)
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
 }
 

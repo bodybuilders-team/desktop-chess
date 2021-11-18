@@ -1,15 +1,19 @@
 package domain.pieces
 
-import domain.Board
-import domain.Move
+import domain.*
 
 
+/**
+ * Rook piece with [type] 'R'.
+ *
+ * Moves horizontally or vertically
+ * @param army piece army
+ */
 class Rook(override val army: Army) : Piece {
 
-    override val symbol = 'R'
+    override val type = PieceType.ROOK
 
     override fun isValidMove(board: Board, move: Move): Boolean {
-        // Rook moves horizontally or vertically
-        return (move.isHorizontal() || move.isVertical()) && !isStraightPathOccupied(board, move)
+        return isValidStraightMove(board, move)
     }
 }

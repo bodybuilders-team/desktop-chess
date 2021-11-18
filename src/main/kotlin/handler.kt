@@ -5,7 +5,7 @@ import ui.console.*
 
 
 /**
- * Associations between command and corresponding display.
+ * Association between command and corresponding display.
  * @property action command
  * @property display view of the command
  */

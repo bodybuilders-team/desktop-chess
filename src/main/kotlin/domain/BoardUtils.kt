@@ -15,8 +15,7 @@ const val WHITE_FIRST_ROW = 1
 val COLS_RANGE = 'a'..'h'
 val ROWS_RANGE = 1..8
 
-// Initial board in String format
-const val STRING_BOARD =
+const val STRING_DEFAULT_BOARD =
             "rnbqkbnr" +
             "pppppppp" +
             "        " +
@@ -43,7 +42,7 @@ fun Board.isValidMove(moveInString: String): Boolean {
     try {
         Move(moveInString, this)
     }
-    catch (err: IllegalMoveException){
+    catch (err: IllegalMoveException) {
         return false
     }
     return true
@@ -56,9 +55,8 @@ fun Board.isValidMove(moveInString: String): Boolean {
  * @return true if the capture is valid
  */
 fun Board.isValidCapture(piece: Piece, move: Move): Boolean {
-    if (move.capture || isPositionOccupied(move.to)) {
+    if (isPositionOccupied(move.to)) {
         val captured = getPiece(move.to) ?: return false
-
         return captured.army != piece.army
     }
     return true
@@ -67,30 +65,31 @@ fun Board.isValidCapture(piece: Piece, move: Move): Boolean {
 
 /**
  * Checks if the promotion is valid and, if it is returns the new promoted piece.
- * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.
  *
- * If no promote piece is specified, promote to queen by default.
+ * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.
  * @param piece piece to promote
  * @param toPos new piece position
  * @param promotion new piece type to promote
  * @param move Move String representation
  * @return promoted piece
- * @throws Throwable if the promotion is invalid
+ * @throws IllegalMoveException if the promotion is invalid
  */
-fun doPromotion(piece: Piece, toPos: Position, promotion: Char?, move: String): Piece {
-    if (piece is Pawn &&
-        (piece.army == Army.WHITE && toPos.row == BLACK_FIRST_ROW ||
-                piece.army == Army.BLACK && toPos.row == WHITE_FIRST_ROW)
+fun getPromotedPiece(piece: Piece, toPos: Position, promotion: Char?, move: String): Piece {
+    requireNotNull(promotion) { "Invalid promotion." }
+
+    return if (piece is Pawn &&
+        (piece.isWhite() && toPos.row == BLACK_FIRST_ROW || !piece.isWhite() && toPos.row == WHITE_FIRST_ROW)
     )
-        return getPieceFromSymbol(promotion ?: 'Q', piece.army)
+        getPieceFromSymbol(promotion, piece.army)
     else
         throw IllegalMoveException(move, "You cannot get promoted.")
 }
 
 
 /**
- * Returns initial chess board.
- * @return initial chess board
+ * Returns matrix from received string board.
+ * @param stringBoard board in string
+ * @return matrix from received string board.
  */
 fun getMatrix2DFromString(stringBoard: String): Matrix2D<Piece?> {
     require(stringBoard.length == BOARD_SIZE) { "Board doesn't have the correct size (BOARD_SIZE = $BOARD_SIZE)" }

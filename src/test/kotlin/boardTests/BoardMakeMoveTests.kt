@@ -1,7 +1,6 @@
 package boardTests
 
-import domain.Board
-import domain.IllegalMoveException
+import domain.*
 import kotlin.test.*
 
 
@@ -10,6 +9,11 @@ class BoardMakeMoveTests {
     @Test
     fun `Illegal move if destination is a piece of same army`() {
         assertFailsWith<IllegalMoveException> { Board().makeMove("Ra1a2")}
+    }
+
+    @Test
+    fun `Illegal move if from position is not occupied`() {
+        assertFailsWith<IllegalMoveException> { Board().makeMove("Pe2e3").makeMove("Pe2e3")}
     }
 
 

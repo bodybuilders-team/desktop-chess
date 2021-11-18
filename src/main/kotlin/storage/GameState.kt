@@ -2,16 +2,11 @@ package storage
 
 import domain.Move
 
+
 /**
  * The GameState contract
  */
 interface GameState {
-    /**
-     * Returns the last move from game [game]
-     * @param game game name
-     * @return the last move in string
-     */
-    fun getLastMove(game: String): Move
 
     /**
      * Returns all the moves from game [game]
@@ -31,14 +26,13 @@ interface GameState {
     /**
      * Creates a game
      * @param game game name
-     * @return true if the operation was successful
      */
-    fun createGame(game: String): Boolean
+    fun createGame(game: String)
 
     /**
-     * Returns the game name specified or null if it doesn't exist
+     * Checks if the game with the specified name exists
      * @param game game name
-     * @return game name
+     * @return true if the game exists
      */
-    fun getGame(game: String): String?
+    fun gameExists(game: String): Boolean
 }

@@ -7,6 +7,7 @@ import domain.pieces.Army
 import java.lang.IllegalArgumentException
 import kotlin.test.*
 
+
 class CommandTests {
 
     @Test
@@ -63,13 +64,13 @@ class CommandTests {
 
     @Test
     fun `Exit command returns failure`() {
-        assertTrue(ExitCommand().execute(null).isFailure)
+        assertTrue(ExitCommand().invoke().isFailure)
     }
 
     @Test
     fun `Help command returns success`() {
         val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Board(), emptyList())
-        val result = HelpCommand(session).execute(null)
+        val result = HelpCommand(session).invoke()
 
         assertTrue(result.isSuccess)
         assertEquals(session, result.getOrThrow())
@@ -84,7 +85,7 @@ class CommandTests {
         val move = Move.extractMoveInfo("Pe2e4").move
         db.postMove("test", move)
 
-        val result = RefreshCommand(db, session).execute(null)
+        val result = RefreshCommand(db, session).invoke()
         val chess = result.getOrThrow()
 
         assertTrue(result.isSuccess)
@@ -97,11 +98,12 @@ class CommandTests {
         val db = GameStateStub()
         db.createGame("test")
 
-        val session = Session("test", SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Board(), emptyList())
+        var session = Session("test", SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Board(), emptyList())
         val move = Move.extractMoveInfo("Pe2e4").move
         db.postMove("test", move)
 
-        val result = MovesCommand(db, session).execute(null)
+        session = RefreshCommand(db, session).invoke().getOrThrow()
+        val result = MovesCommand(db, session).invoke()
 
         assertTrue(result.isSuccess)
         assertEquals(listOf(move), result.getOrThrow().moves)

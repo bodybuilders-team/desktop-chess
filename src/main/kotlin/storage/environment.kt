@@ -1,5 +1,6 @@
 package storage
 
+
 /**
  * Environment variables
  */
@@ -35,13 +36,11 @@ data class DBConnectionInfo(
  */
 fun getDBConnectionInfo(): DBConnectionInfo {
     val dbName = System.getenv(ENV_DB_NAME)
-    requireNotNull(dbName) {
-        "You must specify the environment variable $ENV_DB_NAME"
-    }
+    requireNotNull(dbName) { "You must specify the environment variable $ENV_DB_NAME" }
 
     val connectionString = System.getenv(ENV_DB_CONNECTION)
     return DBConnectionInfo(
-        if(connectionString != null) DbMode.REMOTE else DbMode.LOCAL,
+        if (connectionString != null) DbMode.REMOTE else DbMode.LOCAL,
         dbName,
         connectionString
     )
