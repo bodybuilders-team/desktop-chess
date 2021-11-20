@@ -41,8 +41,7 @@ typealias Matrix2D<T> = Array<Array<T>>
 fun Board.isValidMove(moveInString: String): Boolean {
     try {
         Move(moveInString, this)
-    }
-    catch (err: IllegalMoveException) {
+    } catch (err: IllegalMoveException) {
         return false
     }
     return true
