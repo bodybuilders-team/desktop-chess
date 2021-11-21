@@ -1,51 +1,6 @@
 package domain
 
-import domain.pieces.Army
-import domain.pieces.King
-
-
-/**
- * Returns the number of [armyThatAttacks] pieces that attacks the [position].
- * @param position attacked position
- * @param armyThatAttacks army that attacks the position
- * @return the number of [armyThatAttacks] pieces that attacks the [position].
- */
-fun Board.positionAttackers(position: Board.Position, armyThatAttacks: Army): Int {
-    var checkCount = 0
-    for (row in ROWS_RANGE) {
-        for (col in COLS_RANGE) {
-            val fromPos = Board.Position(col, row)
-            val piece = getPiece(fromPos) ?: continue
-            if (piece.army != armyThatAttacks) continue
-
-            if (piece.isValidMove(this, Move(piece.type.symbol, fromPos, capture = true, position, promotion = null)))
-                checkCount++
-        }
-    }
-
-    return checkCount
-}
-
-
-/**
- * Returns the number of [army] king attackers.
- * @param position position of the king
- * @param army army of the king to check
- * @return the number of [army] king attackers.
- * @throws IllegalArgumentException if there's no king in the specified position
- * @throws IllegalArgumentException if the army of the king is wrong
- * @throws IllegalArgumentException if the king is checked by more than two pieces
- */
-fun Board.kingAttackers(position: Board.Position, army: Army): Int {
-    val piece = getPiece(position)
-    require(piece is King) { "Theres no king in the specified position." }
-    require(piece.army == army) { "The army of the king is wrong." }
-
-    val kingAttackers = positionAttackers(position, army.other())
-    require(kingAttackers <= 2) { "A king cannot be checked by more than two pieces." }
-
-    return kingAttackers
-}
+import domain.pieces.*
 
 
 /**
@@ -54,8 +9,96 @@ fun Board.kingAttackers(position: Board.Position, army: Army): Int {
  * @param army army of the king to check
  * @return true if the king is in check
  */
-fun Board.isKingInCheck(position: Board.Position, army: Army) = kingAttackers(position, army.other()) > 0
+fun Board.isKingInCheck(position: Board.Position, army: Army) = kingAttackers(position, army).isNotEmpty()
 
+
+/**
+ * Checks if the king of the [army] is in check mate.
+ *
+ * The king is in checkmate if all these conditions apply:
+ * - The king is in check;
+ * - The king is unprotectable, meaning no ally piece can remove the check, protecting the king (by being placed in front or killing the attacker);
+ * - The king has nowhere to go. All adjacent positions are either occupied or attacked by an enemy piece.
+ * @param army army of the king to check mate
+ * @return true if the king is in check mate
+ */
+fun Board.isKingInCheckMate(army: Army): Boolean {
+    val kingPos = getPositionOfKing(army)
+
+    return isKingInCheck(kingPos, army) && !isKingProtectable(kingPos, army) && !canKingMove(kingPos, army)
+}
+
+
+/**
+ * Returns list of moves attacking the [position].
+ * @param position attacked position
+ * @param armyThatAttacks army that attacks the position
+ * @return list of moves attacking the [position].
+ */
+fun Board.positionAttackers(position: Board.Position, armyThatAttacks: Army): List<Move> {
+    val attackingMoves = mutableListOf<Move>()
+
+    for (row in ROWS_RANGE) {
+        for (col in COLS_RANGE) {
+            val fromPos = Board.Position(col, row)
+            val piece = getPiece(fromPos) ?: continue
+            if (piece.army != armyThatAttacks) continue
+
+            val move = Move(piece.type.symbol, fromPos, capture = true, position, promotion = null)
+            if (piece.isValidMove(this, move) && isValidCapture(piece, move))
+                attackingMoves += move
+        }
+    }
+
+    return attackingMoves
+}
+
+
+/**
+ * Returns list of moves attacking [army] king.
+ * @param position position of the king
+ * @param army army of the king to attack
+ * @return list of moves attacking [army] king.
+ * @throws IllegalArgumentException if there's no king in the specified position
+ * @throws IllegalArgumentException if the army of the king is wrong
+ * @throws IllegalArgumentException if the king is attacked by more than two pieces
+ */
+fun Board.kingAttackers(position: Board.Position, army: Army): List<Move> {
+    val piece = getPiece(position)
+    require(piece is King) { "Theres no king in the specified position." }
+    require(piece.army == army) { "The army of the king is wrong." }
+
+    val kingAttackers = positionAttackers(position, army.other())
+    require(kingAttackers.size <= 2) { "A king cannot be attacked by more than two pieces." }
+
+    return kingAttackers
+}
+
+
+/**
+ * Checks if the [army] king can move to an adjacent position.
+ * @param position position of the king
+ * @param army army of the king to move
+ * @return true if the [army] king can move to an adjacent position
+ */
+fun Board.canKingMove(position: Board.Position, army: Army): Boolean {
+    val adjacentPositions = listOf(
+        position.copy(col = position.col - 1),
+        position.copy(col = position.col + 1),
+        position.copy(row = position.row - 1),
+        position.copy(row = position.row + 1),
+        position.copy(col = position.col - 1, row = position.row - 1),
+        position.copy(col = position.col - 1, row = position.row + 1),
+        position.copy(col = position.col + 1, row = position.row - 1),
+        position.copy(col = position.col + 1, row = position.row + 1)
+    )
+    
+    val dummyBoard = this.copy()
+    dummyBoard.removePiece(position)
+    
+    return adjacentPositions.none { dummyBoard.isPositionOccupied(it) ||
+            dummyBoard.positionAttackers(it, army.other()).isNotEmpty() }
+}
 
 /**
  * Returns the position of the king of the [army]
@@ -78,44 +121,29 @@ fun Board.getPositionOfKing(army: Army): Board.Position {
 
 
 /**
- * Checks if the king of the [army] is in check mate.
- * @param army army of the king to check
- * @return true if the king is in check
- */
-fun Board.isKingInCheckMate(army: Army): Boolean {
-    val kingPos = getPositionOfKing(army)
-    val adjacentPositions = listOf(
-        kingPos.copy(col = kingPos.col - 1),
-        kingPos.copy(col = kingPos.col + 1),
-        kingPos.copy(row = kingPos.row - 1),
-        kingPos.copy(row = kingPos.row + 1),
-        kingPos.copy(col = kingPos.col - 1, row = kingPos.row - 1),
-        kingPos.copy(col = kingPos.col - 1, row = kingPos.row + 1),
-        kingPos.copy(col = kingPos.col + 1, row = kingPos.row - 1),
-        kingPos.copy(col = kingPos.col + 1, row = kingPos.row + 1)
-    )
-
-    return isKingInCheckTwice(kingPos, army) ||
-            (isKingInCheck(kingPos, army) && !isKingProtectable(kingPos, army) &&
-                    adjacentPositions.all { positionAttackers(it, army.other()) > 0 })
-}
-
-
-/**
  * Checks if the king of the [army] can be protected.
  * @param position position of the king
  * @param army army of the king to check
  * @return true if the king of the [army] can be protected.
  */
 fun Board.isKingProtectable(position: Board.Position, army: Army): Boolean {
-    TODO("To be implemented.")
+    require(isKingInCheck(position, army)) { "King isn't in check. Doesn't need to be protected." }
+
+    kingAttackers(position, army).forEach { attackingMove ->
+        return when {
+            attackingMove.isStraight() ->
+                applyToPositionsInStraightPath(attackingMove, includeFromPos = true) { pos ->
+                    positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
+                }
+            
+            attackingMove.isDiagonal() ->
+                applyToPositionsInDiagonalPath(attackingMove, includeFromPos = true) { pos ->
+                    positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
+                }
+            
+            else -> positionAttackers(attackingMove.from, army).any { it.symbol != PieceType.KING.symbol }
+        }
+    }
+
+    return false
 }
-
-
-/**
- * Checks if the king of the [army] is in check twice.
- * @param position position of the king
- * @param army army of the king to check
- * @return true if the king is in check twice
- */
-fun Board.isKingInCheckTwice(position: Board.Position, army: Army) = kingAttackers(position, army) == 2

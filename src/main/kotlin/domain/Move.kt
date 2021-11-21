@@ -49,10 +49,12 @@ data class Move(
 
         /**
          * Searches for a valid move given a move and if the search is in a specific column or row.
+         * 
          * If [optionalFromCol] is true, all columns are searched. The same applies to [optionalFromRow]
          * @param move move to search for
          * @param optionalFromCol if the search isn't in a specific column
          * @param optionalFromRow if the search isn't in a specific row
+         * @param board board to search for the move in
          * @return the valid move or null if it wasn't found
          */
         private fun searchMove(move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, board: Board): Move? {
@@ -179,6 +181,13 @@ data class Move(
     fun isHorizontal() = from.row == to.row
 
     /**
+     * Return true if the movement is straight (horizontal or vertical)
+     * @return true if the movement is straight (horizontal or vertical)
+     */
+    fun isStraight() = isHorizontal() || isVertical()
+    
+
+    /**
      * Return true if the movement is diagonal
      * @return true if the movement is diagonal
      */
@@ -211,6 +220,6 @@ data class Move(
 
 
     override fun toString(): String {
-        return "$symbol$from${if (capture) "x" else ""}$to${promotion ?: ""}" // ( ͡° ͜ʖ ͡°)
+        return "$symbol$from${if (capture) "x" else ""}$to${if (promotion != null) "=$promotion" else ""}" // ( ͡° ͜ʖ ͡°)
     }
 }
