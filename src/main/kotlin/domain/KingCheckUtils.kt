@@ -96,7 +96,7 @@ fun Board.canKingMove(position: Board.Position, army: Army): Boolean {
     val dummyBoard = this.copy()
     dummyBoard.removePiece(position)
     
-    return adjacentPositions.none { dummyBoard.isPositionOccupied(it) ||
+    return !adjacentPositions.all { dummyBoard.isPositionOccupied(it) ||
             dummyBoard.positionAttackers(it, army.other()).isNotEmpty() }
 }
 
