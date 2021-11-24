@@ -36,9 +36,9 @@ class GameStateTests {
 
         sut.createGame("test")
         val moves = listOf(
-            Move.extractMoveInfo("Pe2e4").move,
-            Move.extractMoveInfo("Pe7e5").move,
-            Move.extractMoveInfo("Pf2f4").move
+            Move.getUnvalidatedMove("Pe2e4"),
+            Move.getUnvalidatedMove("Pe7e5"),
+            Move.getUnvalidatedMove("Pf2f4")
         )
 
         moves.forEach { move -> sut.postMove("test", move) }
@@ -52,7 +52,7 @@ class GameStateTests {
 
         sut.createGame("test")
 
-        val move = Move.extractMoveInfo("Pe2e4").move
+        val move = Move.getUnvalidatedMove("Pe2e4")
 
         sut.postMove("test", move)
         assertEquals(listOf(move), sut.getAllMoves("test"))

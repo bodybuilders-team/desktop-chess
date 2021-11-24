@@ -1,23 +1,25 @@
 package domain
 
 import domain.pieces.ONE_MOVE
+import domain.Board.*
 import kotlin.math.abs
 
 
 /**
- * Apply [func] to all positions in the straight path between fromPos and toPos of [move].
+ * Apply [testPos] to all positions in the straight path between fromPos and toPos of [move].
  *
  * The straight path might be horizontal or vertical.
  * @param move move with the positions to check
  * @param includeFromPos if the fromPos is to be included
- * @return true if [func] returns true
+ * @param testPos function that tests the position and returns boolean
+ * @return true if [testPos] returns true
  */
-fun applyToPositionsInStraightPath(move: Move, includeFromPos: Boolean, func: (Board.Position) -> Boolean): Boolean {
+fun applyToPositionsInStraightPath(move: Move, includeFromPos: Boolean, testPos: (Position) -> Boolean): Boolean {
     var distance = distanceWithoutToPosition(if (move.isHorizontal()) move.colsDistance() else move.rowsDistance())
 
     while (abs(distance) >= if (includeFromPos) 0 else 1) {
-        if (move.isHorizontal() && func(move.from.copy(col = move.from.col + distance))
-            || move.isVertical() && func(move.from.copy(row = move.from.row + distance))
+        if (move.isHorizontal() && testPos(move.from.copy(col = move.from.col + distance))
+            || move.isVertical() && testPos(move.from.copy(row = move.from.row + distance))
         )
             return true
 
@@ -31,17 +33,19 @@ fun applyToPositionsInStraightPath(move: Move, includeFromPos: Boolean, func: (B
 
 
 /**
- * Apply [func] to all positions in the diagonal path between fromPos and toPos of [move].
+ * Apply [testPos] to all positions in the diagonal path between fromPos and toPos of [move].
  * @param move move with the positions to check
  * @param includeFromPos if the fromPos is to be included
- * @return true if there are pieces between diagonal
+ * @param testPos function that tests the position and returns boolean
+ * @return true if [testPos] returns true
  */
-fun applyToPositionsInDiagonalPath(move: Move, includeFromPos: Boolean, func: (Board.Position) -> Boolean): Boolean {
+fun applyToPositionsInDiagonalPath(move: Move, includeFromPos: Boolean, testPos: (Position) -> Boolean): Boolean {
     var rowsDistance = distanceWithoutToPosition(move.rowsDistance())
     var colsDistance = distanceWithoutToPosition(move.colsDistance())
 
     for (step in abs(move.rowsDistance()) - ONE_MOVE downTo if (includeFromPos) 0 else 1) {
-        if (func(move.from.copy(col = move.from.col + colsDistance, row = move.from.row + rowsDistance))) return true
+        if (testPos(move.from.copy(col = move.from.col + colsDistance, row = move.from.row + rowsDistance)))
+            return true
 
         colsDistance = updatedDistance(colsDistance)
         rowsDistance = updatedDistance(rowsDistance)
@@ -60,7 +64,7 @@ fun applyToPositionsInDiagonalPath(move: Move, includeFromPos: Boolean, func: (B
  * @return true if there are pieces between straight path
  */
 fun isStraightPathOccupied(board: Board, move: Move) =
-    applyToPositionsInStraightPath(move, includeFromPos = false){ pos ->
+    applyToPositionsInStraightPath(move, includeFromPos = false) { pos ->
         board.isPositionOccupied(pos)
     }
 
@@ -72,7 +76,7 @@ fun isStraightPathOccupied(board: Board, move: Move) =
  * @return true if there are pieces between diagonal
  */
 fun isDiagonalPathOccupied(board: Board, move: Move) =
-    applyToPositionsInDiagonalPath(move, includeFromPos = false){ pos ->
+    applyToPositionsInDiagonalPath(move, includeFromPos = false) { pos ->
         board.isPositionOccupied(pos)
     }
 

@@ -3,13 +3,20 @@ package domain
 import domain.pieces.*
 
 
+//TODO("Ask professor about the importance of parameter validation on function.
+// In this case, king position, as it is passed to functions in order not to recalculate the king position everytime.")
+
 /**
  * Checks if the king of the [army] is in check.
  * @param position position of the king
  * @param army army of the king to check
  * @return true if the king is in check
  */
-fun Board.isKingInCheck(position: Board.Position, army: Army) = kingAttackers(position, army).isNotEmpty()
+fun Board.isKingInCheck(position: Board.Position, army: Army): Boolean {
+    validateKingPosition(position, army)
+
+    return kingAttackers(position, army).isNotEmpty()
+}
 
 
 /**
@@ -26,6 +33,84 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
     val kingPos = getPositionOfKing(army)
 
     return isKingInCheck(kingPos, army) && !isKingProtectable(kingPos, army) && !canKingMove(kingPos, army)
+}
+
+
+/**
+ * Returns list of moves attacking [army] king.
+ * @param position position of the king
+ * @param army army of the king to attack
+ * @return list of moves attacking [army] king.
+ * @throws IllegalArgumentException if the king is attacked by more than two pieces
+ */
+fun Board.kingAttackers(position: Board.Position, army: Army): List<Move> {
+    validateKingPosition(position, army)
+
+    val kingAttackers = positionAttackers(position, army.other())
+    require(kingAttackers.size <= 2) { "A king cannot be attacked by more than two pieces." }
+
+    return kingAttackers
+}
+
+
+/**
+ * Checks if the king of the [army] can be protected.
+ * @param position position of the king
+ * @param army army of the king to check
+ * @return true if the king of the [army] can be protected.
+ * @throws IllegalArgumentException if the king isn't in check, therefore not needing to be protected
+ */
+fun Board.isKingProtectable(position: Board.Position, army: Army): Boolean {
+    validateKingPosition(position, army)
+    require(isKingInCheck(position, army)) { "King isn't in check. Doesn't need to be protected." }
+
+    kingAttackers(position, army).forEach { attackingMove ->
+        return when {
+            attackingMove.isStraight() ->
+                applyToPositionsInStraightPath(attackingMove, includeFromPos = true) { pos ->
+                    positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
+                }
+
+            attackingMove.isDiagonal() ->
+                applyToPositionsInDiagonalPath(attackingMove, includeFromPos = true) { pos ->
+                    positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
+                }
+
+            else -> positionAttackers(attackingMove.from, army).any { it.symbol != PieceType.KING.symbol }
+        }
+    }
+
+    return false
+}
+
+
+/**
+ * Checks if the [army] king can move to an adjacent position.
+ * @param position position of the king
+ * @param army army of the king to move
+ * @return true if the [army] king can move to an adjacent position
+ */
+fun Board.canKingMove(position: Board.Position, army: Army): Boolean {
+    validateKingPosition(position, army)
+
+    val adjacentPositions = listOf(
+        position.copy(col = position.col - 1),
+        position.copy(col = position.col + 1),
+        position.copy(row = position.row - 1),
+        position.copy(row = position.row + 1),
+        position.copy(col = position.col - 1, row = position.row - 1),
+        position.copy(col = position.col - 1, row = position.row + 1),
+        position.copy(col = position.col + 1, row = position.row - 1),
+        position.copy(col = position.col + 1, row = position.row + 1)
+    )
+
+    val dummyBoard = this.copy()
+    dummyBoard.removePiece(position)
+
+    return !adjacentPositions.all {
+        dummyBoard.isPositionOccupied(it) ||
+                dummyBoard.positionAttackers(it, army.other()).isNotEmpty()
+    }
 }
 
 
@@ -55,52 +140,6 @@ fun Board.positionAttackers(position: Board.Position, armyThatAttacks: Army): Li
 
 
 /**
- * Returns list of moves attacking [army] king.
- * @param position position of the king
- * @param army army of the king to attack
- * @return list of moves attacking [army] king.
- * @throws IllegalArgumentException if there's no king in the specified position
- * @throws IllegalArgumentException if the army of the king is wrong
- * @throws IllegalArgumentException if the king is attacked by more than two pieces
- */
-fun Board.kingAttackers(position: Board.Position, army: Army): List<Move> {
-    val piece = getPiece(position)
-    require(piece is King) { "Theres no king in the specified position." }
-    require(piece.army == army) { "The army of the king is wrong." }
-
-    val kingAttackers = positionAttackers(position, army.other())
-    require(kingAttackers.size <= 2) { "A king cannot be attacked by more than two pieces." }
-
-    return kingAttackers
-}
-
-
-/**
- * Checks if the [army] king can move to an adjacent position.
- * @param position position of the king
- * @param army army of the king to move
- * @return true if the [army] king can move to an adjacent position
- */
-fun Board.canKingMove(position: Board.Position, army: Army): Boolean {
-    val adjacentPositions = listOf(
-        position.copy(col = position.col - 1),
-        position.copy(col = position.col + 1),
-        position.copy(row = position.row - 1),
-        position.copy(row = position.row + 1),
-        position.copy(col = position.col - 1, row = position.row - 1),
-        position.copy(col = position.col - 1, row = position.row + 1),
-        position.copy(col = position.col + 1, row = position.row - 1),
-        position.copy(col = position.col + 1, row = position.row + 1)
-    )
-    
-    val dummyBoard = this.copy()
-    dummyBoard.removePiece(position)
-    
-    return !adjacentPositions.all { dummyBoard.isPositionOccupied(it) ||
-            dummyBoard.positionAttackers(it, army.other()).isNotEmpty() }
-}
-
-/**
  * Returns the position of the king of the [army]
  * @param army army of the king to get position
  * @return the position of the king of the [army]
@@ -121,29 +160,14 @@ fun Board.getPositionOfKing(army: Army): Board.Position {
 
 
 /**
- * Checks if the king of the [army] can be protected.
+ * Validates if the position of the king is valid.
  * @param position position of the king
- * @param army army of the king to check
- * @return true if the king of the [army] can be protected.
+ * @param army army of the king to move
+ * @throws IllegalArgumentException if there's no king in the specified position
+ * @throws IllegalArgumentException if the army of the king is wrong
  */
-fun Board.isKingProtectable(position: Board.Position, army: Army): Boolean {
-    require(isKingInCheck(position, army)) { "King isn't in check. Doesn't need to be protected." }
-
-    kingAttackers(position, army).forEach { attackingMove ->
-        return when {
-            attackingMove.isStraight() ->
-                applyToPositionsInStraightPath(attackingMove, includeFromPos = true) { pos ->
-                    positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
-                }
-            
-            attackingMove.isDiagonal() ->
-                applyToPositionsInDiagonalPath(attackingMove, includeFromPos = true) { pos ->
-                    positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
-                }
-            
-            else -> positionAttackers(attackingMove.from, army).any { it.symbol != PieceType.KING.symbol }
-        }
-    }
-
-    return false
+fun Board.validateKingPosition(position: Board.Position, army: Army) {
+    val piece = getPiece(position)
+    require(piece is King) { "There's no king in the specified position." }
+    require(piece.army == army) { "The army of the king is wrong." }
 }

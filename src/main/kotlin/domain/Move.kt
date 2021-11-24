@@ -32,24 +32,25 @@ data class Move(
         /**
          * Move constructor that receives a String and a Board.
          *
-         * Move properties are extracted from the [string], and searching the [board], it's verified if the move is possible.
-         * @param string move in string format
+         * Move properties are extracted from the [moveInString], and searching the [board], it's verified if the move is possible.
+         * @param moveInString move in string format
          * @param board board where the move will happen
          * @return the validated move
          * @throws IllegalMoveException if move is not possible in [board]
          */
-        operator fun invoke(string: String, board: Board): Move {
-            val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(string)
+        operator fun invoke(moveInString: String, board: Board): Move {
+            val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(moveInString)
 
-            return searchMove(move, optionalFromCol, optionalFromRow, board) ?: throw IllegalMoveException(
-                string, if (optionalFromCol || optionalFromRow) "Try with origin column and row." else "Illegal move."
-            )
+            return searchMove(move, optionalFromCol, optionalFromRow, board) 
+                ?: throw IllegalMoveException(moveInString, if (optionalFromCol || optionalFromRow)
+                    "Try with origin column and row." else "Illegal move."
+                )
         }
 
 
         /**
          * Searches for a valid move given a move and if the search is in a specific column or row.
-         * 
+         *
          * If [optionalFromCol] is true, all columns are searched. The same applies to [optionalFromRow]
          * @param move move to search for
          * @param optionalFromCol if the search isn't in a specific column
@@ -95,17 +96,17 @@ data class Move(
         /**
          * Extracts move information from a string.
          * This move is still unvalidated in the context of a board.
-         * @param string move in string
+         * @param moveInString move in string
          * @return MoveExtraction containing the move, and the if the column or row are optional
          * @throws IllegalMoveException if move string is not well formatted
          */
-        fun extractMoveInfo(string: String): MoveExtraction {
-            if (!isCorrectlyFormatted(string))
+        private fun extractMoveInfo(moveInString: String): MoveExtraction {
+            if (!isCorrectlyFormatted(moveInString))
                 throw IllegalMoveException(
-                    string, "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
+                    moveInString, "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
                 )
 
-            var str = string
+            var str = moveInString
 
             val capture = CAPTURE_CHAR in str
 
@@ -156,6 +157,13 @@ data class Move(
             )
         }
 
+        /**
+         * Returns an unvalidated move in the context of the board.
+         * @param moveInString piece move
+         * @return true if the move in String is correctly formatted
+         */
+        fun getUnvalidatedMove(moveInString: String) = extractMoveInfo(moveInString).move
+
 
         /**
          * Checks if a move in String is correctly formatted.
@@ -185,7 +193,6 @@ data class Move(
      * @return true if the movement is straight (horizontal or vertical)
      */
     fun isStraight() = isHorizontal() || isVertical()
-    
 
     /**
      * Return true if the movement is diagonal
