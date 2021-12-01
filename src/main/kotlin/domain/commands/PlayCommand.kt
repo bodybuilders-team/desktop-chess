@@ -21,7 +21,7 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
 
         requireNotNull(parameter) { "Missing move." }
 
-        val move = Move(parameter, chess.board)
+        val move = Move(parameter, chess.board, chess.moves)
 
         val piece = chess.board.getPiece(move.from)
         requireNotNull(piece) { "Move.invoke() is not throwing IllegalMoveException in case of invalid from position." }

@@ -13,10 +13,9 @@ class Pawn(override val army: Army) : Piece {
 
     override val type = PieceType.PAWN
 
-    override fun isValidMove(board: Board, move: Move): Boolean {
-        return move.isVertical() && isValidPawnVerticalMove(board, move) ||
+    override fun isValidMove(board: Board, move: Move) =
+        move.isVertical() && isValidPawnVerticalMove(board, move) ||
                 move.colsAbsoluteDistance() == ONE_MOVE && isValidPawnDiagonalMove(board, move)
-    }
 
 
     /**
@@ -43,4 +42,21 @@ class Pawn(override val army: Army) : Piece {
      */
     private fun isValidPawnDiagonalMove(board: Board, move: Move) =
         (move.rowsDistance() == if (isWhite()) ONE_MOVE else -ONE_MOVE) && board.isPositionOccupied(move.to)
+
+
+    /**
+     * Checks if the en passant move is valid.
+     * @param board board where the move will happen
+     * @param move move to test
+     * @return true if the en passant move is valid
+     */
+    fun isValidEnPassant(board: Board, move: Move): Boolean {
+        if (isValidPawnDiagonalMove(board, move) && (isWhite() && move.from.row == 5 || !isWhite() && move.from.row == 4)) {
+            val capturedPiecePos = getEnPassantCapturedPawnPosition(move.to, this)
+            val capturedPiece = board.getPiece(capturedPiecePos)
+            return board.isPositionOccupied(capturedPiecePos) && capturedPiece is Pawn && capturedPiece.army != army
+        }
+
+        return false
+    }
 }

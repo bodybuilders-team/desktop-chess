@@ -80,7 +80,7 @@ class MoveMethodsTests {
     @Test
     fun `getUnvalidatedMove returns unvalidated move correctly`() {
         assertEquals(
-            Move('P', Board.Position('e', 2), false, Board.Position('e', 4), null),
+            Move('P', Board.Position('e', 2), false, Board.Position('e', 4), null, MoveType.NORMAL),
             Move.getUnvalidatedMove("Pe2e4")
         )
     }
@@ -88,7 +88,7 @@ class MoveMethodsTests {
     @Test
     fun `getUnvalidatedMove with supposedly invalid move returns unvalidated move correctly`() {
         assertEquals(
-            Move('K', Board.Position('e', 1), false, Board.Position('g', 8), null),
+            Move('K', Board.Position('e', 1), false, Board.Position('g', 8), null, MoveType.NORMAL),
             Move.getUnvalidatedMove("Ke1g8")
         )
     }

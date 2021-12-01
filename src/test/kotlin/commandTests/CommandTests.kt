@@ -122,7 +122,7 @@ class CommandTests {
 
         assertTrue(result.isSuccess)
         assertEquals(SessionState.WAITING_FOR_OPPONENT, chess.state)
-        assertEquals(listOf(Move(move, session.board)), chess.moves)
+        assertEquals(listOf(Move(move, session.board, session.moves)), chess.moves)
     }
 
     @Test

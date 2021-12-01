@@ -40,7 +40,7 @@ typealias Matrix2D<T> = Array<Array<T>>
  */
 fun Board.isValidMove(moveInString: String): Boolean {
     try {
-        Move(moveInString, this)
+        Move(moveInString, this, emptyList())
     } catch (err: IllegalMoveException) {
         return false
     }
@@ -57,6 +57,9 @@ fun Board.isValidCapture(piece: Piece, move: Move): Boolean {
     if (isPositionOccupied(move.to)) {
         val captured = getPiece(move.to) ?: return false
         return captured.army != piece.army
+    }
+    else {
+        // TODO("ver se é para fazer alguma coisa aqui")
     }
     return true
 }
@@ -84,6 +87,42 @@ fun getPromotedPiece(piece: Piece, toPos: Position, promotion: Char?, moveInStri
     else
         throw IllegalMoveException(moveInString, "You cannot get promoted.")
 }
+
+
+/**
+ * Gets the position of the captured pawn from the en passant move.
+ * @param attackerToPos position of the attacker after the move
+ * @param attackingPiece attacker
+ * @return position of the captured pawn
+ */
+fun getEnPassantCapturedPawnPosition(attackerToPos: Position, attackingPiece: Piece) =
+    Position(
+        col = attackerToPos.col,
+        row = attackerToPos.row + if (attackingPiece.isWhite()) -1 else +1
+    )
+
+
+/**
+ * Gets the from position of the rook in a castle move.
+ * @param kingToPos king position after the castle move
+ * @return position of the rook
+ */
+fun getRookPosition(kingToPos: Position) =
+    Position(
+        col = if (kingToPos.col == 'g') 'h' else 'a',
+        row = kingToPos.row
+    )
+
+/**
+ * Gets the to position of the rook in a castle move.
+ * @param kingToPos king position after the castle move
+ * @return position of the rook
+ */
+fun getRookToPosition(kingToPos: Position) =
+    Position(
+        col = if (kingToPos.col == 'g') 'f' else 'd',
+        row = kingToPos.row
+    )
 
 
 /**

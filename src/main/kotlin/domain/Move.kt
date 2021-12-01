@@ -2,6 +2,7 @@ package domain
 
 import kotlin.math.abs
 import domain.Board.Position
+import domain.pieces.*
 
 
 /**
@@ -17,7 +18,8 @@ data class Move(
     val from: Position,
     val capture: Boolean,
     val to: Position,
-    val promotion: Char?
+    val promotion: Char?,
+    val type: MoveType
 ) {
     companion object {
 
@@ -38,12 +40,13 @@ data class Move(
          * @return the validated move
          * @throws IllegalMoveException if move is not possible in [board]
          */
-        operator fun invoke(moveInString: String, board: Board): Move {
+        operator fun invoke(moveInString: String, board: Board, previousMoves: List<Move>): Move {
             val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(moveInString)
 
-            return searchMove(move, optionalFromCol, optionalFromRow, board) 
-                ?: throw IllegalMoveException(move.toString(), if (optionalFromCol || optionalFromRow)
-                    "Try with origin column and row." else "Illegal move."
+            return searchMove(move, optionalFromCol, optionalFromRow, board, previousMoves)
+                ?: throw IllegalMoveException(
+                    move.toString(), if (optionalFromCol || optionalFromRow)
+                        "Try with origin column and row." else "Illegal move."
                 )
         }
 
@@ -56,9 +59,13 @@ data class Move(
          * @param optionalFromCol if the search isn't in a specific column
          * @param optionalFromRow if the search isn't in a specific row
          * @param board board to search for the move in
+         * @param previousMoves previous moves made
          * @return the valid move or null if it wasn't found
          */
-        private fun searchMove(move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, board: Board): Move? {
+        private fun searchMove(
+            move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, board: Board,
+            previousMoves: List<Move>
+        ): Move? {
             var foundMove: Move? = null
 
             val colSearchRange = if (optionalFromCol) COLS_RANGE else move.from.col..move.from.col
@@ -66,14 +73,18 @@ data class Move(
 
             for (row in rowSearchRange) {
                 for (col in colSearchRange) {
-                    val pos = Position(col, row)
-                    val piece = board.getPiece(pos) ?: continue
+                    val fromPos = Position(col, row)
+                    val piece = board.getPiece(fromPos) ?: continue
 
                     if (piece.type.symbol != move.symbol) continue
 
-                    val newMove = move.copy(from = pos)
-                    if (pos != newMove.to && piece.isValidMove(board, newMove) && board.isValidCapture(piece, newMove))
-                    {
+                    val newMove = move.copy(from = fromPos)
+                    val isValidMove =
+                        isValidEnPassant(previousMoves, newMove, piece, board) ||
+                            piece.isValidMove(board, newMove)
+
+
+                    if (fromPos != newMove.to && isValidMove && board.isValidCapture(piece, newMove)) {
                         if (foundMove != null) return null
                         foundMove = newMove.copy(capture = board.isPositionOccupied(newMove.to))
                     }
@@ -82,6 +93,35 @@ data class Move(
 
             return foundMove
         }
+
+
+        /**
+         * Checks if an en passant move is valid/possible.
+         * @param previousMoves previous moves made
+         * @param move move to check if an en passant is valid/possible.
+         * @param piece piece to check if an en passant move is valid/possible
+         * @param board board where the possible en passant move will happen
+         * @return true if an en passant move is valid/possible
+         */
+        private fun isValidEnPassant(previousMoves: List<Move>, move: Move, piece: Piece, board: Board) =
+            previousMoves.isNotEmpty() &&
+                    isEnPassantPossible(move, piece, previousMoves) &&
+                    piece is Pawn &&
+                    piece.isValidEnPassant(board, move)
+
+
+        /**
+         * Checks if the last move is valid to do en passant move immediately next.
+         * @param move en passant move
+         * @param piece piece that makes en passant
+         * @param previousMoves previous game moves
+         * @return true if the last move is valid.
+         */
+        private fun isEnPassantPossible(move: Move, piece: Piece, previousMoves: List<Move>) =
+            previousMoves.last().toString() in listOf(
+                "P${move.from.col - 1}${move.from.row + 2 * if (piece.isWhite()) 1 else -1}${move.from.col - 1}${move.from.row}",
+                "P${move.from.col + 1}${move.from.row + 2 * if (piece.isWhite()) 1 else -1}${move.from.col + 1}${move.from.row}"
+            )
 
 
         /**
@@ -125,7 +165,7 @@ data class Move(
                 MIN_STRING_LEN ->
                     when {
                         str.first().isUpperCase() -> pieceSymbol = str.first()
-                        str.first().isDigit()     -> fromRow = str.first().digitToInt()
+                        str.first().isDigit() -> fromRow = str.first().digitToInt()
                         str.first().isLowerCase() -> fromCol = str.first()
                     }
 
@@ -151,7 +191,14 @@ data class Move(
             }
 
             return MoveExtraction(
-                Move(pieceSymbol, Position(fromCol ?: FIRST_COL, fromRow ?: FIRST_ROW), capture, toPos, promotion),
+                Move(
+                    pieceSymbol,
+                    Position(fromCol ?: FIRST_COL, fromRow ?: FIRST_ROW),
+                    capture,
+                    toPos,
+                    promotion,
+                    MoveType.NORMAL
+                ),
                 optionalFromCol = fromCol == null,
                 optionalFromRow = fromRow == null
             )
@@ -229,4 +276,14 @@ data class Move(
     override fun toString(): String {
         return "$symbol$from${if (capture) "x" else ""}$to${if (promotion != null) "=$promotion" else ""}" // ( ͡° ͜ʖ ͡°)
     }
+}
+
+
+/**
+ * Type of the move.
+ */
+enum class MoveType {
+    NORMAL,
+    CASTLE,
+    EN_PASSANT
 }

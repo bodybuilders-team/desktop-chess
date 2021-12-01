@@ -59,7 +59,7 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
 fun Board.isKingInStaleMate(army: Army): Boolean {
     val kingPos = getPositionOfKing(army)
     
-    return !isKingInCheck(kingPos, army) && !hasAvailableMoves(army)
+    return !isKingInCheck(kingPos, army) && false // !hasAvailableMoves(army)
 }
 
 
@@ -159,7 +159,7 @@ fun Board.positionAttackers(position: Position, armyThatAttacks: Army): List<Mov
             val piece = getPiece(fromPos) ?: continue
             if (piece.army != armyThatAttacks) continue
 
-            val move = Move(piece.type.symbol, fromPos, capture = true, position, promotion = null)
+            val move = Move(piece.type.symbol, fromPos, capture = true, position, promotion = null,  MoveType.NORMAL)
             if (piece.isValidMove(this, move) && isValidCapture(piece, move))
                 attackingMoves += move
         }

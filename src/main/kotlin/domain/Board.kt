@@ -83,6 +83,18 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
             else getPromotedPiece(piece, toPos, move.promotion, move.toString())
         )
 
+
+        if (move.type == MoveType.CASTLE) {
+            val rookPosition = getRookPosition(toPos)
+            val rook = getPiece(rookPosition)
+
+            newBoard.removePiece(rookPosition)
+            newBoard.setPiece(getRookToPosition(toPos), rook)
+        }
+        else if (move.type == MoveType.EN_PASSANT)
+            newBoard.removePiece(getEnPassantCapturedPawnPosition(toPos, piece))
+
+
         if (isKingInCheck(piece.army))
             throw IllegalMoveException(move.toString(), "Your King is in check! You must protect your King.")
 
@@ -96,7 +108,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * @return new board with the move made
      */
     fun makeMove(moveInString: String): Board {
-        return makeMove(Move(moveInString, this))
+        return makeMove(Move(moveInString, this, emptyList()))
     }
 
 
