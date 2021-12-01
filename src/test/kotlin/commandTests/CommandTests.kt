@@ -69,7 +69,7 @@ class CommandTests {
 
     @Test
     fun `Help command returns success`() {
-        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Board(), emptyList())
+        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Board(), emptyList(), Check.NO_CHECK)
         val result = HelpCommand(session).invoke()
 
         assertTrue(result.isSuccess)
@@ -81,7 +81,7 @@ class CommandTests {
         val db = GameStateStub()
         db.createGame("test")
 
-        val session = Session("test", SessionState.WAITING_FOR_OPPONENT, Army.BLACK, Board(), emptyList())
+        val session = Session("test", SessionState.WAITING_FOR_OPPONENT, Army.BLACK, Board(), emptyList(), Check.NO_CHECK)
         val move = Move.getUnvalidatedMove("Pe2e4")
         db.postMove("test", move)
 
@@ -98,7 +98,7 @@ class CommandTests {
         val db = GameStateStub()
         db.createGame("test")
 
-        var session = Session("test", SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Board(), emptyList())
+        var session = Session("test", SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Board(), emptyList(), Check.NO_CHECK)
         val move = Move.getUnvalidatedMove("Pe2e4")
         db.postMove("test", move)
 
@@ -114,7 +114,7 @@ class CommandTests {
         val db = GameStateStub()
         db.createGame("test")
 
-        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Board(), emptyList())
+        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Board(), emptyList(), Check.NO_CHECK)
 
         val move = "Pe2e4"
         val result = PlayCommand(db, session).execute(move)

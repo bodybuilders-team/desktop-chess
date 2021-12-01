@@ -23,6 +23,13 @@ enum class Check {
  */
 fun Board.isKingInCheck(position: Position, army: Army) = kingAttackers(position, army).isNotEmpty()
 
+/**
+ * Checks if the king of the [army] is in check.
+ * @param army army of the king to check
+ * @return true if the king is in check
+ */
+fun Board.isKingInCheck(army: Army) = kingAttackers(getPositionOfKing(army), army).isNotEmpty()
+
 
 /**
  * Checks if the king of the [army] is in check mate.
@@ -39,6 +46,29 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
 
     return isKingInCheck(kingPos, army) && !isKingProtectable(kingPos, army) && !canKingMove(kingPos, army)
 }
+
+
+//TODO("Test")
+/**
+ * Checks if the king of the [army] is in stalemate.
+ * 
+ * The king is in stalemate if the king isn't in check but the army has no valid moves.
+ * @param army army of the king to stalemate
+ * @return true if the king is in stalemate
+ */
+fun Board.isKingInStaleMate(army: Army): Boolean {
+    val kingPos = getPositionOfKing(army)
+    
+    return !isKingInCheck(kingPos, army) && !hasAvailableMoves(army)
+}
+
+
+//TODO("Test")
+/**
+ * Checks if the king of the [army] is in mate (in checkmate or stalemate).
+ * @param army army of the king to mate
+ */
+fun Board.isKingInMate(army: Army) = isKingInCheckMate(army) || isKingInStaleMate(army)
 
 
 // TODO("Test")

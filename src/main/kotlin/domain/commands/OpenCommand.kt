@@ -22,13 +22,26 @@ class OpenCommand(private val db: GameState) : Command {
                 emptyList()
             }
 
+        val board = boardWithMoves(moves)
+
+        val inMate = board.isKingInMate(Army.WHITE) || board.isKingInMate(Army.BLACK)
+
+        val state = when {
+            inMate -> SessionState.ENDED
+            currentTurnArmy(moves) == Army.WHITE -> SessionState.YOUR_TURN
+            else -> SessionState.WAITING_FOR_OPPONENT
+        }
+
         return Result.success(
             Session(
                 name = parameter,
-                state = if (isWhiteTurn(moves)) SessionState.YOUR_TURN else SessionState.WAITING_FOR_OPPONENT,
+                state = state,
                 army = Army.WHITE,
-                board = boardWithMoves(moves),
-                moves = moves
+                board = board,
+                moves = moves,
+                currentCheck =
+                if (state == SessionState.YOUR_TURN && board.isKingInCheck(Army.WHITE)) Check.CHECK
+                else Check.NO_CHECK
             )
         )
     }

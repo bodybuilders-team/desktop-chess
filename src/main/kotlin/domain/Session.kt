@@ -27,7 +27,8 @@ data class Session(
 enum class SessionState {
     LOGGING,
     YOUR_TURN,
-    WAITING_FOR_OPPONENT
+    WAITING_FOR_OPPONENT,
+    ENDED
 }
 
 

@@ -177,7 +177,23 @@ class BoardCheckTests {
                     "        "))
         
         val army = Army.WHITE
-        assertTrue(sut.isKingInCheck(sut.getPositionOfKing(army), army))
+        assertTrue(sut.isKingInCheck(army))
+    }
+
+    @Test
+    fun `isKingInCheck returns false if king isn't in check`(){
+        val sut = Board(getMatrix2DFromString(
+            "        " +
+                    "        " +
+                    "        " +
+                    "   q    " +
+                    "        " +
+                    "    K   " +
+                    "        " +
+                    "        "))
+
+        val army = Army.WHITE
+        assertFalse(sut.isKingInCheck(army))
     }
 
     @Test

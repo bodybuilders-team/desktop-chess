@@ -9,6 +9,8 @@ import domain.*
 typealias View = (Session) -> Unit
 
 
+//TODO("Discuss checkmate views")
+
 /**
  * Prints the board of the opened game.
  * @param game opened game
@@ -16,6 +18,11 @@ typealias View = (Session) -> Unit
 fun openView(game: Session) {
     printBoard(game.board)
     println("Game ${game.name} opened. Play with white pieces.")
+
+    if (game.state == SessionState.ENDED)
+        println("Game ended.")
+    else if (game.currentCheck == Check.CHECK)
+        println("Your King is in check.")
 }
 
 
@@ -26,6 +33,10 @@ fun openView(game: Session) {
 fun joinView(game: Session) {
     printBoard(game.board)
     println("Join to game ${game.name}. Play with black pieces.")
+    if (game.state == SessionState.ENDED)
+        println("Game ended.")
+    else if (game.currentCheck == Check.CHECK)
+        println("Your King is in check.")
 }
 
 
@@ -35,8 +46,13 @@ fun joinView(game: Session) {
  */
 fun playView(game: Session) {
     printBoard(game.board)
-    if (game.currentCheck == Check.CHECK)
-        println("Enemy King is in check.")
+    when (game.currentCheck) {
+        Check.CHECK -> println("Enemy King is in check.")
+        Check.CHECK_MATE -> println("Enemy King is in checkmate. Game ended.")
+        Check.STALE_MATE -> println("Enemy King is in stalemate. Game ended.")
+        else -> {}
+    }
+
 }
 
 
@@ -46,6 +62,10 @@ fun playView(game: Session) {
  */
 fun refreshView(game: Session) {
     printBoard(game.board)
+    if (game.state == SessionState.ENDED)
+        println("Your King is in checkmate or stalemate. Game ended.")
+    else if (game.currentCheck == Check.CHECK)
+        println("Your King is in check.")
 }
 
 
@@ -63,13 +83,14 @@ fun movesView(game: Session) {
  * @param game game where the play happens
  */
 fun helpView(game: Session) {
-    println("${game.name} -> These are the application commands you can use:\n" +
-            "open <game> - Opens or joins the game named <game> to play with the White pieces\n" +
-            "join <game> - Joins the game named <game> to play with the Black pieces\n" +
-            "play <move> - Makes the <move> play\n" +
-            "refresh     - Refreshes the game\n" +
-            "moves       - Prints all moves made\n" +
-            "exit        - Ends the application"
+    println(
+        "${game.name} -> These are the application commands you can use:\n" +
+                "open <game> - Opens or joins the game named <game> to play with the White pieces\n" +
+                "join <game> - Joins the game named <game> to play with the Black pieces\n" +
+                "play <move> - Makes the <move> play\n" +
+                "refresh     - Refreshes the game\n" +
+                "moves       - Prints all moves made\n" +
+                "exit        - Ends the application"
     )
 }
 

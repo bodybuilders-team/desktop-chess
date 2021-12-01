@@ -9,31 +9,31 @@ import kotlin.test.*
 class UserInputTests {
     @Test
     fun `getPrompt with logging session name returns empty string`() {
-        val session = Session("", SessionState.LOGGING, Army.WHITE, Board(), emptyList())
+        val session = Session("", SessionState.LOGGING, Army.WHITE, Board(), emptyList(), Check.NO_CHECK)
         assertEquals("", getPrompt(session))
     }
 
     @Test
     fun `getPrompt with White turn being White`() {
-        val session = Session("name", SessionState.YOUR_TURN, Army.WHITE, Board(), emptyList())
+        val session = Session("name", SessionState.YOUR_TURN, Army.WHITE, Board(), emptyList(), Check.NO_CHECK)
         assertEquals("name:White", getPrompt(session))
     }
 
     @Test
     fun `getPrompt with White turn being Black`() {
-        val session = Session("name", SessionState.WAITING_FOR_OPPONENT, Army.BLACK, Board(), emptyList())
+        val session = Session("name", SessionState.WAITING_FOR_OPPONENT, Army.BLACK, Board(), emptyList(), Check.NO_CHECK)
         assertEquals("name:White", getPrompt(session))
     }
 
     @Test
     fun `getPrompt with Black turn being Black`() {
-        val session = Session("name", SessionState.YOUR_TURN, Army.BLACK, Board(), emptyList())
+        val session = Session("name", SessionState.YOUR_TURN, Army.BLACK, Board(), emptyList(), Check.NO_CHECK)
         assertEquals("name:Black", getPrompt(session))
     }
 
     @Test
     fun `getPrompt with Black turn being White`() {
-        val session = Session("name", SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Board(), emptyList())
+        val session = Session("name", SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Board(), emptyList(), Check.NO_CHECK)
         assertEquals("name:Black", getPrompt(session))
     }
 }

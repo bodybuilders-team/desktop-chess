@@ -62,6 +62,7 @@ fun Board.isValidCapture(piece: Piece, move: Move): Boolean {
 }
 
 
+//TODO("Test")
 /**
  * Checks if the promotion is valid and, if it is returns the new promoted piece.
  *
@@ -69,11 +70,11 @@ fun Board.isValidCapture(piece: Piece, move: Move): Boolean {
  * @param piece piece to promote
  * @param toPos new piece position
  * @param promotion new piece type to promote
- * @param move Move String representation
+ * @param moveInString Move String representation
  * @return promoted piece
  * @throws IllegalMoveException if the promotion is invalid
  */
-fun getPromotedPiece(piece: Piece, toPos: Position, promotion: Char?, move: String): Piece {
+fun getPromotedPiece(piece: Piece, toPos: Position, promotion: Char?, moveInString: String): Piece {
     requireNotNull(promotion) { "Invalid promotion." }
 
     return if (piece is Pawn &&
@@ -81,7 +82,7 @@ fun getPromotedPiece(piece: Piece, toPos: Position, promotion: Char?, move: Stri
     )
         getPieceFromSymbol(promotion, piece.army)
     else
-        throw IllegalMoveException(move, "You cannot get promoted.")
+        throw IllegalMoveException(moveInString, "You cannot get promoted.")
 }
 
 

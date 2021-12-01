@@ -17,6 +17,8 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
     override fun execute(parameter: String?): Result<Session> {
         require(!chess.isLogging()) { "Can't play without a game: try open or join commands." }
         require(chess.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
+        require(chess.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
+
         requireNotNull(parameter) { "Missing move." }
 
         val move = Move(parameter, chess.board)
@@ -29,16 +31,21 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
 
         val newBoard = chess.board.makeMove(move)
         db.postMove(chess.name, move)
+        
+        val inCheckMate = newBoard.isKingInCheckMate(chess.army.other())
+        val inStaleMate = newBoard.isKingInStaleMate(chess.army.other())
 
         return Result.success(
             chess.copy(
-                state = SessionState.WAITING_FOR_OPPONENT,
+                state = if (inCheckMate || inStaleMate) SessionState.ENDED else SessionState.WAITING_FOR_OPPONENT,
                 board = newBoard,
                 moves = chess.moves + move,
-                currentCheck = if (newBoard.isKingInCheck(
-                        newBoard.getPositionOfKing(chess.army.other()), chess.army.other()
-                    )
-                ) Check.CHECK else Check.NO_CHECK
+                currentCheck = when {
+                    newBoard.isKingInCheck(chess.army.other()) -> Check.CHECK
+                    inCheckMate -> Check.CHECK_MATE
+                    inStaleMate -> Check.STALE_MATE
+                    else -> Check.NO_CHECK
+                }
             )
         )
     }
