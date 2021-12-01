@@ -2,7 +2,6 @@ package boardTests
 
 import domain.*
 import domain.pieces.Army
-import java.lang.IllegalArgumentException
 import kotlin.test.*
 
 
@@ -93,7 +92,7 @@ class BoardCheckTests {
     @Test
     fun `isKingProtectable returns false if king isn't protectable and the attacking move is vertical`(){
         val sut = Board(getMatrix2DFromString(
-            "rnbqkbnr" +
+                    "rnbqkbnr" +
                     "pppppppp" +
                     "    P   " +
                     "    q   " +
@@ -153,7 +152,7 @@ class BoardCheckTests {
     @Test
     fun `isKingProtectable returns false if king isn't protectable and the attacking move is diagonal`(){
         val sut = Board(getMatrix2DFromString(
-            "rnbqkbnr" +
+                    "rnbqkbnr" +
                     "pppppppp" +
                     "    P   " +
                     "      b " +
@@ -163,23 +162,6 @@ class BoardCheckTests {
                     "RNBQ BNR"))
 
         assertFalse(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
-    }
-
-    @Test
-    fun `isKingProtectable throws if king doesn't need to be protected`(){
-        val sut = Board(getMatrix2DFromString(
-                    "        " +
-                    "        " +
-                    "        " +
-                    "  q     " +
-                    "        " +
-                    "   K    " +
-                    "    N   " +
-                    "        "))
-
-        assertFailsWith<IllegalArgumentException> {
-            sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE)
-        }
     }
 
     @Test

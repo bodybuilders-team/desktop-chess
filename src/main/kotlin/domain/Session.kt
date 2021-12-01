@@ -16,7 +16,8 @@ data class Session(
     val state: SessionState,
     val army: Army,
     val board: Board,
-    val moves: List<Move>
+    val moves: List<Move>,
+    val currentCheck: Check
 )
 
 

@@ -5,4 +5,4 @@ package domain
  * @param move Illegal move made
  * @param message Used to specify what went wrong
  */
-class IllegalMoveException(val move: String, message: String) : Exception(message)
+class IllegalMoveException(val move: String, override val message: String) : Exception(message)

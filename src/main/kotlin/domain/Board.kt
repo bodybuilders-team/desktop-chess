@@ -83,6 +83,9 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
             else getPromotedPiece(piece, toPos, move.promotion, move.toString())
         )
 
+        if (isKingInCheck(getPositionOfKing(piece.army), piece.army))
+            throw IllegalMoveException(move.toString(), "Your King is in check! You must protect your King.")
+
         return newBoard
     }
 

@@ -26,51 +26,53 @@ fun main() {
     val dbInfo = getDBConnectionInfo()
     val driver = createMongoClient(if (dbInfo.mode == DbMode.REMOTE) dbInfo.connectionString else null)
 
-    try {
-        var chess = Session(
-            name = "",
-            state = SessionState.LOGGING,
-            army = Army.WHITE,
-            board = Board(),
-            moves = emptyList()
-        )
-        val dataBase = MongoDBGameState(driver.getDatabase(System.getenv(ENV_DB_NAME)))
+    driver.use {
+        try {
+            var chess = Session(
+                name = "",
+                state = SessionState.LOGGING,
+                army = Army.WHITE,
+                board = Board(),
+                moves = emptyList(),
+                currentCheck = Check.NO_CHECK
+            )
+            val dataBase = MongoDBGameState(driver.getDatabase(System.getenv(ENV_DB_NAME)))
 
-        while (true) {
-            try {
-                val dispatcher = buildCommandsHandler(chess, dataBase)
-                val (command, parameter) = readCommand(getPrompt(chess))
+            while (true) {
+                try {
+                    val dispatcher = buildCommandsHandler(chess, dataBase)
+                    val (command, parameter) = readCommand(getPrompt(chess))
 
-                val handler = dispatcher[command]
-                if (handler == null) {
-                    println("Invalid command")
-                    continue
-                }
-
-                val result = handler.action(parameter)
-                if (result.isSuccess) {
-                    chess = result.getOrThrow()
-                    handler.display(chess)
-                } else break
-
-            } catch (err: Exception) {
-                println(
-                    when (err) {
-                        is IllegalMoveException -> "Illegal move \"${err.move}\". ${err.message}"
-                        else -> "ERROR: ${err.message}"
+                    val handler = dispatcher[command]
+                    if (handler == null) {
+                        println("Invalid command")
+                        continue
                     }
-                )
-            }
-        }
 
-    } catch (err: GameStateAccessException) {
-        println(
-            "An unknown error occurred while trying to reach the database. " +
-            if (dbInfo.mode == DbMode.REMOTE) "Check your network connection."
-            else "Is your local database started?"
-        )
-    } finally {
-        println("BYE.\n")
-        driver.close()
+                    val result = handler.action(parameter)
+                    if (result.isSuccess) {
+                        chess = result.getOrThrow()
+                        handler.display(chess)
+                    } else break
+
+                } catch (err: Exception) {
+                    println(
+                        when (err) {
+                            is IllegalMoveException -> "Illegal move \"${err.move}\". ${err.message}"
+                            else -> "ERROR: ${err.message}"
+                        }
+                    )
+                }
+            }
+
+        } catch (err: GameStateAccessException) {
+            println(
+                "An unknown error occurred while trying to reach the database. " +
+                        if (dbInfo.mode == DbMode.REMOTE) "Check your network connection."
+                        else "Is your local database started?"
+            )
+        } finally {
+            println("BYE.\n")
+        }
     }
 }

@@ -35,6 +35,8 @@ fun joinView(game: Session) {
  */
 fun playView(game: Session) {
     printBoard(game.board)
+    if (game.currentCheck == Check.CHECK)
+        println("Enemy King is in check.")
 }
 
 

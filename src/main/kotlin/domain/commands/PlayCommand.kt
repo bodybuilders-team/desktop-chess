@@ -25,7 +25,7 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
         requireNotNull(piece) { "Move.invoke() is not throwing IllegalMoveException in case of invalid from position." }
 
         if (piece.army == chess.army.other())
-            throw IllegalMoveException(parameter, "You cannot move an opponent's piece.")
+            throw IllegalMoveException(move.toString(), "You cannot move an opponent's piece.")
 
         val newBoard = chess.board.makeMove(move)
         db.postMove(chess.name, move)
@@ -34,7 +34,11 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
             chess.copy(
                 state = SessionState.WAITING_FOR_OPPONENT,
                 board = newBoard,
-                moves = chess.moves + move
+                moves = chess.moves + move,
+                currentCheck = if (newBoard.isKingInCheck(
+                        newBoard.getPositionOfKing(chess.army.other()), chess.army.other()
+                    )
+                ) Check.CHECK else Check.NO_CHECK
             )
         )
     }

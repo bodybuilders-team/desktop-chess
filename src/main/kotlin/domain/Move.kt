@@ -42,7 +42,7 @@ data class Move(
             val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(moveInString)
 
             return searchMove(move, optionalFromCol, optionalFromRow, board) 
-                ?: throw IllegalMoveException(moveInString, if (optionalFromCol || optionalFromRow)
+                ?: throw IllegalMoveException(move.toString(), if (optionalFromCol || optionalFromRow)
                     "Try with origin column and row." else "Illegal move."
                 )
         }
