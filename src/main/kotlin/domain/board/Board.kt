@@ -68,39 +68,29 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * @return new board with the move made
      */
     fun makeMove(move: Move): Board {
-        val fromPos = move.from
-        val toPos = move.to
-        val piece = getPiece(fromPos)
+        val piece = getPiece(move.from)
 
         requireNotNull(piece) { "Move.invoke() is not throwing IllegalMoveException in case of invalid from position." }
 
         val newBoard = this.copy()
 
-        newBoard.removePiece(fromPos)
+        newBoard.removePiece(move.from)
 
         newBoard.setPiece(
-            toPos,
+            move.to,
             if (move.promotion == null) piece
-            else getPromotedPiece(piece, toPos, move.promotion, move.toString())
+            else getPromotedPiece(piece, move.to, move.promotion, move.toString())
         )
 
-
-        if (move.type == MoveType.CASTLE) {
-            val rookPosition = getRookPosition(toPos)
-            val rook = getPiece(rookPosition)
-
-            newBoard.removePiece(rookPosition)
-            newBoard.setPiece(getRookToPosition(toPos), rook)
-        }
-        else if (move.type == MoveType.EN_PASSANT)
-            newBoard.removePiece(getEnPassantCapturedPawnPosition(toPos, piece))
-
+        placePieceFromSpecialMoves(move, piece, newBoard)
 
         if (isKingInCheck(piece.army))
             throw IllegalMoveException(move.toString(), "Your King is in check! You must protect your King.")
 
         return newBoard
     }
+
+
 
 
     /**

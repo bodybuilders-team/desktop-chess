@@ -1,7 +1,9 @@
 package domain.pieces
 
-import domain.board.Board
-import domain.move.Move
+import domain.board.*
+import domain.isStraightPathOccupied
+import domain.board.Board.*
+import domain.move.*
 
 
 /**
@@ -18,5 +20,18 @@ class King(override val army: Army) : Piece {
         return (move.rowsAbsoluteDistance() in NO_MOVE..ONE_MOVE)
                 && (move.colsAbsoluteDistance() in NO_MOVE..ONE_MOVE)
                 && !(move.colsAbsoluteDistance() == NO_MOVE && move.rowsAbsoluteDistance() == NO_MOVE)
+    }
+
+
+    /**
+     * Checks if the castle move is valid.
+     * @param board board where the move will happen
+     * @param move move to test
+     * @return true if the castle move is valid
+     */
+    fun isValidCastle(board: Board, move: Move): Boolean {
+        return move.isHorizontal() &&
+                !isStraightPathOccupied(board, move.copy(to = Castle.getRookPosition(move.to))) &&
+                move.from == Position(INITIAL_KING_COL, if (isWhite()) FIRST_ROW else LAST_ROW)
     }
 }

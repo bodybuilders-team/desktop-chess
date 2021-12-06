@@ -60,7 +60,7 @@ class BoardCheckTests {
                     "        ")
         )
 
-        assertEquals(Board.Position('d', 3), sut.getPositionOfKing(army = Army.WHITE))
+        assertEquals(Board.Position('d', 3), sut.getKingPosition(army = Army.WHITE))
     }
 
     @Test
@@ -78,7 +78,7 @@ class BoardCheckTests {
         )
 
         assertFailsWith<IllegalArgumentException> {
-            sut.getPositionOfKing(army = Army.WHITE)
+            sut.getKingPosition(army = Army.WHITE)
         }
     }
 
@@ -96,7 +96,7 @@ class BoardCheckTests {
                     "RNBQKBNR")
         )
         
-        assertTrue(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
+        assertTrue(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
@@ -113,7 +113,7 @@ class BoardCheckTests {
                     "RNBQ BNR")
         )
 
-        assertFalse(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
+        assertFalse(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
@@ -130,7 +130,7 @@ class BoardCheckTests {
                     "RNBQ BNR")
         )
 
-        assertTrue(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
+        assertTrue(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
@@ -147,7 +147,7 @@ class BoardCheckTests {
                     "RNB QBNR")
         )
 
-        assertFalse(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
+        assertFalse(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
@@ -164,7 +164,7 @@ class BoardCheckTests {
                     "RNBQ BNR")
         )
 
-        assertTrue(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
+        assertTrue(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
@@ -181,7 +181,7 @@ class BoardCheckTests {
                     "RNBQ BNR")
         )
 
-        assertFalse(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
+        assertFalse(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test

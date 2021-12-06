@@ -1,7 +1,7 @@
 package domain.pieces
 
 import domain.board.*
-import domain.move.Move
+import domain.move.*
 
 
 /**

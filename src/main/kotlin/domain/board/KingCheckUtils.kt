@@ -30,7 +30,7 @@ fun Board.isKingInCheck(position: Position, army: Army) = kingAttackers(position
  * @param army army of the king to check
  * @return true if the king is in check
  */
-fun Board.isKingInCheck(army: Army) = kingAttackers(getPositionOfKing(army), army).isNotEmpty()
+fun Board.isKingInCheck(army: Army) = kingAttackers(getKingPosition(army), army).isNotEmpty()
 
 
 /**
@@ -44,7 +44,7 @@ fun Board.isKingInCheck(army: Army) = kingAttackers(getPositionOfKing(army), arm
  * @return true if the king is in check mate
  */
 fun Board.isKingInCheckMate(army: Army): Boolean {
-    val kingPos = getPositionOfKing(army)
+    val kingPos = getKingPosition(army)
 
     return isKingInCheck(kingPos, army) && !isKingProtectable(kingPos, army) && !canKingMove(kingPos, army)
 }
@@ -59,7 +59,7 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
  * @return true if the king is in stalemate
  */
 fun Board.isKingInStaleMate(army: Army): Boolean {
-    val kingPos = getPositionOfKing(army)
+    val kingPos = getKingPosition(army)
     
     return !isKingInCheck(kingPos, army) && false // !hasAvailableMoves(army)
 }
@@ -177,7 +177,7 @@ fun Board.positionAttackers(position: Position, armyThatAttacks: Army): List<Mov
  * @return the position of the king of the [army]
  * @throws IllegalArgumentException if the [army] has no king
  */
-fun Board.getPositionOfKing(army: Army): Position {
+fun Board.getKingPosition(army: Army): Position {
     for (row in ROWS_RANGE) {
         for (col in COLS_RANGE) {
             val position = Position(col, row)

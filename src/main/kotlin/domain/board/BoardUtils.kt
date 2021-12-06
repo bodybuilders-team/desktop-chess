@@ -1,8 +1,7 @@
 package domain.board
 
-import domain.move.IllegalMoveException
 import domain.board.Board.*
-import domain.move.Move
+import domain.move.*
 import domain.pieces.*
 
 
@@ -10,12 +9,14 @@ import domain.pieces.*
 const val BOARD_SIDE_LENGTH = 8
 const val BOARD_SIZE = 64
 const val FIRST_COL = 'a'
+const val LAST_COL = 'h'
 const val FIRST_ROW = 1
+const val LAST_ROW = 8
 const val BLACK_FIRST_ROW = 8
 const val WHITE_FIRST_ROW = 1
 
-val COLS_RANGE = 'a'..'h'
-val ROWS_RANGE = 1..8
+val COLS_RANGE = FIRST_COL..LAST_COL
+val ROWS_RANGE = FIRST_ROW..LAST_ROW
 
 const val STRING_DEFAULT_BOARD =
             "rnbqkbnr" +
@@ -87,39 +88,27 @@ fun getPromotedPiece(piece: Piece, toPos: Position, promotion: Char?, moveInStri
 
 
 /**
- * Gets the position of the captured pawn from the en passant move.
- * @param attackerToPos position of the attacker after the move
- * @param attackingPiece attacker
- * @return position of the captured pawn
+ * Places/Removes the other piece from a special move.
+ * In a castle move, the other piece can be a king or a rook.
+ * In an en passant move, the other piece is the captured pawn.
+ * @param move move to make
+ * @param piece already moved piece
+ * @param board board to place/remove piece
  */
-fun getEnPassantCapturedPawnPosition(attackerToPos: Position, attackingPiece: Piece) =
-    Position(
-        col = attackerToPos.col,
-        row = attackerToPos.row + if (attackingPiece.isWhite()) -1 else +1
-    )
+fun Board.placePieceFromSpecialMoves(move: Move, piece: Piece, board: Board) {
+    if (move.type == MoveType.CASTLE) {
+        val toRemovePos =
+            if (piece is King) Castle.getRookPosition(move.to) else Castle.getKingPosition(move.to)
+        val toRemove = getPiece(toRemovePos)
 
-
-/**
- * Gets the from position of the rook in a castle move.
- * @param kingToPos king position after the castle move
- * @return position of the rook
- */
-fun getRookPosition(kingToPos: Position) =
-    Position(
-        col = if (kingToPos.col == 'g') 'h' else 'a',
-        row = kingToPos.row
-    )
-
-/**
- * Gets the to position of the rook in a castle move.
- * @param kingToPos king position after the castle move
- * @return position of the rook
- */
-fun getRookToPosition(kingToPos: Position) =
-    Position(
-        col = if (kingToPos.col == 'g') 'f' else 'd',
-        row = kingToPos.row
-    )
+        board.removePiece(toRemovePos)
+        board.setPiece(
+            if (piece is King) Castle.getRookToPosition(move.to) else Castle.getKingToPosition(move.to),
+            toRemove
+        )
+    } else if (move.type == MoveType.EN_PASSANT)
+        board.removePiece(getEnPassantCapturedPawnPosition(move.to, piece))
+}
 
 
 /**
