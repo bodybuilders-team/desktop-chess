@@ -1,6 +1,7 @@
 package boardTests
 
-import domain.*
+import domain.board.Board
+import domain.move.IllegalMoveException
 import kotlin.test.*
 
 

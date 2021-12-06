@@ -1,7 +1,7 @@
 package commandTests
 
-import domain.*
 import GameStateStub
+import domain.move.Move
 import kotlin.test.*
 
 

@@ -1,7 +1,8 @@
-package domain
+package domain.move
 
+import domain.board.*
 import domain.pieces.Army
-import domain.Board.Position
+import domain.board.Board.Position
 
 
 //TODO("Test")

@@ -1,6 +1,7 @@
 package uiTests
 
 import domain.*
+import domain.board.*
 import domain.pieces.Army
 import ui.console.getPrompt
 import kotlin.test.*

@@ -1,6 +1,6 @@
 package boardTests
 
-import domain.Board
+import domain.board.Board
 import kotlin.test.*
 
 

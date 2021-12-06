@@ -1,8 +1,9 @@
-package domain
+package domain.move
 
+import domain.board.*
 import kotlin.math.abs
-import domain.Board.Position
-import domain.pieces.*
+import domain.board.Board.Position
+import domain.pieces.Piece
 
 
 /**
@@ -54,17 +55,19 @@ data class Move(
         /**
          * Searches for a valid move given a move and if the search is in a specific column or row.
          *
-         * If [optionalFromCol] is true, all columns are searched. The same applies to [optionalFromRow]
+         * If [optionalFromCol] is true, all columns are searched. The same applies to [optionalFromRow].
+         *
+         * Only one move should exist, otherwise null is returned.
+         *
          * @param move move to search for
          * @param optionalFromCol if the search isn't in a specific column
          * @param optionalFromRow if the search isn't in a specific row
          * @param board board to search for the move in
          * @param previousMoves previous moves made
-         * @return the valid move or null if it wasn't found
+         * @return the valid move or null if it wasn't found or multiple were found
          */
         private fun searchMove(
-            move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, board: Board,
-            previousMoves: List<Move>
+            move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, board: Board, previousMoves: List<Move>
         ): Move? {
             var foundMove: Move? = null
 
@@ -78,50 +81,17 @@ data class Move(
 
                     if (piece.type.symbol != move.symbol) continue
 
-                    val newMove = move.copy(from = fromPos)
-                    val isValidMove =
-                        isValidEnPassant(previousMoves, newMove, piece, board) ||
-                            piece.isValidMove(board, newMove)
+                    val validatedMove = move.copy(from = fromPos).getValidatedMove(piece, board, previousMoves)
 
-
-                    if (fromPos != newMove.to && isValidMove && board.isValidCapture(piece, newMove)) {
+                    if (validatedMove != null) {
                         if (foundMove != null) return null
-                        foundMove = newMove.copy(capture = board.isPositionOccupied(newMove.to))
+                        foundMove = validatedMove
                     }
                 }
             }
 
             return foundMove
         }
-
-
-        /**
-         * Checks if an en passant move is valid/possible.
-         * @param previousMoves previous moves made
-         * @param move move to check if an en passant is valid/possible.
-         * @param piece piece to check if an en passant move is valid/possible
-         * @param board board where the possible en passant move will happen
-         * @return true if an en passant move is valid/possible
-         */
-        private fun isValidEnPassant(previousMoves: List<Move>, move: Move, piece: Piece, board: Board) =
-            previousMoves.isNotEmpty() &&
-                    isEnPassantPossible(move, piece, previousMoves) &&
-                    piece is Pawn &&
-                    piece.isValidEnPassant(board, move)
-
-
-        /**
-         * Checks if the last move is valid to do en passant move immediately next.
-         * @param move en passant move
-         * @param piece piece that makes en passant
-         * @param previousMoves previous game moves
-         * @return true if the last move is valid.
-         */
-        private fun isEnPassantPossible(move: Move, piece: Piece, previousMoves: List<Move>) =
-            previousMoves.last().toString() in listOf(
-                "P${move.from.col - 1}${move.from.row + 2 * if (piece.isWhite()) 1 else -1}${move.from.col - 1}${move.from.row}",
-                "P${move.from.col + 1}${move.from.row + 2 * if (piece.isWhite()) 1 else -1}${move.from.col + 1}${move.from.row}"
-            )
 
 
         /**
@@ -217,9 +187,7 @@ data class Move(
          * @param moveInString piece move
          * @return true if the move in String is correctly formatted
          */
-        fun isCorrectlyFormatted(moveInString: String): Boolean {
-            return moveRegexFormat.toRegex().containsMatchIn(moveInString)
-        }
+        fun isCorrectlyFormatted(moveInString: String) = moveRegexFormat.toRegex().containsMatchIn(moveInString)
     }
 
 
@@ -227,25 +195,25 @@ data class Move(
      * Return true if the movement is vertical
      * @return true if the movement is vertical
      */
-    fun isVertical() = from.col == to.col
+    fun isVertical() = from.col == to.col && rowsAbsoluteDistance() != 0
 
     /**
      * Return true if the movement is horizontal
      * @return true if the movement is horizontal
      */
-    fun isHorizontal() = from.row == to.row
+    fun isHorizontal() = from.row == to.row && colsAbsoluteDistance() != 0
 
     /**
      * Return true if the movement is straight (horizontal or vertical)
      * @return true if the movement is straight (horizontal or vertical)
      */
-    fun isStraight() = isHorizontal() || isVertical()
+    fun isStraight() = isHorizontal() xor isVertical()
 
     /**
      * Return true if the movement is diagonal
      * @return true if the movement is diagonal
      */
-    fun isDiagonal() = rowsAbsoluteDistance() == colsAbsoluteDistance()
+    fun isDiagonal() = rowsAbsoluteDistance() == colsAbsoluteDistance() && rowsDistance() != 0
 
 
     /**
@@ -276,6 +244,25 @@ data class Move(
     override fun toString(): String {
         return "$symbol$from${if (capture) "x" else ""}$to${if (promotion != null) "=$promotion" else ""}" // ( ͡° ͜ʖ ͡°)
     }
+}
+
+
+/**
+ * Gets a validated move, with information of its move type and capture, or null if the move isn't valid.
+ * @param piece piece of the move's from position
+ * @param board board where the move will happen
+ * @param previousMoves previous moves made
+ * @return validated move, with information of its move type and capture, or null if the move isn't valid.
+ */
+fun Move.getValidatedMove(piece: Piece, board: Board, previousMoves: List<Move>): Move? {
+    val validMove = when {
+        isValidEnPassant(piece, board, previousMoves)                       -> copy(type = MoveType.EN_PASSANT)
+        isValidCastle(piece, board, previousMoves)                          -> copy(type = MoveType.CASTLE)
+        piece.isValidMove(board, this) && board.isValidCapture(piece, this) -> copy(type = MoveType.NORMAL)
+        else -> return null
+    }
+
+    return validMove.copy(capture = board.isPositionOccupied(validMove.to))
 }
 
 

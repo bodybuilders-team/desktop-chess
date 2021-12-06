@@ -1,11 +1,14 @@
 package piecesTests
 
-import domain.*
+import domain.board.Board
+import domain.board.getMatrix2DFromString
+import domain.board.isValidMove
 import kotlin.test.*
 
 
 class BishopMoveTests {
-    private val sut = Board(getMatrix2DFromString(
+    private val sut = Board(
+        getMatrix2DFromString(
             "        " +
             "        " +
             "        " +
@@ -14,7 +17,8 @@ class BishopMoveTests {
             "     p  " +
             "    B   " +
             "        "
-    ))
+    )
+    )
 
     @Test
     fun `Bishop vertical move is not valid`() {

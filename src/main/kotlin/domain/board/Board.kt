@@ -1,5 +1,6 @@
-package domain
+package domain.board
 
+import domain.move.*
 import domain.pieces.*
 
 

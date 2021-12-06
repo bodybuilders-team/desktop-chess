@@ -1,4 +1,4 @@
-package domain
+package domain.move
 
 /**
  * Exception thrown when an Illegal move is made by one of the users

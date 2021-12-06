@@ -1,6 +1,6 @@
 package storage
 
-import domain.Move
+import domain.move.Move
 
 
 /**

@@ -1,6 +1,7 @@
 package ui.console
 
 import domain.*
+import domain.board.*
 
 
 /**

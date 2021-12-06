@@ -1,4 +1,6 @@
 import domain.*
+import domain.board.*
+import domain.move.IllegalMoveException
 import domain.pieces.Army
 import storage.*
 import storage.mongodb.createMongoClient

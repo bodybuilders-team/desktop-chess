@@ -1,6 +1,6 @@
 package boardTests
 
-import domain.*
+import domain.board.*
 import domain.pieces.Army
 import kotlin.test.*
 
@@ -8,7 +8,8 @@ import kotlin.test.*
 class BoardCheckTests {
     @Test
     fun `positionAttackers' size is 2 if two enemy pieces can attack`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                 "rnbqkbnr" +
                 "pppppppp" +
                 "    P   " +
@@ -16,7 +17,8 @@ class BoardCheckTests {
                 "        " +
                 "        " +
                 "PPPP PPP" +
-                "RNBQKBNR"))
+                "RNBQKBNR")
+        )
 
         val position = Board.Position('e', 6)
 
@@ -26,7 +28,8 @@ class BoardCheckTests {
 
     @Test
     fun `positionAttackers is empty if no piece attacks the position`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "rnbqkbnr" +
                     "pppppppp" +
                     "    P   " +
@@ -34,7 +37,8 @@ class BoardCheckTests {
                     "        " +
                     "        " +
                     "PPPP PPP" +
-                    "RNBQKBNR"))
+                    "RNBQKBNR")
+        )
 
         val position = Board.Position('e', 4)
 
@@ -44,7 +48,8 @@ class BoardCheckTests {
 
     @Test
     fun `getPositionOfKing returns position of king of specified army`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "        " +
                     "        " +
                     "        " +
@@ -52,14 +57,16 @@ class BoardCheckTests {
                     "        " +
                     "   K    " +
                     "    N   " +
-                    "        "))
+                    "        ")
+        )
 
         assertEquals(Board.Position('d', 3), sut.getPositionOfKing(army = Army.WHITE))
     }
 
     @Test
     fun `getPositionOfKing throws if king of specified army isn't found`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "        " +
                     "        " +
                     "        " +
@@ -67,7 +74,8 @@ class BoardCheckTests {
                     "        " +
                     "        " +
                     "    N   " +
-                    "        "))
+                    "        ")
+        )
 
         assertFailsWith<IllegalArgumentException> {
             sut.getPositionOfKing(army = Army.WHITE)
@@ -76,7 +84,8 @@ class BoardCheckTests {
 
     @Test
     fun `isKingProtectable returns true if king is protectable and the attacking move is vertical`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "rnbqkbnr" +
                     "pppppppp" +
                     "    P   " +
@@ -84,14 +93,16 @@ class BoardCheckTests {
                     "    q   " +
                     "        " +
                     "PPPP PPP" +
-                    "RNBQKBNR"))
+                    "RNBQKBNR")
+        )
         
         assertTrue(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
     fun `isKingProtectable returns false if king isn't protectable and the attacking move is vertical`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "rnbqkbnr" +
                     "pppppppp" +
                     "    P   " +
@@ -99,14 +110,16 @@ class BoardCheckTests {
                     "    K   " +
                     "        " +
                     "PPPP PPP" +
-                    "RNBQ BNR"))
+                    "RNBQ BNR")
+        )
 
         assertFalse(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
     fun `isKingProtectable returns true if king is protectable and the attacking move is horizontal`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "rnbqkbnr" +
                     "pppppppp" +
                     "    P   " +
@@ -114,14 +127,16 @@ class BoardCheckTests {
                     "        " +
                     "    K  r" +
                     "PPPP PPP" +
-                    "RNBQ BNR"))
+                    "RNBQ BNR")
+        )
 
         assertTrue(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
     fun `isKingProtectable returns false if king isn't protectable and the attacking move is horizontal`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "rnbqkbnr" +
                     "pppppppp" +
                     "        " +
@@ -129,14 +144,16 @@ class BoardCheckTests {
                     "        " +
                     "        " +
                     "PPPP PPP" +
-                    "RNB QBNR"))
+                    "RNB QBNR")
+        )
 
         assertFalse(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
     fun `isKingProtectable returns true if king is protectable and the attacking move is diagonal`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "rnbqkbnr" +
                     "pppppppp" +
                     "    P   " +
@@ -144,14 +161,16 @@ class BoardCheckTests {
                     "        " +
                     "    K   " +
                     "PPPP PPP" +
-                    "RNBQ BNR"))
+                    "RNBQ BNR")
+        )
 
         assertTrue(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
     fun `isKingProtectable returns false if king isn't protectable and the attacking move is diagonal`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "rnbqkbnr" +
                     "pppppppp" +
                     "    P   " +
@@ -159,14 +178,16 @@ class BoardCheckTests {
                     "        " +
                     "    K   " +
                     "PPPP  PP" +
-                    "RNBQ BNR"))
+                    "RNBQ BNR")
+        )
 
         assertFalse(sut.isKingProtectable(sut.getPositionOfKing(army = Army.WHITE), army = Army.WHITE))
     }
 
     @Test
     fun `isKingInCheck returns true if king is in check`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "        " +
                     "        " +
                     "        " +
@@ -174,7 +195,8 @@ class BoardCheckTests {
                     "        " +
                     "   K    " +
                     "        " +
-                    "        "))
+                    "        ")
+        )
         
         val army = Army.WHITE
         assertTrue(sut.isKingInCheck(army))
@@ -182,7 +204,8 @@ class BoardCheckTests {
 
     @Test
     fun `isKingInCheck returns false if king isn't in check`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
             "        " +
                     "        " +
                     "        " +
@@ -190,7 +213,8 @@ class BoardCheckTests {
                     "        " +
                     "    K   " +
                     "        " +
-                    "        "))
+                    "        ")
+        )
 
         val army = Army.WHITE
         assertFalse(sut.isKingInCheck(army))
@@ -198,7 +222,8 @@ class BoardCheckTests {
 
     @Test
     fun `isKingInCheckMate returns true if king is in checkmate`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "        " +
                     "    Kq  " +
                     "      b " +
@@ -206,14 +231,16 @@ class BoardCheckTests {
                     "        " +
                     "        " +
                     "        " +
-                    "        "))
+                    "        ")
+        )
 
         assertTrue(sut.isKingInCheckMate(Army.WHITE))
     }
 
     @Test
     fun `isKingInCheckMate returns false if king isn't in checkmate`(){
-        val sut = Board(getMatrix2DFromString(
+        val sut = Board(
+            getMatrix2DFromString(
                     "        " +
                     "    K   " +
                     "      b " +
@@ -221,7 +248,8 @@ class BoardCheckTests {
                     "        " +
                     "        " +
                     "        " +
-                    "        "))
+                    "        ")
+        )
 
         assertFalse(sut.isKingInCheckMate(Army.WHITE))
     }

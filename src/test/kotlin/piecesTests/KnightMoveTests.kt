@@ -1,11 +1,12 @@
 package piecesTests
 
-import domain.*
+import domain.board.*
 import kotlin.test.*
 
 
 class KnightMoveTests {
-    private val sut = Board(getMatrix2DFromString(
+    private val sut = Board(
+        getMatrix2DFromString(
             "        " +
             "        " +
             "        " +
@@ -14,7 +15,8 @@ class KnightMoveTests {
             "  N     " +
             "        " +
             "        "
-    ))
+    )
+    )
 
     @Test
     fun `Knight upper right with capture is valid`() {

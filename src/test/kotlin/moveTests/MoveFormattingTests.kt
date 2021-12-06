@@ -1,6 +1,6 @@
 package moveTests
 
-import domain.*
+import domain.move.Move
 import kotlin.test.*
 
 

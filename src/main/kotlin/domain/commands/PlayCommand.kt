@@ -1,6 +1,8 @@
 package domain.commands
 
 import domain.*
+import domain.board.*
+import domain.move.*
 import storage.GameState
 
 

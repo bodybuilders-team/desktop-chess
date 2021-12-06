@@ -1,6 +1,7 @@
 package domain.pieces
 
-import domain.*
+import domain.board.*
+import domain.move.Move
 
 
 /**
@@ -15,7 +16,7 @@ class Pawn(override val army: Army) : Piece {
 
     override fun isValidMove(board: Board, move: Move) =
         move.isVertical() && isValidPawnVerticalMove(board, move) ||
-                move.colsAbsoluteDistance() == ONE_MOVE && isValidPawnDiagonalMove(board, move)
+                move.isDiagonal() && isValidPawnDiagonalMove(board, move)
 
 
     /**

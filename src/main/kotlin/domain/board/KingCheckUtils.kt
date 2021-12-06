@@ -1,7 +1,9 @@
-package domain
+package domain.board
 
+import domain.*
 import domain.pieces.*
-import domain.Board.*
+import domain.board.Board.*
+import domain.move.*
 
 
 /**

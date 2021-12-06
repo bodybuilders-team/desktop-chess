@@ -1,5 +1,7 @@
 package domain
 
+import domain.board.*
+import domain.move.Move
 import domain.pieces.Army
 
 

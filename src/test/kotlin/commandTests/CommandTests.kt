@@ -2,7 +2,9 @@ package commandTests
 
 import domain.*
 import GameStateStub
+import domain.board.*
 import domain.commands.*
+import domain.move.Move
 import domain.pieces.Army
 import java.lang.IllegalArgumentException
 import kotlin.test.*

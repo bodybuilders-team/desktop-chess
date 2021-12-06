@@ -1,4 +1,4 @@
-import domain.Move
+import domain.move.Move
 import storage.GameState
 
 

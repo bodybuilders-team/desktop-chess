@@ -1,11 +1,12 @@
 package piecesTests
 
-import domain.*
+import domain.board.*
 import kotlin.test.*
 
 
 class QueenMoveTests {
-    private val sut = Board(getMatrix2DFromString(
+    private val sut = Board(
+        getMatrix2DFromString(
             "        " +
             "        " +
             "        " +
@@ -14,7 +15,8 @@ class QueenMoveTests {
             "        " +
             " Q      " +
             "        "
-    ))
+    )
+    )
 
     @Test
     fun `Queen vertical(up) move is valid`() {

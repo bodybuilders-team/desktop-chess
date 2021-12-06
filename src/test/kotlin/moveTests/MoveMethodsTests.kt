@@ -1,6 +1,7 @@
 package moveTests
 
-import domain.*
+import domain.board.Board
+import domain.move.*
 import kotlin.test.*
 
 

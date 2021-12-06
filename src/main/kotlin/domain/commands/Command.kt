@@ -1,6 +1,8 @@
 package domain.commands
 
 import domain.*
+import domain.board.Board
+import domain.move.Move
 import domain.pieces.*
 
 

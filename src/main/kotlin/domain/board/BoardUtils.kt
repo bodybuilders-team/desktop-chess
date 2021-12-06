@@ -1,6 +1,8 @@
-package domain
+package domain.board
 
-import domain.Board.*
+import domain.move.IllegalMoveException
+import domain.board.Board.*
+import domain.move.Move
 import domain.pieces.*
 
 
@@ -54,14 +56,9 @@ fun Board.isValidMove(moveInString: String): Boolean {
  * @return true if the capture is valid
  */
 fun Board.isValidCapture(piece: Piece, move: Move): Boolean {
-    if (isPositionOccupied(move.to)) {
-        val captured = getPiece(move.to) ?: return false
-        return captured.army != piece.army
-    }
-    else {
-        // TODO("ver se é para fazer alguma coisa aqui")
-    }
-    return true
+    val capturedPiece = getPiece(move.to) ?: return true
+
+    return piece.army != capturedPiece.army
 }
 
 
