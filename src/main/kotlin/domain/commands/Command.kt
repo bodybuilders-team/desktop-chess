@@ -4,6 +4,8 @@ import domain.*
 import domain.board.Board
 import domain.move.Move
 import domain.pieces.*
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 
 /**
@@ -50,4 +52,26 @@ fun boardWithMoves(moves: List<Move>): Board {
     var newBoard = Board()
     moves.forEach { move -> newBoard = newBoard.makeMove(move) }
     return newBoard
+}
+
+
+/**
+ * Exception thrown when an error occurs while executing a command.
+ * @param message cause of the error
+ */
+class CommandException(override val message: String?) : Exception(message)
+
+
+fun cmdRequire(value: Boolean, lazyMessage: () -> Any) {
+    if (!value) throw CommandException(lazyMessage().toString())
+}
+
+
+@OptIn(ExperimentalContracts::class)
+fun <T> cmdRequireNotNull(value: T?, lazyMessage: () -> Any) {
+    contract {
+        returns() implies (value != null)
+    }
+
+    if (value == null) throw CommandException(lazyMessage().toString())
 }

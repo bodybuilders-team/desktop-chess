@@ -1,8 +1,21 @@
 package storage
 
+import com.mongodb.MongoException
 import domain.move.Move
 import com.mongodb.client.MongoDatabase
 import storage.mongodb.*
+
+
+/**
+ * Tries to execute a code block. If a MongoException is caught, throws a GameStateAccessException.
+ * @throws GameStateAccessException if a MongoException is caught
+ */
+fun <T> tryDataBaseAccess(codeBlock: () -> T) =
+    try {
+        codeBlock()
+    } catch (err: MongoException) {
+        throw GameStateAccessException(err.message ?: "")
+    }
 
 
 /**
@@ -12,19 +25,19 @@ import storage.mongodb.*
 class MongoDBGameState(private val db: MongoDatabase) : GameState {
 
     override fun getAllMoves(game: String): List<Move> {
-        return db.getCollectionWithId<Move>(game).getAll().toList()
+        return tryDataBaseAccess { db.getCollectionWithId<Move>(game).getAll().toList() }
     }
 
     override fun postMove(game: String, move: Move): Boolean {
-        return db.createDocument(game, move)
+        return tryDataBaseAccess { db.createDocument(game, move) }
     }
 
     override fun createGame(game: String) {
         require(!gameExists(game))
-        db.createCollection(game)
+        tryDataBaseAccess { db.createCollection(game) }
     }
 
     override fun gameExists(game: String): Boolean {
-        return game in db.getRootCollectionsIds()
+        return tryDataBaseAccess { game in db.getRootCollectionsIds() }
     }
 }

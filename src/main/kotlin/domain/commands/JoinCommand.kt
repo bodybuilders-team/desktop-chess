@@ -15,13 +15,15 @@ import storage.GameState
 class JoinCommand(private val db: GameState) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
-        requireNotNull(parameter) { "Missing game name." }
-        require(db.gameExists(parameter)) { "Unknown game." }
+        cmdRequireNotNull(parameter) { "Missing game name." }
+        cmdRequire(db.gameExists(parameter)) { "Unknown game." }
 
         val moves = db.getAllMoves(parameter)
         val board = boardWithMoves(moves)
 
-        val inMate = board.isKingInMate(Army.WHITE) || board.isKingInMate(Army.BLACK)
+        val inMate = board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK) ||
+                currentTurnArmy(moves) == Army.WHITE && board.isKingInStaleMate(Army.WHITE) ||
+                currentTurnArmy(moves) == Army.BLACK && board.isKingInStaleMate(Army.BLACK)
 
         val state = when {
             inMate -> SessionState.ENDED

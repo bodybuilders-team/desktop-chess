@@ -9,7 +9,10 @@ import ui.console.*
  * @property action command
  * @property display view of the command
  */
-data class CommandHandler(val action: Command, val display: View)
+data class CommandHandler(
+    val action: Command,
+    val display: View
+)
 
 
 /**

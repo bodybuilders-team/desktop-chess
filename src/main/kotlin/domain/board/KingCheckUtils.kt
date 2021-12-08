@@ -64,13 +64,6 @@ fun Board.isKingInStaleMate(army: Army): Boolean {
 
 
 /**
- * Checks if the king of the [army] is in mate (in checkmate or stalemate).
- * @param army army of the king to mate
- */
-fun Board.isKingInMate(army: Army) = isKingInCheckMate(army) || isKingInStaleMate(army)
-
-
-/**
  * Returns list of moves attacking [army] king.
  * @param position position of the king
  * @param army army of the king to attack

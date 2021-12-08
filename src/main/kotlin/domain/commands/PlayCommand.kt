@@ -10,18 +10,21 @@ import storage.GameState
  * Executes a move command if it corresponds to the rules
  * @param db database where the moves are stored
  * @param chess current chess game
- * @throws IllegalArgumentException if game has not been initialized yet
- * @throws IllegalArgumentException if it is not the user's turn
- * @throws IllegalArgumentException if move to be made not specified
+ * @throws CommandException if game has not been initialized yet
+ * @throws CommandException if it is not the user's turn
+ * @throws CommandException if the game ended
+ * @throws CommandException if move to be made not specified
+ * @throws IllegalArgumentException if there's no piece in the specified from position in move
+ * @throws IllegalMoveException if the user tried to play with an opponent's piece
  */
 class PlayCommand(private val db: GameState, private val chess: Session) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
-        require(!chess.isLogging()) { "Can't play without a game: try open or join commands." }
-        require(chess.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
-        require(chess.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
+        cmdRequire(!chess.isLogging()) { "Can't play without a game: try open or join commands." }
+        cmdRequire(chess.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
+        cmdRequire(chess.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
 
-        requireNotNull(parameter) { "Missing move." }
+        cmdRequireNotNull(parameter) { "Missing move." }
 
         val move = Move(parameter, chess.board, chess.moves)
 

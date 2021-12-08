@@ -1,5 +1,6 @@
 import domain.*
 import domain.board.*
+import domain.commands.CommandException
 import domain.move.IllegalMoveException
 import domain.pieces.Army
 import storage.*
@@ -38,7 +39,7 @@ fun main() {
                 moves = emptyList(),
                 currentCheck = Check.NO_CHECK
             )
-            val dataBase = MongoDBGameState(driver.getDatabase(System.getenv(ENV_DB_NAME)))
+            val dataBase = MongoDBGameState(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
 
             while (true) {
                 try {
@@ -46,22 +47,21 @@ fun main() {
                     val (command, parameter) = readCommand(getPrompt(chess))
 
                     val handler = dispatcher[command]
-                    if (handler == null) {
+                    if (handler == null)
                         println("Invalid command")
-                        continue
+                    else {
+                        val result = handler.action(parameter)
+                        if (result.isSuccess) {
+                            chess = result.getOrThrow()
+                            handler.display(chess)
+                        } else break
                     }
-
-                    val result = handler.action(parameter)
-                    if (result.isSuccess) {
-                        chess = result.getOrThrow()
-                        handler.display(chess)
-                    } else break
-
                 } catch (err: Exception) {
                     println(
                         when (err) {
                             is IllegalMoveException -> "Illegal move \"${err.move}\". ${err.message}"
-                            else -> "ERROR: ${err.message}"
+                            is CommandException -> "ERROR: ${err.message}"
+                            else -> throw err
                         }
                     )
                 }

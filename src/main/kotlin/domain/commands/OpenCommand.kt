@@ -9,12 +9,12 @@ import storage.GameState
 /**
  * Opens a game with the received name or creates a new game if it doesn't exist
  * @param db database where the moves are stored
- * @throws IllegalArgumentException if game name not specified
+ * @throws CommandException if game name not specified
  */
 class OpenCommand(private val db: GameState) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
-        requireNotNull(parameter) { "Missing game name." }
+        cmdRequireNotNull(parameter) { "Missing game name." }
 
         val moves =
             if (db.gameExists(parameter)) db.getAllMoves(parameter)
@@ -25,7 +25,9 @@ class OpenCommand(private val db: GameState) : Command {
 
         val board = boardWithMoves(moves)
 
-        val inMate = board.isKingInMate(Army.WHITE) || board.isKingInMate(Army.BLACK)
+        val inMate = board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK) ||
+                currentTurnArmy(moves) == Army.WHITE && board.isKingInStaleMate(Army.WHITE) ||
+                currentTurnArmy(moves) == Army.BLACK && board.isKingInStaleMate(Army.BLACK)
 
         val state = when {
             inMate -> SessionState.ENDED
@@ -41,8 +43,8 @@ class OpenCommand(private val db: GameState) : Command {
                 board = board,
                 moves = moves,
                 currentCheck =
-                if (state == SessionState.YOUR_TURN && board.isKingInCheck(Army.WHITE)) Check.CHECK
-                else Check.NO_CHECK
+                    if (state == SessionState.YOUR_TURN && board.isKingInCheck(Army.WHITE)) Check.CHECK
+                    else Check.NO_CHECK
             )
         )
     }

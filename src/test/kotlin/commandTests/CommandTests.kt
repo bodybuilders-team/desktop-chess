@@ -59,7 +59,7 @@ class CommandTests {
     fun `Join command to a game that doesn't exist throws`(){
         val db = GameStateStub()
 
-        assertFailsWith<IllegalArgumentException> {
+        assertFailsWith<CommandException> {
             JoinCommand(db).execute("test")
         }
     }
