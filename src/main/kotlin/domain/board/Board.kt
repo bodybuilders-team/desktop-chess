@@ -40,7 +40,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * @param pos position to set
      * @param piece piece to put in [pos]
      */
-    fun setPiece(pos: Position, piece: Piece?) {
+    fun setPiece(pos: Position, piece: Piece) {
         matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = piece
     }
 
@@ -50,7 +50,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * @param pos position to remove the piece
      */
     fun removePiece(pos: Position) {
-        setPiece(pos, null)
+        matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = null
     }
 
 
@@ -78,28 +78,15 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
 
         newBoard.setPiece(
             move.to,
-            if (move.promotion == null) piece
-            else getPromotedPiece(piece, move.to, move.promotion, move.toString())
+            if (move.promotion == null) piece else getPieceFromSymbol(move.promotion, piece.army)
         )
 
-        placePieceFromSpecialMoves(move, piece, newBoard)
+        newBoard.placePieceFromSpecialMoves(move, piece)
 
-        if (isKingInCheck(piece.army))
+        if (newBoard.isKingInCheck(piece.army))
             throw IllegalMoveException(move.toString(), "Your King is in check! You must protect your King.")
 
         return newBoard
-    }
-
-
-
-
-    /**
-     * Makes a move in the board.
-     * @param moveInString move to make in string
-     * @return new board with the move made
-     */
-    fun makeMove(moveInString: String): Board {
-        return makeMove(Move(moveInString, this, emptyList()))
     }
 
 

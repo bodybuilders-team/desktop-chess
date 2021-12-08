@@ -1,9 +1,8 @@
 package piecesTests
 
-import domain.board.Board
-import domain.board.getMatrix2DFromString
-import domain.board.isValidMove
+import domain.board.*
 import kotlin.test.*
+import isValidMove
 
 
 class BishopMoveTests {

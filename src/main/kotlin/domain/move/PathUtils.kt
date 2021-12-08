@@ -1,9 +1,8 @@
-package domain
+package domain.move
 
 import domain.board.*
 import domain.board.Board.*
 import domain.pieces.ONE_MOVE
-import domain.move.Move
 import kotlin.math.abs
 
 

@@ -2,6 +2,7 @@ package piecesTests
 
 import domain.board.*
 import kotlin.test.*
+import isValidMove
 
 
 class KnightMoveTests {

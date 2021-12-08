@@ -5,18 +5,37 @@ import domain.board.Board.*
 import domain.pieces.*
 
 const val INITIAL_KING_COL = 'e'
+const val INITIAL_ROOK_COL_FURTHER_FROM_KING = FIRST_COL
+const val INITIAL_ROOK_COL_CLOSER_TO_KING = LAST_COL
+const val LONG_CASTLE_ROOK_COL = 'd'
+const val SHORT_CASTLE_ROOK_COL = 'f'
+const val LONG_CASTLE_KING_COL = 'c'
+const val SHORT_CASTLE_KING_COL = 'g'
 
 /**
- * Checks if an en passant move is valid/possible.
- * @param piece piece to check if an en passant move is valid/possible
- * @param board board where the possible en passant move will happen
+ * Checks if the move is a valid en passant.
+ * @param piece piece to check if the move is a valid en passant
+ * @param board board where the move will happen
  * @param previousMoves previous moves made
- * @return true if an en passant move is valid/possible
+ * @return true if the move is a valid en passant
  */
 fun Move.isValidEnPassant(piece: Piece, board: Board, previousMoves: List<Move>) =
     isEnPassantPossible(piece, previousMoves) &&
             piece is Pawn &&
             piece.isValidEnPassant(board, this)
+
+
+/**
+ * Checks if the move is a valid castle.
+ * @param piece piece to check if the move is a valid castle
+ * @param board board where the move will happen
+ * @param previousMoves previous moves made
+ * @return true if the move is a valid castle
+ */
+fun Move.isValidCastle(piece: Piece, board: Board, previousMoves: List<Move>): Boolean {
+    return isCastlePossible(piece, previousMoves) &&
+            (piece is King && piece.isValidCastle(board, this) || piece is Rook && piece.isValidCastle(board, this))
+}
 
 
 /**
@@ -33,19 +52,6 @@ fun Move.isEnPassantPossible(piece: Piece, previousMoves: List<Move>) =
 
 
 /**
- * Checks if a castle move is valid/possible.
- * @param piece piece to check if a castle move is valid/possible
- * @param board board where the possible castle move will happen
- * @param previousMoves previous moves made
- * @return true if a castle move is valid/possible
- */
-fun Move.isValidCastle(piece: Piece, board: Board, previousMoves: List<Move>): Boolean {
-    return isCastlePossible(piece, previousMoves) &&
-            (piece is King && piece.isValidCastle(board, this) || piece is Rook && piece.isValidCastle(board, this))
-}
-
-
-/**
  * Checks if a castle move is possible.
  * @param piece piece that makes castle move
  * @param previousMoves previous game moves
@@ -53,8 +59,16 @@ fun Move.isValidCastle(piece: Piece, board: Board, previousMoves: List<Move>): B
  */
 fun isCastlePossible(piece: Piece, previousMoves: List<Move>) =
     previousMoves.none { move ->
-        piece.isWhite() && move.from !in listOf(Position('a', 1), Position('h', 1), Position('e', 1)) ||
-        !piece.isWhite() && move.from !in listOf(Position('a', 8), Position('h', 8), Position('e', 8))
+        piece.isWhite() && move.from in listOf(
+            Position(INITIAL_ROOK_COL_FURTHER_FROM_KING, WHITE_FIRST_ROW),
+            Position(INITIAL_ROOK_COL_CLOSER_TO_KING, WHITE_FIRST_ROW),
+            Position(INITIAL_KING_COL, WHITE_FIRST_ROW)
+        ) ||
+                !piece.isWhite() && move.from in listOf(
+            Position(INITIAL_ROOK_COL_FURTHER_FROM_KING, BLACK_FIRST_ROW),
+            Position(INITIAL_ROOK_COL_CLOSER_TO_KING, BLACK_FIRST_ROW),
+            Position(INITIAL_KING_COL, BLACK_FIRST_ROW)
+        )
     }
 
 
@@ -66,7 +80,7 @@ object Castle {
      */
     fun getRookPosition(kingToPos: Position) =
         Position(
-            col = if (kingToPos.col == 'g') 'h' else 'a',
+            col = if (kingToPos.col == SHORT_CASTLE_KING_COL) INITIAL_ROOK_COL_CLOSER_TO_KING else INITIAL_ROOK_COL_FURTHER_FROM_KING,
             row = kingToPos.row
         )
 
@@ -77,7 +91,7 @@ object Castle {
      */
     fun getRookToPosition(kingToPos: Position) =
         Position(
-            col = if (kingToPos.col == 'g') 'f' else 'd',
+            col = if (kingToPos.col == SHORT_CASTLE_KING_COL) SHORT_CASTLE_ROOK_COL else LONG_CASTLE_ROOK_COL,
             row = kingToPos.row
         )
 
@@ -99,7 +113,7 @@ object Castle {
      */
     fun getKingToPosition(rookToPos: Position) =
         Position(
-            col = if (rookToPos.col == 'f') 'g' else 'c',
+            col = if (rookToPos.col == SHORT_CASTLE_ROOK_COL) SHORT_CASTLE_KING_COL else LONG_CASTLE_KING_COL,
             row = rookToPos.row
         )
 }
@@ -114,7 +128,7 @@ object Castle {
 fun getEnPassantCapturedPawnPosition(attackerToPos: Position, attackingPiece: Piece) =
     Position(
         col = attackerToPos.col,
-        row = attackerToPos.row + if (attackingPiece.isWhite()) -1 else +1
+        row = attackerToPos.row + if (attackingPiece.isWhite()) -1 else 1
     )
 
 

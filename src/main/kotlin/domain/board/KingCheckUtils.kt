@@ -1,6 +1,5 @@
 package domain.board
 
-import domain.*
 import domain.pieces.*
 import domain.board.Board.*
 import domain.move.*
@@ -23,7 +22,7 @@ enum class Check {
  * @param army army of the king to check
  * @return true if the king is in check
  */
-fun Board.isKingInCheck(position: Position, army: Army) = kingAttackers(position, army).isNotEmpty()
+private fun Board.isKingInCheck(position: Position, army: Army) = kingAttackers(position, army).isNotEmpty()
 
 /**
  * Checks if the king of the [army] is in check.
@@ -50,7 +49,6 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
 }
 
 
-//TODO("Test")
 /**
  * Checks if the king of the [army] is in stalemate.
  * 
@@ -65,7 +63,6 @@ fun Board.isKingInStaleMate(army: Army): Boolean {
 }
 
 
-//TODO("Test")
 /**
  * Checks if the king of the [army] is in mate (in checkmate or stalemate).
  * @param army army of the king to mate
@@ -73,7 +70,6 @@ fun Board.isKingInStaleMate(army: Army): Boolean {
 fun Board.isKingInMate(army: Army) = isKingInCheckMate(army) || isKingInStaleMate(army)
 
 
-// TODO("Test")
 /**
  * Returns list of moves attacking [army] king.
  * @param position position of the king
@@ -117,7 +113,6 @@ fun Board.isKingProtectable(position: Position, army: Army): Boolean {
 }
 
 
-// TODO("Test")
 /**
  * Checks if the [army] king can move to an adjacent position.
  * @param position position of the king
@@ -161,8 +156,8 @@ fun Board.positionAttackers(position: Position, armyThatAttacks: Army): List<Mov
             val piece = getPiece(fromPos) ?: continue
             if (piece.army != armyThatAttacks) continue
 
-            val move = Move(piece.type.symbol, fromPos, capture = true, position, promotion = null,  MoveType.NORMAL)
-            if (piece.isValidMove(this, move) && isValidCapture(piece, move))
+            val move = Move(piece.type.symbol, fromPos, capture = false, position, promotion = null,  MoveType.NORMAL)
+            if (piece.isValidMove(this, move) && move.isValidCapture(piece, this))
                 attackingMoves += move
         }
     }

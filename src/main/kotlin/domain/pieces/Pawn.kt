@@ -27,7 +27,7 @@ class Pawn(override val army: Army) : Piece {
      * @return true if the vertical move is valid
      */
     private fun isValidPawnVerticalMove(board: Board, move: Move): Boolean {
-        val defaultMove = move.rowsDistance() == if (isWhite()) ONE_MOVE else -ONE_MOVE
+        val defaultMove = move.rowDistanceIsOne()
         val isInInitialRow = move.from.row == if (isWhite()) WHITE_PAWN_INITIAL_ROW else BLACK_PAWN_INITIAL_ROW
         val doubleMove = isInInitialRow && move.rowsDistance() == if (isWhite()) DOUBLE_MOVE else -DOUBLE_MOVE
 
@@ -42,8 +42,8 @@ class Pawn(override val army: Army) : Piece {
      * @return true if the diagonal move is valid
      */
     private fun isValidPawnDiagonalMove(board: Board, move: Move) =
-        (move.rowsDistance() == if (isWhite()) ONE_MOVE else -ONE_MOVE) && board.isPositionOccupied(move.to)
-
+        move.rowDistanceIsOne() && board.isPositionOccupied(move.to)
+    
 
     /**
      * Checks if the en passant move is valid.
@@ -52,7 +52,8 @@ class Pawn(override val army: Army) : Piece {
      * @return true if the en passant move is valid
      */
     fun isValidEnPassant(board: Board, move: Move): Boolean {
-        if (isValidPawnDiagonalMove(board, move) && (isWhite() && move.from.row == 5 || !isWhite() && move.from.row == 4)) {
+        if (move.isDiagonal() && move.rowDistanceIsOne() &&
+            (isWhite() && move.from.row == 5 || !isWhite() && move.from.row == 4)) {
             val capturedPiecePos = getEnPassantCapturedPawnPosition(move.to, this)
             val capturedPiece = board.getPiece(capturedPiecePos)
             return board.isPositionOccupied(capturedPiecePos) && capturedPiece is Pawn && capturedPiece.army != army
@@ -60,4 +61,10 @@ class Pawn(override val army: Army) : Piece {
 
         return false
     }
+
+    /**
+     * Checks if the row distance is [ONE_MOVE]].
+     * @return true if the distance between the rows is [ONE_MOVE]
+     */
+    private fun Move.rowDistanceIsOne() = rowsDistance() == if (isWhite()) ONE_MOVE else -ONE_MOVE
 }

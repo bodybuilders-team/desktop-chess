@@ -1,21 +1,22 @@
 package moveTests
 
-import domain.board.Board
+import domain.board.*
 import domain.move.*
+import domain.pieces.PieceType
 import kotlin.test.*
 
 
 class MoveMethodsTests {
 
     @Test
-    fun `isHorizontal with horizontal move works`() {
-        assertTrue(Move.getUnvalidatedMove("e2f2").isHorizontal())
+    fun `Move to same place doesn't work`() {
+        assertFalse(Move.getUnvalidatedMove("e2e2").isVertical())
+        assertFalse(Move.getUnvalidatedMove("e2e2").isHorizontal())
+        assertFalse(Move.getUnvalidatedMove("e2e2").isStraight())
+        assertFalse(Move.getUnvalidatedMove("e2e2").isDiagonal())
     }
-
-    @Test
-    fun `isHorizontal with vertical move doesn't work`() {
-        assertFalse(Move.getUnvalidatedMove("e2e4").isHorizontal())
-    }
+    
+    //Vertical
 
     @Test
     fun `isVertical with vertical move works`() {
@@ -26,6 +27,37 @@ class MoveMethodsTests {
     fun `isVertical with horizontal move doesn't work`() {
         assertFalse(Move.getUnvalidatedMove("e2f2").isVertical())
     }
+    
+    //Horizontal
+    
+    @Test
+    fun `isHorizontal with horizontal move works`() {
+        assertTrue(Move.getUnvalidatedMove("e2f2").isHorizontal())
+    }
+
+    @Test
+    fun `isHorizontal with vertical move doesn't work`() {
+        assertFalse(Move.getUnvalidatedMove("e2e4").isHorizontal())
+    }
+    
+    //Straight
+
+    @Test
+    fun `isStraight with horizontal move works`() {
+        assertTrue(Move.getUnvalidatedMove("e2f2").isStraight())
+    }
+
+    @Test
+    fun `isStraight with vertical move works`() {
+        assertTrue(Move.getUnvalidatedMove("e2e4").isStraight())
+    }
+
+    @Test
+    fun `isStraight with diagonal move doesn't work`() {
+        assertFalse(Move.getUnvalidatedMove("e2g4").isStraight())
+    }
+    
+    //Diagonal
 
     @Test
     fun `isDiagonal with diagonal move works`() {
@@ -33,11 +65,12 @@ class MoveMethodsTests {
     }
 
     @Test
-    fun `isDiagonal with non diagonal move doesn't work`() {
+    fun `isDiagonal with straight move doesn't work`() {
         assertFalse(Move.getUnvalidatedMove("e2f4").isDiagonal())
     }
 
-
+    //Distances
+    
     @Test
     fun `rowsDistance works`() {
         assertEquals(2, Move.getUnvalidatedMove("e2e4").rowsDistance())
@@ -77,12 +110,30 @@ class MoveMethodsTests {
     fun `colsAbsoluteDistance with no distance works`() {
         assertEquals(0, Move.getUnvalidatedMove("h2h7").colsAbsoluteDistance())
     }
+    
+    //getUnvalidatedMove
 
     @Test
     fun `getUnvalidatedMove returns unvalidated move correctly`() {
         assertEquals(
             Move('P', Board.Position('e', 2), false, Board.Position('e', 4), null, MoveType.NORMAL),
             Move.getUnvalidatedMove("Pe2e4")
+        )
+    }
+
+    @Test
+    fun `getUnvalidatedMove with optional from position returns unvalidated move correctly`() {
+        assertEquals(
+            Move('P', Board.Position('a', 1), false, Board.Position('e', 4), null, MoveType.NORMAL),
+            Move.getUnvalidatedMove("Pe4")
+        )
+        assertEquals(
+            Move('P', Board.Position('e', 1), false, Board.Position('e', 4), null, MoveType.NORMAL),
+            Move.getUnvalidatedMove("Pee4")
+        )
+        assertEquals(
+            Move('P', Board.Position('a', 2), false, Board.Position('e', 4), null, MoveType.NORMAL),
+            Move.getUnvalidatedMove("P2e4")
         )
     }
 
@@ -94,9 +145,210 @@ class MoveMethodsTests {
         )
     }
 
+    //toString
+    
     @Test
-    fun `Move toString works`() {
-        val moveInString = "Pe2e4"
-        assertEquals(moveInString, Move.getUnvalidatedMove(moveInString).toString())
+    fun `toString works`() {
+        assertEquals("Pe2e4", Move.getUnvalidatedMove("Pe2e4").toString())
+    }
+
+    @Test
+    fun `toString with optional from position works`() {
+        assertEquals("Pe4", Move.getUnvalidatedMove("Pe4").toString(optionalFromCol = true, optionalFromRow = true))
+        assertEquals("Pee4", Move.getUnvalidatedMove("Pee4").toString(optionalFromCol = false, optionalFromRow = true))
+        assertEquals("P2e4", Move.getUnvalidatedMove("P2e4").toString(optionalFromCol = true, optionalFromRow = false))
+    }
+    
+    //isValidCapture
+
+    @Test
+    fun `isValidCapture returns true with valid capture to empty square`(){
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "ppppp pp" +
+                "        " +
+                "     p  " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR")
+        )
+
+        val move = Move.getUnvalidatedMove("Ng1f3")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertTrue(move.isValidCapture(piece, sut))
+    }
+
+    @Test
+    fun `isValidCapture returns true with valid capture to occupied square`(){
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "pppp ppp" +
+                "        " +
+                "    p   " +
+                "        " +
+                "     N  " +
+                "PPPPPPPP" +
+                "RNBQKB R")
+        )
+
+        val move = Move.getUnvalidatedMove("Nf3e5")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertTrue(move.isValidCapture(piece, sut))
+    }
+
+    @Test
+    fun `isValidCapture returns false with invalid capture`(){
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "ppppp pp" +
+                "        " +
+                "     p  " +
+                "        " +
+                "     N  " +
+                "PPPPPPPP" +
+                "RNBQKB R")
+        )
+
+        val move = Move.getUnvalidatedMove("Pf2f3")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertFalse(move.isValidCapture(piece, sut))
+    }
+
+    @Test
+    fun `isValidCapture returns false with valid capture to empty square with wrong capture information`(){
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "ppppp pp" +
+                "        " +
+                "     p  " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR")
+        )
+
+        val move = Move.getUnvalidatedMove("Pe2e4").copy(capture = true)
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertFalse(move.isValidCapture(piece, sut))
+    }
+
+    @Test
+    fun `isValidCapture returns true with valid promotion`(){
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkb r" +
+                "ppppppPp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR")
+        )
+
+        val move = Move.getUnvalidatedMove("Pg7g8").copy(promotion = PieceType.QUEEN.symbol)
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertTrue(move.isValidCapture(piece, sut))
+    }
+
+    @Test
+    fun `isValidCapture returns false with invalid promotion`(){
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkb r" +
+                "pppppp p" +
+                "        " +
+                "      P " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR")
+        )
+
+        val move = Move.getUnvalidatedMove("Pg5g6").copy(promotion = PieceType.QUEEN.symbol)
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertFalse(move.isValidCapture(piece, sut))
+    }
+    
+    //getValidatedMove
+
+    @Test
+    fun `getValidatedMove returns validated move with the correct move type information`() {
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbNr" +
+                "pppppppp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR")
+        )
+
+        val move = Move.getUnvalidatedMove("Pe2e4").copy(type = MoveType.CASTLE)
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertEquals(move.copy(type = MoveType.NORMAL), move.getValidatedMove(piece, sut, emptyList()))
+    }
+
+    @Test
+    fun `getValidatedMove returns validated move with the correct capture information`() {
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbNr" +
+                "pppp ppp" +
+                "        " +
+                "        " +
+                "    p   " +
+                "     P  " +
+                "PPPPP PP" +
+                "RNBQKBNR")
+        )
+
+        val move = Move.getUnvalidatedMove("Pf3e4")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertEquals(move.copy(capture = true), move.getValidatedMove(piece, sut, emptyList()))
+    }
+
+    @Test
+    fun `getValidatedMove returns null with invalid move`() {
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbNr" +
+                "pppp ppp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR")
+        )
+
+        val move = Move.getUnvalidatedMove("Pe2e6")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertNull(move.getValidatedMove(piece, sut, emptyList()))
     }
 }

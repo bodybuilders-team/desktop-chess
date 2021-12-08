@@ -1,7 +1,7 @@
 package domain.pieces
 
 import domain.board.*
-import domain.isStraightPathOccupied
+import domain.move.isStraightPathOccupied
 import domain.board.Board.*
 import domain.move.*
 
@@ -30,8 +30,13 @@ class King(override val army: Army) : Piece {
      * @return true if the castle move is valid
      */
     fun isValidCastle(board: Board, move: Move): Boolean {
-        return move.isHorizontal() &&
-                !isStraightPathOccupied(board, move.copy(to = Castle.getRookPosition(move.to))) &&
-                move.from == Position(INITIAL_KING_COL, if (isWhite()) FIRST_ROW else LAST_ROW)
+        val validKingPositionForCastle =
+            Position(INITIAL_KING_COL, if (isWhite()) WHITE_FIRST_ROW else BLACK_FIRST_ROW)
+
+        val validKingToColsForCastle = listOf(LONG_CASTLE_KING_COL, SHORT_CASTLE_KING_COL)
+        
+        return move.isHorizontal() && move.from == validKingPositionForCastle &&
+                move.to.col in validKingToColsForCastle &&
+                !isStraightPathOccupied(board, move.copy(to = Castle.getRookPosition(move.to)))
     }
 }

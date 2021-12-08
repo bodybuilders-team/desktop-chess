@@ -3,7 +3,7 @@ package domain.move
 import domain.board.*
 import kotlin.math.abs
 import domain.board.Board.Position
-import domain.pieces.Piece
+import domain.pieces.*
 
 
 /**
@@ -46,7 +46,8 @@ data class Move(
 
             return searchMove(move, optionalFromCol, optionalFromRow, board, previousMoves)
                 ?: throw IllegalMoveException(
-                    move.toString(), if (optionalFromCol || optionalFromRow)
+                    move.toString(optionalFromCol, optionalFromRow), //.removeRange((if(optionalFromCol) 1 else 2) .. (if(optionalFromRow) 2 else 1))
+                    if (optionalFromCol || optionalFromRow)
                         "Try with origin column and row." else "Illegal move."
                 )
         }
@@ -244,6 +245,41 @@ data class Move(
     override fun toString(): String {
         return "$symbol$from${if (capture) "x" else ""}$to${if (promotion != null) "=$promotion" else ""}" // ( ͡° ͜ʖ ͡°)
     }
+
+    /**
+     * Returns a string representation of the move, with the possibility to omit fromCol and fromRow.
+     * @param optionalFromCol if fromCol is to be omitted
+     * @param optionalFromRow if romRow is to be omitted
+     * @return string representation of the move
+     */
+    fun toString(optionalFromCol: Boolean, optionalFromRow: Boolean): String {
+        return "$symbol" +
+                "${if (!optionalFromCol) from.col else ""}${if (!optionalFromRow) from.row else ""}" +
+                (if (capture) "x" else "") +
+                "$to" +
+                if (promotion != null) "=$promotion" else ""
+    }
+}
+
+
+/**
+ * Checks if the capture in the move is valid.
+ *
+ * Also checking, if the capture is a promotion, if it's a valid promotion.
+ * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.
+ * @param piece move with the capture
+ * @param board board where the move happens
+ * @return true if the capture is valid
+ */
+fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
+    val isValidPromotion =
+        if (this.promotion != null) piece is Pawn && (piece.isWhite() && to.row == BLACK_FIRST_ROW ||
+                !piece.isWhite() && to.row == WHITE_FIRST_ROW)
+        else true
+    
+    val capturedPiece = board.getPiece(this.to) ?: return !capture && isValidPromotion
+
+    return piece.army != capturedPiece.army && isValidPromotion
 }
 
 
@@ -258,7 +294,7 @@ fun Move.getValidatedMove(piece: Piece, board: Board, previousMoves: List<Move>)
     val validMove = when {
         isValidEnPassant(piece, board, previousMoves)                       -> copy(type = MoveType.EN_PASSANT)
         isValidCastle(piece, board, previousMoves)                          -> copy(type = MoveType.CASTLE)
-        piece.isValidMove(board, this) && board.isValidCapture(piece, this) -> copy(type = MoveType.NORMAL)
+        piece.isValidMove(board, this) && isValidCapture(piece, board)      -> copy(type = MoveType.NORMAL)
         else -> return null
     }
 

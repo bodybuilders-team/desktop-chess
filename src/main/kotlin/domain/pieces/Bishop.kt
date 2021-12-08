@@ -1,8 +1,8 @@
 package domain.pieces
 
-import domain.*
 import domain.board.Board
 import domain.move.Move
+import domain.move.isValidDiagonalMove
 
 
 /**

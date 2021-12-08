@@ -96,4 +96,20 @@ class PieceTypeTests {
     fun `PieceType get with 'Q' returns PieceType Queen`() {
         assertEquals(PieceType.QUEEN, PieceType['Q'])
     }
+    
+    @Test
+    fun `Piece toChar returns character representation of the piece as seen in-game`(){
+        assertEquals('P', Pawn(Army.WHITE).toChar())
+        assertEquals('p', Pawn(Army.BLACK).toChar())
+        assertEquals('R', Rook(Army.WHITE).toChar())
+        assertEquals('r', Rook(Army.BLACK).toChar())
+        assertEquals('N', Knight(Army.WHITE).toChar())
+        assertEquals('n', Knight(Army.BLACK).toChar())
+        assertEquals('B', Bishop(Army.WHITE).toChar())
+        assertEquals('b', Bishop(Army.BLACK).toChar())
+        assertEquals('Q', Queen(Army.WHITE).toChar())
+        assertEquals('q', Queen(Army.BLACK).toChar())
+        assertEquals('K', King(Army.WHITE).toChar())
+        assertEquals('k', King(Army.BLACK).toChar())
+    }
 }

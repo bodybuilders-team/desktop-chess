@@ -1,4 +1,4 @@
-package commandTests
+package storageTests
 
 import GameStateStub
 import domain.move.Move

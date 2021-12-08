@@ -7,7 +7,7 @@ import kotlin.test.*
 class BoardPositionTests {
 
     @Test
-    fun `Position with collum outside bounds throws`() {
+    fun `Position with column outside bounds throws`() {
         assertFailsWith<IllegalArgumentException> {
             Board.Position(col = 'x', row = 2)
         }
@@ -21,7 +21,7 @@ class BoardPositionTests {
     }
 
     @Test
-    fun `Position with col and row inside bounds works`() {
+    fun `Position with column and row inside bounds works`() {
         Board.Position(col = 'a', row = 5)
     }
 

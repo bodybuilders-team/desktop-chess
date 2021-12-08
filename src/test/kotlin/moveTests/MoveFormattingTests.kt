@@ -7,6 +7,16 @@ import kotlin.test.*
 class MoveFormattingTests {
 
     @Test
+    fun `Empty is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted(""))
+    }
+
+    @Test
+    fun `Too lengthy is incorrectly formatted`() {
+        assertFalse(Move.isCorrectlyFormatted("Pe2e9aaaaaa"))
+    }
+
+    @Test
     fun `Valid simple move is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("Pe2e4"))
     }
@@ -14,11 +24,6 @@ class MoveFormattingTests {
     @Test
     fun `Valid capture symbol is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("Pe2xd3"))
-    }
-
-    @Test
-    fun `Empty is incorrectly formatted`() {
-        assertFalse(Move.isCorrectlyFormatted(""))
     }
 
     @Test
@@ -57,11 +62,6 @@ class MoveFormattingTests {
     }
 
     @Test
-    fun `Too lengthy is incorrectly formatted`() {
-        assertFalse(Move.isCorrectlyFormatted("Pe2e9aaaaaa"))
-    }
-
-    @Test
     fun `Move with optional piece symbol is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("e2e4"))
     }
@@ -82,17 +82,17 @@ class MoveFormattingTests {
     }
 
     @Test
-    fun `Move with optional piece and optional fromCol is correctly formatted`() {
+    fun `Move with optional piece symbol and optional fromCol is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("2e4"))
     }
 
     @Test
-    fun `Move with optional piece and optional fromRow is correctly formatted`() {
+    fun `Move with optional piece symbol and optional fromRow is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("ee4"))
     }
 
     @Test
-    fun `Move with optional piece and optional fromPos is correctly formatted`() {
+    fun `Move with optional piece symbol and optional fromPos is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("e4"))
     }
 }
