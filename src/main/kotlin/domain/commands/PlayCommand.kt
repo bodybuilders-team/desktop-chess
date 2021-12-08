@@ -23,7 +23,6 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
         cmdRequire(!chess.isLogging()) { "Can't play without a game: try open or join commands." }
         cmdRequire(chess.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
         cmdRequire(chess.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
-
         cmdRequireNotNull(parameter) { "Missing move." }
 
         val move = Move(parameter, chess.board, chess.moves)

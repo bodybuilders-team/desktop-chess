@@ -277,7 +277,7 @@ fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
                 !piece.isWhite() && to.row == WHITE_FIRST_ROW)
         else true
     
-    val capturedPiece = board.getPiece(this.to) ?: return !capture && isValidPromotion
+    val capturedPiece = board.getPiece(to) ?: return !capture && isValidPromotion
 
     return piece.army != capturedPiece.army && isValidPromotion
 }

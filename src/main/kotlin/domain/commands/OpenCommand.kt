@@ -24,16 +24,7 @@ class OpenCommand(private val db: GameState) : Command {
             }
 
         val board = boardWithMoves(moves)
-
-        val inMate = board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK) ||
-                currentTurnArmy(moves) == Army.WHITE && board.isKingInStaleMate(Army.WHITE) ||
-                currentTurnArmy(moves) == Army.BLACK && board.isKingInStaleMate(Army.BLACK)
-
-        val state = when {
-            inMate -> SessionState.ENDED
-            currentTurnArmy(moves) == Army.WHITE -> SessionState.YOUR_TURN
-            else -> SessionState.WAITING_FOR_OPPONENT
-        }
+        val state = getCurrentState(board, moves, Army.WHITE)
 
         return Result.success(
             Session(

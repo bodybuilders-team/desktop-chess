@@ -129,38 +129,6 @@ class BoardMethodsTests {
     //placePieceFromSpecialMoves
 
     @Test
-    fun `placePieceFromSpecialMoves places king from long castle with rook correctly`(){
-        val sut = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                "pppppppp" +
-                "        " +
-                "        " +
-                "     P  " +
-                "        " +
-                "PPPPP PP" +
-                "R   KBNR")
-        )
-
-        val move = Move.getUnvalidatedMove("Ra1d1").copy(type = MoveType.CASTLE)
-        val piece = sut.getPiece(move.from)
-
-        assertNotNull(piece)
-
-        sut.placePieceFromSpecialMoves(move, piece)
-        
-        assertEquals(
-            "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "R K  BNR", sut.toString())
-    }
-
-    @Test
     fun `placePieceFromSpecialMoves places rook from long castle with king correctly`(){
         val sut = Board(
             getMatrix2DFromString(
@@ -190,38 +158,6 @@ class BoardMethodsTests {
             "        " +
             "PPPPP PP" +
             "   RKBNR", sut.toString())
-    }
-
-    @Test
-    fun `placePieceFromSpecialMoves places king from short castle with rook correctly`(){
-        val sut = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                "pppppppp" +
-                "        " +
-                "        " +
-                "     P  " +
-                "        " +
-                "PPPPP PP" +
-                "RNBQK  R")
-        )
-
-        val move = Move.getUnvalidatedMove("Kh1f1").copy(type = MoveType.CASTLE)
-        val piece = sut.getPiece(move.from)
-
-        assertNotNull(piece)
-
-        sut.placePieceFromSpecialMoves(move, piece)
-
-        assertEquals(
-            "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQ  KR", sut.toString())
     }
 
     @Test

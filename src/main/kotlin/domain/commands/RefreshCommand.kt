@@ -27,9 +27,9 @@ class RefreshCommand(private val db: GameState, private val chess: Session) : Co
         val inMate = board.isKingInCheckMate(chess.army) || board.isKingInStaleMate(chess.army)
         
         val state = when {
-            inMate -> SessionState.ENDED
+            inMate                               -> SessionState.ENDED
             currentTurnArmy(moves) == chess.army -> SessionState.YOUR_TURN
-            else -> SessionState.WAITING_FOR_OPPONENT
+            else                                 -> SessionState.WAITING_FOR_OPPONENT
         }
 
         return Result.success(

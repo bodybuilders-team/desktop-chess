@@ -62,16 +62,24 @@ fun boardWithMoves(moves: List<Move>): Board {
 class CommandException(override val message: String?) : Exception(message)
 
 
+/**
+ * Throws an [CommandException] with the result of calling [lazyMessage] if the [value] is false.
+ */
 fun cmdRequire(value: Boolean, lazyMessage: () -> Any) {
     if (!value) throw CommandException(lazyMessage().toString())
 }
 
 
+/**
+ * Throws an [CommandException] with the result of calling lazyMessage if the value is null.
+ * Otherwise, returns the not null value.
+ */
 @OptIn(ExperimentalContracts::class)
-fun <T> cmdRequireNotNull(value: T?, lazyMessage: () -> Any) {
+fun <T> cmdRequireNotNull(value: T?, lazyMessage: () -> Any): T {
     contract {
         returns() implies (value != null)
     }
 
     if (value == null) throw CommandException(lazyMessage().toString())
+    return value
 }

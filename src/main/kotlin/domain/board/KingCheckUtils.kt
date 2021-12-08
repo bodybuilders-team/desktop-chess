@@ -2,7 +2,11 @@ package domain.board
 
 import domain.pieces.*
 import domain.board.Board.*
+import domain.commands.currentTurnArmy
 import domain.move.*
+
+// King Check Constants
+const val MAX_KING_ATTACKERS = 2
 
 
 /**
@@ -51,16 +55,23 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
 
 /**
  * Checks if the king of the [army] is in stalemate.
- * 
+ *
  * The king is in stalemate if the king isn't in check but the army has no valid moves.
  * @param army army of the king to stalemate
  * @return true if the king is in stalemate
  */
-fun Board.isKingInStaleMate(army: Army): Boolean {
-    val kingPos = getKingPosition(army)
-    
-    return !isKingInCheck(kingPos, army) && false // !hasAvailableMoves(army)
-}
+fun Board.isKingInStaleMate(army: Army) = false //!isKingInCheck(getKingPosition(army), army) && !hasAvailableMoves(army)
+
+
+/**
+ * Checks if any king in the board is in mate (checkmate or stalemate).
+ * @param moves all moves played in board
+ * @return true if any king in the board is in mate
+ */
+fun Board.isInMate(moves: List<Move>) =
+    isKingInCheckMate(Army.WHITE) || isKingInCheckMate(Army.BLACK) ||
+            currentTurnArmy(moves) == Army.WHITE && isKingInStaleMate(Army.WHITE) ||
+            currentTurnArmy(moves) == Army.BLACK && isKingInStaleMate(Army.BLACK)
 
 
 /**
@@ -72,7 +83,7 @@ fun Board.isKingInStaleMate(army: Army): Boolean {
  */
 fun Board.kingAttackers(position: Position, army: Army): List<Move> {
     val kingAttackers = positionAttackers(position, army.other())
-    require(kingAttackers.size <= 2) { "A king cannot be attacked by more than two pieces." }
+    require(kingAttackers.size <= MAX_KING_ATTACKERS) { "A king cannot be attacked by more than two pieces." }
 
     return kingAttackers
 }
@@ -149,7 +160,7 @@ fun Board.positionAttackers(position: Position, armyThatAttacks: Army): List<Mov
             val piece = getPiece(fromPos) ?: continue
             if (piece.army != armyThatAttacks) continue
 
-            val move = Move(piece.type.symbol, fromPos, capture = false, position, promotion = null,  MoveType.NORMAL)
+            val move = Move(piece.type.symbol, fromPos, capture = false, position, promotion = null, MoveType.NORMAL)
             if (piece.isValidMove(this, move) && move.isValidCapture(piece, this))
                 attackingMoves += move
         }

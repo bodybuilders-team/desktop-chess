@@ -1,6 +1,7 @@
 package domain
 
 import domain.board.*
+import domain.commands.currentTurnArmy
 import domain.move.Move
 import domain.pieces.Army
 
@@ -39,3 +40,18 @@ enum class SessionState {
  * @return true if a session is in logging state.
  */
 fun Session.isLogging() = state == SessionState.LOGGING
+
+
+/**
+ * Gets the current state of the session.
+ * @param board session board
+ * @param moves all moves played in board
+ * @param army session army
+ * @return current state of the session
+ */
+fun getCurrentState(board: Board, moves: List<Move>, army: Army) = when {
+    board.isInMate(moves)          -> SessionState.ENDED
+    currentTurnArmy(moves) == army -> SessionState.YOUR_TURN
+    else                           -> SessionState.WAITING_FOR_OPPONENT
+}
+

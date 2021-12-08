@@ -69,23 +69,19 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      */
     fun makeMove(move: Move): Board {
         val piece = getPiece(move.from)
-
         requireNotNull(piece) { "Move.invoke() is not throwing IllegalMoveException in case of invalid from position." }
 
         val newBoard = this.copy()
 
-        newBoard.removePiece(move.from)
+        newBoard.apply {
+            removePiece(move.from)
+            setPiece(move.to, if (move.promotion == null) piece else getPieceFromSymbol(move.promotion, piece.army))
 
-        newBoard.setPiece(
-            move.to,
-            if (move.promotion == null) piece else getPieceFromSymbol(move.promotion, piece.army)
-        )
+            placePieceFromSpecialMoves(move, piece)
 
-        newBoard.placePieceFromSpecialMoves(move, piece)
-
-        if (newBoard.isKingInCheck(piece.army))
-            throw IllegalMoveException(move.toString(), "Your King is in check! You must protect your King.")
-
+            if (isKingInCheck(piece.army))
+                throw IllegalMoveException(move.toString(), "Your King is in check! You must protect your King.")
+        }
         return newBoard
     }
 

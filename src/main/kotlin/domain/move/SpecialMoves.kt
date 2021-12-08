@@ -33,8 +33,7 @@ fun Move.isValidEnPassant(piece: Piece, board: Board, previousMoves: List<Move>)
  * @return true if the move is a valid castle
  */
 fun Move.isValidCastle(piece: Piece, board: Board, previousMoves: List<Move>): Boolean {
-    return isCastlePossible(piece, previousMoves) &&
-            (piece is King && piece.isValidCastle(board, this) || piece is Rook && piece.isValidCastle(board, this))
+    return isCastlePossible(piece, previousMoves) && piece is King && piece.isValidCastle(board, this)
 }
 
 
@@ -93,28 +92,6 @@ object Castle {
         Position(
             col = if (kingToPos.col == SHORT_CASTLE_KING_COL) SHORT_CASTLE_ROOK_COL else LONG_CASTLE_ROOK_COL,
             row = kingToPos.row
-        )
-
-    /**
-     * Gets the from position of the king in a castle move.
-     * @param rookToPos rook position after the castle move
-     * @return position of the king
-     */
-    fun getKingPosition(rookToPos: Position) =
-        Position(
-            col = INITIAL_KING_COL,
-            row = rookToPos.row
-        )
-
-    /**
-     * Gets the to position of the king in a castle move.
-     * @param rookToPos rook position after the castle move
-     * @return position of the king
-     */
-    fun getKingToPosition(rookToPos: Position) =
-        Position(
-            col = if (rookToPos.col == SHORT_CASTLE_ROOK_COL) SHORT_CASTLE_KING_COL else LONG_CASTLE_KING_COL,
-            row = rookToPos.row
         )
 }
 
