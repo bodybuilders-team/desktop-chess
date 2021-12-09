@@ -73,7 +73,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      */
     fun makeMove(move: Move): Board {
         val piece = getPiece(move.from)
-        requireNotNull(piece) { "Move.invoke() is not throwing IllegalMoveException in case of invalid from position." }
+        requireNotNull(piece) { "Move is not validated! Invalid from position." }
 
         val newBoard = this.copy()
             .removePiece(move.from)

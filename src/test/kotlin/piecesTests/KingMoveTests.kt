@@ -66,6 +66,29 @@ class KingMoveTests {
 
     @Test
     fun `King move to same place is not valid`() {
-        assertFalse(sut.isValidMove("Ke2e2",))
+        assertFalse(sut.isValidMove("Ke2e2"))
+    }
+
+    private val sutCastle = Board(
+        getMatrix2DFromString(
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "R   K  R"
+        )
+    )
+
+    @Test
+    fun `King long castle move is valid`() {
+        assertTrue(sutCastle.isValidMove("Ra1c1"))
+    }
+
+    @Test
+    fun `King short castle move is valid`() {
+        assertTrue(sutCastle.isValidMove("Rh1f1"))
     }
 }

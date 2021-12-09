@@ -7,7 +7,7 @@ import domain.pieces.*
 
 
 /**
- * Chess move
+ * Chess move.
  * @property symbol Piece Moving
  * @property from original piece position
  * @property capture true if the piece will capture enemy piece
@@ -33,15 +33,26 @@ data class Move(
 
 
         /**
-         * Move constructor that receives a String and a Board.
+         * Move constructor that receives a String.
+         * @param moveInString move in string format
+         * @return the move extracted from the string, unvalidated in the context of the board
+         */
+        operator fun invoke(moveInString: String): Move {
+            return extractMoveInfo(moveInString).move
+        }
+
+
+        /**
+         * Returns a move already validated in the context of a board/chess game.
          *
          * Move properties are extracted from the [moveInString], and searching the [board], it's verified if the move is possible.
          * @param moveInString move in string format
          * @param board board where the move will happen
-         * @return the validated move or null if it wasn't found or multiple were found
-         * @throws IllegalMoveException if move is not possible in [board]
+         * @param previousMoves the previous moves in board
+         * @return the validated move
+         * @throws IllegalMoveException if move is not possible in [board] or multiple possible moves were found
          */
-        operator fun invoke(moveInString: String, board: Board, previousMoves: List<Move>): Move {
+        fun getValidatedMove(moveInString: String, board: Board, previousMoves: List<Move>): Move {
             val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(moveInString)
             val validMoves =
                 searchMoves(move, optionalFromCol, optionalFromRow, optionalToPos = false, board, previousMoves)
@@ -182,13 +193,6 @@ data class Move(
                 optionalFromRow = fromRow == null
             )
         }
-
-        /**
-         * Returns an unvalidated move in the context of the board.
-         * @param moveInString piece move
-         * @return true if the move in String is correctly formatted
-         */
-        fun getUnvalidatedMove(moveInString: String) = extractMoveInfo(moveInString).move
 
 
         /**

@@ -135,7 +135,7 @@ class BoardMethodsTests {
                 "R   KBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Ke1c1").copy(type = MoveType.CASTLE)
+        val move = Move("Ke1c1").copy(type = MoveType.CASTLE)
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -167,7 +167,7 @@ class BoardMethodsTests {
                 "RNBQK  R")
         )
 
-        val move = Move.getUnvalidatedMove("Ke1g1").copy(type = MoveType.CASTLE)
+        val move = Move("Ke1g1").copy(type = MoveType.CASTLE)
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)

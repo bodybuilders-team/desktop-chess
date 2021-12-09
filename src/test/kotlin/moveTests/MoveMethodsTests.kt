@@ -10,105 +10,105 @@ class MoveMethodsTests {
 
     @Test
     fun `Move to same place doesn't work`() {
-        assertFalse(Move.getUnvalidatedMove("e2e2").isVertical())
-        assertFalse(Move.getUnvalidatedMove("e2e2").isHorizontal())
-        assertFalse(Move.getUnvalidatedMove("e2e2").isStraight())
-        assertFalse(Move.getUnvalidatedMove("e2e2").isDiagonal())
+        assertFalse(Move("e2e2").isVertical())
+        assertFalse(Move("e2e2").isHorizontal())
+        assertFalse(Move("e2e2").isStraight())
+        assertFalse(Move("e2e2").isDiagonal())
     }
     
     //Vertical
 
     @Test
     fun `isVertical with vertical move works`() {
-        assertTrue(Move.getUnvalidatedMove("e2e4").isVertical())
+        assertTrue(Move("e2e4").isVertical())
     }
 
     @Test
     fun `isVertical with horizontal move doesn't work`() {
-        assertFalse(Move.getUnvalidatedMove("e2f2").isVertical())
+        assertFalse(Move("e2f2").isVertical())
     }
     
     //Horizontal
     
     @Test
     fun `isHorizontal with horizontal move works`() {
-        assertTrue(Move.getUnvalidatedMove("e2f2").isHorizontal())
+        assertTrue(Move("e2f2").isHorizontal())
     }
 
     @Test
     fun `isHorizontal with vertical move doesn't work`() {
-        assertFalse(Move.getUnvalidatedMove("e2e4").isHorizontal())
+        assertFalse(Move("e2e4").isHorizontal())
     }
     
     //Straight
 
     @Test
     fun `isStraight with horizontal move works`() {
-        assertTrue(Move.getUnvalidatedMove("e2f2").isStraight())
+        assertTrue(Move("e2f2").isStraight())
     }
 
     @Test
     fun `isStraight with vertical move works`() {
-        assertTrue(Move.getUnvalidatedMove("e2e4").isStraight())
+        assertTrue(Move("e2e4").isStraight())
     }
 
     @Test
     fun `isStraight with diagonal move doesn't work`() {
-        assertFalse(Move.getUnvalidatedMove("e2g4").isStraight())
+        assertFalse(Move("e2g4").isStraight())
     }
     
     //Diagonal
 
     @Test
     fun `isDiagonal with diagonal move works`() {
-        assertTrue(Move.getUnvalidatedMove("e2g4").isDiagonal())
+        assertTrue(Move("e2g4").isDiagonal())
     }
 
     @Test
     fun `isDiagonal with straight move doesn't work`() {
-        assertFalse(Move.getUnvalidatedMove("e2f4").isDiagonal())
+        assertFalse(Move("e2f4").isDiagonal())
     }
 
     //Distances
     
     @Test
     fun `rowsDistance works`() {
-        assertEquals(2, Move.getUnvalidatedMove("e2e4").rowsDistance())
+        assertEquals(2, Move("e2e4").rowsDistance())
     }
 
     @Test
     fun `rowsDistance with no distance works`() {
-        assertEquals(0, Move.getUnvalidatedMove("e2f2").rowsDistance())
+        assertEquals(0, Move("e2f2").rowsDistance())
     }
 
     @Test
     fun `colsDistance works`() {
-        assertEquals(1, Move.getUnvalidatedMove("e2f2").colsDistance())
+        assertEquals(1, Move("e2f2").colsDistance())
     }
 
     @Test
     fun `colsDistance with no distance works`() {
-        assertEquals(0, Move.getUnvalidatedMove("e2e5").colsDistance())
+        assertEquals(0, Move("e2e5").colsDistance())
     }
 
     @Test
     fun `rowsAbsoluteDistance works`() {
-        assertEquals(2, Move.getUnvalidatedMove("e4e2").rowsAbsoluteDistance())
+        assertEquals(2, Move("e4e2").rowsAbsoluteDistance())
     }
 
     @Test
     fun `rowsAbsoluteDistance with no distance works`() {
-        assertEquals(0, Move.getUnvalidatedMove("e6f6").rowsAbsoluteDistance())
+        assertEquals(0, Move("e6f6").rowsAbsoluteDistance())
     }
 
     @Test
     fun `colsAbsoluteDistance works`() {
-        assertEquals(1, Move.getUnvalidatedMove("b2a2").colsAbsoluteDistance())
+        assertEquals(1, Move("b2a2").colsAbsoluteDistance())
     }
 
     @Test
     fun `colsAbsoluteDistance with no distance works`() {
-        assertEquals(0, Move.getUnvalidatedMove("h2h7").colsAbsoluteDistance())
+        assertEquals(0, Move("h2h7").colsAbsoluteDistance())
     }
     
     //getUnvalidatedMove
@@ -117,7 +117,7 @@ class MoveMethodsTests {
     fun `getUnvalidatedMove returns unvalidated move correctly`() {
         assertEquals(
             Move('P', Board.Position('e', 2), false, Board.Position('e', 4), null, MoveType.NORMAL),
-            Move.getUnvalidatedMove("Pe2e4")
+            Move("Pe2e4")
         )
     }
 
@@ -125,15 +125,15 @@ class MoveMethodsTests {
     fun `getUnvalidatedMove with optional from position returns unvalidated move correctly`() {
         assertEquals(
             Move('P', Board.Position('a', 1), false, Board.Position('e', 4), null, MoveType.NORMAL),
-            Move.getUnvalidatedMove("Pe4")
+            Move("Pe4")
         )
         assertEquals(
             Move('P', Board.Position('e', 1), false, Board.Position('e', 4), null, MoveType.NORMAL),
-            Move.getUnvalidatedMove("Pee4")
+            Move("Pee4")
         )
         assertEquals(
             Move('P', Board.Position('a', 2), false, Board.Position('e', 4), null, MoveType.NORMAL),
-            Move.getUnvalidatedMove("P2e4")
+            Move("P2e4")
         )
     }
 
@@ -141,7 +141,7 @@ class MoveMethodsTests {
     fun `getUnvalidatedMove with supposedly invalid move returns unvalidated move correctly`() {
         assertEquals(
             Move('K', Board.Position('e', 1), false, Board.Position('g', 8), null, MoveType.NORMAL),
-            Move.getUnvalidatedMove("Ke1g8")
+            Move("Ke1g8")
         )
     }
 
@@ -149,14 +149,14 @@ class MoveMethodsTests {
     
     @Test
     fun `toString works`() {
-        assertEquals("Pe2e4", Move.getUnvalidatedMove("Pe2e4").toString())
+        assertEquals("Pe2e4", Move("Pe2e4").toString())
     }
 
     @Test
     fun `toString with optional from position works`() {
-        assertEquals("Pe4", Move.getUnvalidatedMove("Pe4").toString(optionalFromCol = true, optionalFromRow = true))
-        assertEquals("Pee4", Move.getUnvalidatedMove("Pee4").toString(optionalFromCol = false, optionalFromRow = true))
-        assertEquals("P2e4", Move.getUnvalidatedMove("P2e4").toString(optionalFromCol = true, optionalFromRow = false))
+        assertEquals("Pe4", Move("Pe4").toString(optionalFromCol = true, optionalFromRow = true))
+        assertEquals("Pee4", Move("Pee4").toString(optionalFromCol = false, optionalFromRow = true))
+        assertEquals("P2e4", Move("P2e4").toString(optionalFromCol = true, optionalFromRow = false))
     }
     
     //isValidCapture
@@ -175,7 +175,7 @@ class MoveMethodsTests {
                 "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Ng1f3")
+        val move = Move("Ng1f3")
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -196,7 +196,7 @@ class MoveMethodsTests {
                 "RNBQKB R")
         )
 
-        val move = Move.getUnvalidatedMove("Nf3e5")
+        val move = Move("Nf3e5")
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -217,7 +217,7 @@ class MoveMethodsTests {
                 "RNBQKB R")
         )
 
-        val move = Move.getUnvalidatedMove("Pf2f3")
+        val move = Move("Pf2f3")
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -238,7 +238,7 @@ class MoveMethodsTests {
                 "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Pe2e4").copy(capture = true)
+        val move = Move("Pe2e4").copy(capture = true)
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -259,7 +259,7 @@ class MoveMethodsTests {
                 "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Pg7g8").copy(promotion = PieceType.QUEEN.symbol)
+        val move = Move("Pg7g8").copy(promotion = PieceType.QUEEN.symbol)
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -280,7 +280,7 @@ class MoveMethodsTests {
                 "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Pg5g6").copy(promotion = PieceType.QUEEN.symbol)
+        val move = Move("Pg5g6").copy(promotion = PieceType.QUEEN.symbol)
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -303,7 +303,7 @@ class MoveMethodsTests {
                 "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Pe2e4").copy(type = MoveType.CASTLE)
+        val move = Move("Pe2e4").copy(type = MoveType.CASTLE)
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -324,7 +324,7 @@ class MoveMethodsTests {
                 "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Pf3e4")
+        val move = Move("Pf3e4")
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -345,7 +345,7 @@ class MoveMethodsTests {
                 "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Pe2e6")
+        val move = Move("Pe2e6")
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)

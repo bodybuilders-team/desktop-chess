@@ -49,7 +49,7 @@ fun Board.placePieceFromSpecialMoves(move: Move, piece: Piece) =
         MoveType.CASTLE -> {
             val toRemovePos = Castle.getRookPosition(move.to)
             val toRemove = getPiece(toRemovePos)
-            requireNotNull(toRemove) { "No piece in the position. Expected rook/king." }
+            requireNotNull(toRemove) { "No piece in the position. Expected rook." }
 
             removePiece(toRemovePos).placePiece(Castle.getRookToPosition(move.to), toRemove)
         }

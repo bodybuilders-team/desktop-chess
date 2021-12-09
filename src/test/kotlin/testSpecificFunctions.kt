@@ -10,7 +10,7 @@ import domain.move.Move
  * @return new board with the move made
  */
 fun Board.makeMove(moveInString: String): Board {
-    return makeMove(Move(moveInString, this, emptyList()))
+    return makeMove(Move.getValidatedMove(moveInString, this, emptyList()))
 }
 
 /**
@@ -24,7 +24,7 @@ fun Board.makeMove(moveInString: String): Board {
  */
 fun Board.isValidMove(moveInString: String): Boolean {
     try {
-        Move(moveInString, this, emptyList())
+        Move.getValidatedMove(moveInString, this, emptyList())
     } catch (err: IllegalMoveException) {
         return false
     }

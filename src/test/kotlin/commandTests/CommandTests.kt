@@ -28,7 +28,7 @@ class CommandTests {
         val db = GameStateStub()
         db.createGame("test")
 
-        val move = Move.getUnvalidatedMove("Pe2e4")
+        val move = Move("Pe2e4")
         db.postMove("test", move)
 
         val result = OpenCommand(db).execute("test")
@@ -44,7 +44,7 @@ class CommandTests {
         val db = GameStateStub()
         db.createGame("test")
 
-        val move = Move.getUnvalidatedMove("Pe2e4")
+        val move = Move("Pe2e4")
         db.postMove("test", move)
 
         val result = JoinCommand(db).execute("test")
@@ -84,7 +84,7 @@ class CommandTests {
         db.createGame("test")
 
         val session = Session("test", SessionState.WAITING_FOR_OPPONENT, Army.BLACK, Board(), emptyList(), Check.NO_CHECK)
-        val move = Move.getUnvalidatedMove("Pe2e4")
+        val move = Move("Pe2e4")
         db.postMove("test", move)
 
         val result = RefreshCommand(db, session).invoke()
@@ -101,7 +101,7 @@ class CommandTests {
         db.createGame("test")
 
         var session = Session("test", SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Board(), emptyList(), Check.NO_CHECK)
-        val move = Move.getUnvalidatedMove("Pe2e4")
+        val move = Move("Pe2e4")
         db.postMove("test", move)
 
         session = RefreshCommand(db, session).invoke().getOrThrow()
@@ -124,7 +124,7 @@ class CommandTests {
 
         assertTrue(result.isSuccess)
         assertEquals(SessionState.WAITING_FOR_OPPONENT, chess.state)
-        assertEquals(listOf(Move(move, session.board, session.moves)), chess.moves)
+        assertEquals(listOf(Move.getValidatedMove(move, session.board, session.moves)), chess.moves)
     }
 
     @Test
@@ -134,7 +134,7 @@ class CommandTests {
 
     @Test
     fun `currentTurnArmy returns Black when number of moves is odd`() {
-        assertEquals(Army.BLACK, currentTurnArmy(listOf(Move.getUnvalidatedMove("Pe2e4"))))
+        assertEquals(Army.BLACK, currentTurnArmy(listOf(Move("Pe2e4"))))
     }
 
     @Test
@@ -144,7 +144,7 @@ class CommandTests {
 
     @Test
     fun `isWhiteTurn returns false when number of moves is odd`() {
-        assertFalse(isWhiteTurn(listOf(Move.getUnvalidatedMove("Pe2e4"))))
+        assertFalse(isWhiteTurn(listOf(Move("Pe2e4"))))
     }
 
     @Test

@@ -24,10 +24,10 @@ class SpecialMovesTests {
                 "RNBQKBNR")
         )
         
-        val move = Move.getUnvalidatedMove("Pf5e6")
+        val move = Move("Pf5e6")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Pf2f4"), Move.getUnvalidatedMove("Pf4f5"),
-                                    Move.getUnvalidatedMove("Pe7e5"))
+        val previousMoves = listOf(Move("Pf2f4"), Move("Pf4f5"),
+                                    Move("Pe7e5"))
         
         assertNotNull(piece)
         assertTrue(move.isValidEnPassant(piece, sut, previousMoves))
@@ -47,9 +47,9 @@ class SpecialMovesTests {
                 "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Pf4f5")
+        val move = Move("Pf4f5")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Pf2f4"), Move.getUnvalidatedMove("Pd7d6"))
+        val previousMoves = listOf(Move("Pf2f4"), Move("Pd7d6"))
 
         assertNotNull(piece)
         assertFalse(move.isValidEnPassant(piece, sut, previousMoves))
@@ -71,9 +71,9 @@ class SpecialMovesTests {
                 "R   KBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Ke1c1")
+        val move = Move("Ke1c1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Pf2f4"))
+        val previousMoves = listOf(Move("Pf2f4"))
 
         assertNotNull(piece)
         assertTrue(move.isValidCastle(piece, sut, previousMoves))
@@ -93,9 +93,9 @@ class SpecialMovesTests {
                 "R   KBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Ke1c1")
+        val move = Move("Ke1c1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Ra1b1"), Move.getUnvalidatedMove("Rb1a1"))
+        val previousMoves = listOf(Move("Ra1b1"), Move("Rb1a1"))
 
         assertNotNull(piece)
         assertFalse(move.isValidCastle(piece, sut, previousMoves))
@@ -115,9 +115,9 @@ class SpecialMovesTests {
                 "RNBQK  R")
         )
 
-        val move = Move.getUnvalidatedMove("Ke1g1")
+        val move = Move("Ke1g1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Pf2f4"))
+        val previousMoves = listOf(Move("Pf2f4"))
 
         assertNotNull(piece)
         assertTrue(move.isValidCastle(piece, sut, previousMoves))
@@ -137,9 +137,9 @@ class SpecialMovesTests {
                 "RNBQK  R")
         )
 
-        val move = Move.getUnvalidatedMove("Ke1g1")
+        val move = Move("Ke1g1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Rh1g1"), Move.getUnvalidatedMove("Rg1h1"))
+        val previousMoves = listOf(Move("Rh1g1"), Move("Rg1h1"))
 
         assertNotNull(piece)
         assertFalse(move.isValidCastle(piece, sut, previousMoves))
@@ -161,10 +161,10 @@ class SpecialMovesTests {
                         "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Pf5e6")
+        val move = Move("Pf5e6")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Pf2f4"), Move.getUnvalidatedMove("Pf4f5"),
-            Move.getUnvalidatedMove("Pe7e5"))
+        val previousMoves = listOf(Move("Pf2f4"), Move("Pf4f5"),
+            Move("Pe7e5"))
 
         assertNotNull(piece)
         assertTrue(move.isEnPassantPossible(piece, previousMoves))
@@ -184,9 +184,9 @@ class SpecialMovesTests {
                         "RNBQKBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Pf4f5")
+        val move = Move("Pf4f5")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Pf2f4"), Move.getUnvalidatedMove("Pd7d6"))
+        val previousMoves = listOf(Move("Pf2f4"), Move("Pd7d6"))
 
         assertNotNull(piece)
         assertFalse(move.isEnPassantPossible(piece, previousMoves))
@@ -208,9 +208,9 @@ class SpecialMovesTests {
                 "R   KBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Ra1d1")
+        val move = Move("Ra1d1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Pf2f4"))
+        val previousMoves = listOf(Move("Pf2f4"))
 
         assertNotNull(piece)
         assertTrue(isCastlePossible(piece, previousMoves))
@@ -230,9 +230,9 @@ class SpecialMovesTests {
                 "R   KBNR")
         )
 
-        val move = Move.getUnvalidatedMove("Ra1d1")
+        val move = Move("Ra1d1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move.getUnvalidatedMove("Ra1b1"), Move.getUnvalidatedMove("Rb1a1"))
+        val previousMoves = listOf(Move("Ra1b1"), Move("Rb1a1"))
 
         assertNotNull(piece)
         assertFalse(isCastlePossible(piece, previousMoves))
