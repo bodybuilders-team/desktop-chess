@@ -5,6 +5,7 @@ import domain.board.Board.*
 import domain.commands.currentTurnArmy
 import domain.move.*
 
+
 // King Check Constants
 const val MAX_KING_ATTACKERS = 2
 
@@ -48,7 +49,6 @@ fun Board.isKingInCheck(army: Army) = kingAttackers(getKingPosition(army), army)
  */
 fun Board.isKingInCheckMate(army: Army): Boolean {
     val kingPos = getKingPosition(army)
-
     return isKingInCheck(kingPos, army) && !isKingProtectable(kingPos, army) && !canKingMove(kingPos, army)
 }
 
@@ -58,9 +58,11 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
  *
  * The king is in stalemate if the king isn't in check but the army has no valid moves.
  * @param army army of the king to stalemate
+ * @param previousMoves previous moves made
  * @return true if the king is in stalemate
  */
-fun Board.isKingInStaleMate(army: Army) = false //!isKingInCheck(getKingPosition(army), army) && !hasAvailableMoves(army)
+fun Board.isKingInStaleMate(army: Army, previousMoves: List<Move>) =
+    !isKingInCheck(getKingPosition(army), army) && !hasAvailableMoves(army, previousMoves)
 
 
 /**
@@ -70,8 +72,8 @@ fun Board.isKingInStaleMate(army: Army) = false //!isKingInCheck(getKingPosition
  */
 fun Board.isInMate(moves: List<Move>) =
     isKingInCheckMate(Army.WHITE) || isKingInCheckMate(Army.BLACK) ||
-            currentTurnArmy(moves) == Army.WHITE && isKingInStaleMate(Army.WHITE) ||
-            currentTurnArmy(moves) == Army.BLACK && isKingInStaleMate(Army.BLACK)
+            currentTurnArmy(moves) == Army.WHITE && isKingInStaleMate(Army.WHITE, moves) ||
+            currentTurnArmy(moves) == Army.BLACK && isKingInStaleMate(Army.BLACK, moves)
 
 
 /**
@@ -137,9 +139,9 @@ fun Board.canKingMove(position: Position, army: Army): Boolean {
 
     val dummyBoard = this.copy().removePiece(position)
 
-    return !adjacentPositions.all {
-        dummyBoard.isPositionOccupied(it) ||
-                dummyBoard.positionAttackers(it, army.other()).isNotEmpty()
+    return adjacentPositions.any { pos ->
+        (!dummyBoard.isPositionOccupied(pos) || dummyBoard.getPiece(pos)?.army == army.other()) &&
+                dummyBoard.removePiece(pos).positionAttackers(pos, army.other()).isEmpty()
     }
 }
 

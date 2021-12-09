@@ -1,7 +1,9 @@
 package domain.pieces
 
 import domain.board.Board
+import domain.move.IllegalMoveException
 import domain.move.Move
+import domain.move.MoveType
 
 
 // Constants.
@@ -35,6 +37,38 @@ interface Piece {
      * @return true if the move is possible
      */
     fun isValidMove(board: Board, move: Move): Boolean
+
+
+    /**
+     * Gets all available moves based on the piece type and the position in the board.
+     * @param board board where the piece is situated
+     * @param position position of the piece
+     * @param previousMoves previous moves made
+     * @return list of available moves
+     */
+    fun getAvailableMoves(board: Board, position: Board.Position, previousMoves: List<Move>): List<Move> =
+        Move.searchMoves(
+            Move(
+                symbol = type.symbol,
+                from = position,
+                capture = false,
+                to = Board.Position('a', 1),
+                promotion = null,
+                type = MoveType.NORMAL
+            ),
+            optionalFromCol = false,
+            optionalFromRow = false,
+            optionalToPos = true,
+            board = board,
+            previousMoves = previousMoves
+        ).filter { move ->
+            try {
+                board.makeMove(move)
+            } catch (err: IllegalMoveException) {
+                if (err.message == "Your King is in check! You must protect your King.") return@filter false
+            }
+            true
+        }
 }
 
 
@@ -60,12 +94,12 @@ enum class Army {
  */
 fun getPieceFromSymbol(symbol: Char, army: Army): Piece {
     return when (PieceType[symbol]) {
-        PieceType.PAWN   -> Pawn(army)
-        PieceType.ROOK   -> Rook(army)
+        PieceType.PAWN -> Pawn(army)
+        PieceType.ROOK -> Rook(army)
         PieceType.KNIGHT -> Knight(army)
         PieceType.BISHOP -> Bishop(army)
-        PieceType.KING   -> King(army)
-        PieceType.QUEEN  -> Queen(army)
+        PieceType.KING -> King(army)
+        PieceType.QUEEN -> Queen(army)
     }
 }
 

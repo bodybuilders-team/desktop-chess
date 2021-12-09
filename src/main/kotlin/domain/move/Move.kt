@@ -38,60 +38,68 @@ data class Move(
          * Move properties are extracted from the [moveInString], and searching the [board], it's verified if the move is possible.
          * @param moveInString move in string format
          * @param board board where the move will happen
-         * @return the validated move
+         * @return the validated move or null if it wasn't found or multiple were found
          * @throws IllegalMoveException if move is not possible in [board]
          */
         operator fun invoke(moveInString: String, board: Board, previousMoves: List<Move>): Move {
             val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(moveInString)
+            val validMoves =
+                searchMoves(move, optionalFromCol, optionalFromRow, optionalToPos = false, board, previousMoves)
 
-            return searchMove(move, optionalFromCol, optionalFromRow, board, previousMoves)
-                ?: throw IllegalMoveException(
-                    move.toString(optionalFromCol, optionalFromRow), //.removeRange((if(optionalFromCol) 1 else 2) .. (if(optionalFromRow) 2 else 1))
-                    if (optionalFromCol || optionalFromRow)
-                        "Try with origin column and row." else "Illegal move."
-                )
+            if (validMoves.size != 1) throw IllegalMoveException(
+                move.toString(optionalFromCol, optionalFromRow),
+                if (optionalFromCol || optionalFromRow)
+                    "Try with origin column and row." else "Illegal move."
+            )
+
+            return validMoves.first()
         }
 
 
         /**
-         * Searches for a valid move given a move and if the search is in a specific column or row.
+         * Searches for valid moves given a move and if the search is in a specific column or row.
          *
          * If [optionalFromCol] is true, all columns are searched. The same applies to [optionalFromRow].
-         *
-         * Only one move should exist, otherwise null is returned.
          *
          * @param move move to search for
          * @param optionalFromCol if the search isn't in a specific column
          * @param optionalFromRow if the search isn't in a specific row
+         * @param optionalToPos if the search isn't in a specific to position
          * @param board board to search for the move in
          * @param previousMoves previous moves made
-         * @return the valid move or null if it wasn't found or multiple were found
+         * @return all valid moves
          */
-        private fun searchMove(
-            move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, board: Board, previousMoves: List<Move>
-        ): Move? {
-            var foundMove: Move? = null
+        fun searchMoves(
+            move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, optionalToPos: Boolean,
+            board: Board, previousMoves: List<Move>
+        ): List<Move> {
+            val foundMoves: MutableList<Move> = mutableListOf()
 
-            val colSearchRange = if (optionalFromCol) COLS_RANGE else move.from.col..move.from.col
-            val rowSearchRange = if (optionalFromRow) ROWS_RANGE else move.from.row..move.from.row
+            val fromColSearchRange = if (optionalFromCol) COLS_RANGE else move.from.col..move.from.col
+            val fromRowSearchRange = if (optionalFromRow) ROWS_RANGE else move.from.row..move.from.row
 
-            for (row in rowSearchRange) {
-                for (col in colSearchRange) {
-                    val fromPos = Position(col, row)
-                    val piece = board.getPiece(fromPos) ?: continue
+            val toColSearchRange = if (optionalToPos) COLS_RANGE else move.to.col..move.to.col
+            val toRowSearchRange = if (optionalToPos) ROWS_RANGE else move.to.row..move.to.row
 
-                    if (piece.type.symbol != move.symbol) continue
+            for (fromRow in fromRowSearchRange) {
+                for (fromCol in fromColSearchRange) {
+                    for (toRow in toRowSearchRange) {
+                        for (toCol in toColSearchRange) {
+                            val fromPos = Position(fromCol, fromRow)
+                            val piece = board.getPiece(fromPos) ?: continue
+                            if (piece.type.symbol != move.symbol) continue
 
-                    val validatedMove = move.copy(from = fromPos).getValidatedMove(piece, board, previousMoves)
-
-                    if (validatedMove != null) {
-                        if (foundMove != null) return null
-                        foundMove = validatedMove
+                            val validatedMove = move.copy(
+                                from = fromPos,
+                                to = Position(toCol, toRow)
+                            ).getValidatedMove(piece, board, previousMoves)
+                            if (validatedMove != null) foundMoves.add(validatedMove)
+                        }
                     }
                 }
             }
 
-            return foundMove
+            return foundMoves
         }
 
 
@@ -242,9 +250,8 @@ data class Move(
     fun colsAbsoluteDistance(): Int = abs(colsDistance())
 
 
-    override fun toString(): String {
-        return "$symbol$from${if (capture) "x" else ""}$to${if (promotion != null) "=$promotion" else ""}" // ( ͡° ͜ʖ ͡°)
-    }
+    override fun toString() =
+        "$symbol$from${if (capture) "x" else ""}$to${if (promotion != null) "=$promotion" else ""}" // ( ͡° ͜ʖ ͡°)
 
     /**
      * Returns a string representation of the move, with the possibility to omit fromCol and fromRow.
@@ -252,15 +259,13 @@ data class Move(
      * @param optionalFromRow if romRow is to be omitted
      * @return string representation of the move
      */
-    fun toString(optionalFromCol: Boolean, optionalFromRow: Boolean): String {
-        return "$symbol" +
+    fun toString(optionalFromCol: Boolean, optionalFromRow: Boolean) =
+        "$symbol" +
                 "${if (!optionalFromCol) from.col else ""}${if (!optionalFromRow) from.row else ""}" +
                 (if (capture) "x" else "") +
                 "$to" +
                 if (promotion != null) "=$promotion" else ""
-    }
 }
-
 
 /**
  * Checks if the capture in the move is valid.
@@ -276,7 +281,7 @@ fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
         if (this.promotion != null) piece is Pawn && (piece.isWhite() && to.row == BLACK_FIRST_ROW ||
                 !piece.isWhite() && to.row == WHITE_FIRST_ROW)
         else true
-    
+
     val capturedPiece = board.getPiece(to) ?: return !capture && isValidPromotion
 
     return piece.army != capturedPiece.army && isValidPromotion
@@ -292,9 +297,9 @@ fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
  */
 fun Move.getValidatedMove(piece: Piece, board: Board, previousMoves: List<Move>): Move? {
     val validMove = when {
-        isValidEnPassant(piece, board, previousMoves)                       -> copy(type = MoveType.EN_PASSANT)
-        isValidCastle(piece, board, previousMoves)                          -> copy(type = MoveType.CASTLE)
-        piece.isValidMove(board, this) && isValidCapture(piece, board)      -> copy(type = MoveType.NORMAL)
+        isValidEnPassant(piece, board, previousMoves) -> copy(type = MoveType.EN_PASSANT)
+        isValidCastle(piece, board, previousMoves) -> copy(type = MoveType.CASTLE)
+        piece.isValidMove(board, this) && isValidCapture(piece, board) -> copy(type = MoveType.NORMAL)
         else -> return null
     }
 

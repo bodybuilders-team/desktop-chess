@@ -35,15 +35,17 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
 
         val newBoard = chess.board.makeMove(move)
         db.postMove(chess.name, move)
+
+        val moves = chess.moves + move
         
         val inCheckMate = newBoard.isKingInCheckMate(chess.army.other())
-        val inStaleMate = newBoard.isKingInStaleMate(chess.army.other())
+        val inStaleMate = newBoard.isKingInStaleMate(chess.army.other(), moves)
 
         return Result.success(
             chess.copy(
                 state = if (inCheckMate || inStaleMate) SessionState.ENDED else SessionState.WAITING_FOR_OPPONENT,
                 board = newBoard,
-                moves = chess.moves + move,
+                moves = moves,
                 currentCheck = when {
                     newBoard.isKingInCheck(chess.army.other()) -> Check.CHECK
                     inCheckMate -> Check.CHECK_MATE

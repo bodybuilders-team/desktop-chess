@@ -21,9 +21,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
             require(row in ROWS_RANGE) { "Invalid Position: Row $row out of range (1 .. 8)." }
         }
 
-        override fun toString(): String {
-            return "$col$row"
-        }
+        override fun toString() = "$col$row"
     }
 
 
@@ -93,13 +91,12 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      * String representation of the game board.
      * @return string representation of the chess board
      */
-    override fun toString(): String {
-        return matrix.joinToString("") { row ->
+    override fun toString() =
+        matrix.joinToString("") { row ->
             row.map { piece ->
                 piece?.toChar() ?: ' '
             }.joinToString("")
         }
-    }
 
 
     /**

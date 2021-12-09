@@ -97,7 +97,7 @@ class BoardCheckTests {
                 "        ")
         )
         //TODO("Finish isKingInStaleMate, by creating hasAvailableMoves()")
-        assertTrue(sut.isKingInStaleMate(Army.WHITE))
+        assertTrue(sut.isKingInStaleMate(Army.WHITE, emptyList()))
     }
 
     @Test
@@ -114,7 +114,7 @@ class BoardCheckTests {
                 "        ")
         )
 
-        assertFalse(sut.isKingInStaleMate(Army.WHITE))
+        assertFalse(sut.isKingInStaleMate(Army.WHITE, emptyList()))
     }
 
     //kingAttackers
@@ -301,7 +301,7 @@ class BoardCheckTests {
             getMatrix2DFromString(
                 "        " +
                         "        " +
-                        "    r   " +
+                        "   br   " +
                         "  q     " +
                         "   K    " +
                         "       r" +

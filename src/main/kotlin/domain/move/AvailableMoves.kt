@@ -9,31 +9,29 @@ import domain.board.Board.Position
 /**
  * Gets a given position's available moves.
  * @param position position to get the available moves
+ * @param previousMoves previous moves made
  * @return list of available moves
  */
-fun Board.getAvailableMoves(position: Position): List<Move> {
-    TODO(
-        "To be implemented. Every piece class needs a new function" +
-                "availableMoves() that calculates the available moves based on the piece type and position."
-    )
-}
+fun Board.getAvailableMoves(position: Position, previousMoves: List<Move>) =
+    getPiece(position)?.getAvailableMoves(this, position, previousMoves) ?: emptyList()
 
 
 //TODO("Test")
 /**
  * Checks if a given army has any available valid moves to make.
  * @param army army to make the move
+ * @param previousMoves previous moves made
  * @return true if the army has available moves
  */
-fun Board.hasAvailableMoves(army: Army): Boolean {
+fun Board.hasAvailableMoves(army: Army, previousMoves: List<Move>): Boolean {
     for (row in ROWS_RANGE) {
         for (col in COLS_RANGE) {
             val pos = Position(col, row)
-            val piece = getPiece(pos) ?: continue
 
+            val piece = getPiece(pos) ?: continue
             if (piece.army != army) continue
 
-            if (getAvailableMoves(pos).isNotEmpty()) return true
+            if (getAvailableMoves(pos, previousMoves).isNotEmpty()) return true
         }
     }
 

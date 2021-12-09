@@ -14,7 +14,5 @@ class Rook(override val army: Army) : Piece {
 
     override val type = PieceType.ROOK
 
-    override fun isValidMove(board: Board, move: Move): Boolean {
-        return isValidStraightMove(board, move)
-    }
+    override fun isValidMove(board: Board, move: Move) = isValidStraightMove(board, move)
 }

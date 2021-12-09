@@ -1,9 +1,7 @@
 package domain.pieces
 
 import domain.board.Board
-import domain.move.Move
-import domain.move.isValidDiagonalMove
-import domain.move.isValidStraightMove
+import domain.move.*
 
 
 /**
@@ -16,7 +14,6 @@ class Queen(override val army: Army) : Piece {
 
     override val type = PieceType.QUEEN
 
-    override fun isValidMove(board: Board, move: Move): Boolean {
-        return isValidStraightMove(board, move) || isValidDiagonalMove(board, move)
-    }
+    override fun isValidMove(board: Board, move: Move) =
+        isValidStraightMove(board, move) || isValidDiagonalMove(board, move)
 }

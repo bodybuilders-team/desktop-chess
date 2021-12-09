@@ -44,19 +44,18 @@ typealias Matrix2D<T> = Array<Array<T>>
  * @throws IllegalMoveException if there's no piece to place
  * @return new board with the pieces placed/removed
  */
-fun Board.placePieceFromSpecialMoves(move: Move, piece: Piece): Board {
-    if (move.type == MoveType.CASTLE) {
-        val toRemovePos = Castle.getRookPosition(move.to)
-        val toRemove = getPiece(toRemovePos)
-        requireNotNull(toRemove) { "No piece in the position. Expected rook/king." }
+fun Board.placePieceFromSpecialMoves(move: Move, piece: Piece) =
+    when (move.type) {
+        MoveType.CASTLE -> {
+            val toRemovePos = Castle.getRookPosition(move.to)
+            val toRemove = getPiece(toRemovePos)
+            requireNotNull(toRemove) { "No piece in the position. Expected rook/king." }
 
-        return removePiece(toRemovePos)
-            .placePiece(Castle.getRookToPosition(move.to), toRemove)
-    } else if (move.type == MoveType.EN_PASSANT)
-        return removePiece(getEnPassantCapturedPawnPosition(move.to, piece))
-
-    return this
-}
+            removePiece(toRemovePos).placePiece(Castle.getRookToPosition(move.to), toRemove)
+        }
+        MoveType.EN_PASSANT -> removePiece(getEnPassantCapturedPawnPosition(move.to, piece))
+        MoveType.NORMAL -> this
+    }
 
 
 /**

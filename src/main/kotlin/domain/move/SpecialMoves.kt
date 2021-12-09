@@ -32,9 +32,8 @@ fun Move.isValidEnPassant(piece: Piece, board: Board, previousMoves: List<Move>)
  * @param previousMoves previous moves made
  * @return true if the move is a valid castle
  */
-fun Move.isValidCastle(piece: Piece, board: Board, previousMoves: List<Move>): Boolean {
-    return isCastlePossible(piece, previousMoves) && piece is King && piece.isValidCastle(board, this)
-}
+fun Move.isValidCastle(piece: Piece, board: Board, previousMoves: List<Move>) =
+    isCastlePossible(piece, previousMoves) && piece is King && piece.isValidCastle(board, this)
 
 
 /**

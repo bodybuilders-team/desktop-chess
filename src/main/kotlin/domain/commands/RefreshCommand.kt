@@ -2,7 +2,6 @@ package domain.commands
 
 import domain.*
 import domain.board.*
-import domain.pieces.Army
 import storage.GameState
 
 
@@ -24,7 +23,7 @@ class RefreshCommand(private val db: GameState, private val chess: Session) : Co
         val moves = db.getAllMoves(chess.name)
         val board = boardWithMoves(moves)
 
-        val inMate = board.isKingInCheckMate(chess.army) || board.isKingInStaleMate(chess.army)
+        val inMate = board.isKingInCheckMate(chess.army) || board.isKingInStaleMate(chess.army, moves)
         
         val state = when {
             inMate                               -> SessionState.ENDED
