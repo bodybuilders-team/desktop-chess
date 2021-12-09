@@ -4,9 +4,7 @@ import domain.board.*
 import domain.board.Board.*
 import domain.move.Move
 import domain.move.MoveType
-import domain.move.isValidCastle
 import domain.pieces.*
-import ui.console.printBoard
 import kotlin.test.*
 
 
@@ -45,9 +43,8 @@ class BoardMethodsTests {
     fun `setPiece places piece in the position`() {
         val piece = Pawn(Army.WHITE)
         val position = Position('e', 5)
-        sut.setPiece(position, piece)
 
-        assertEquals(piece, sut.getPiece(position))
+        assertEquals(piece, sut.placePiece(position, piece).getPiece(position))
     }
 
     //removePiece
@@ -55,17 +52,13 @@ class BoardMethodsTests {
     @Test
     fun `removePiece removes piece from occupied position`() {
         val position = Position('e', 2)
-        sut.removePiece(position)
-
-        assertNull(sut.getPiece(position))
+        assertNull(sut.removePiece(position).getPiece(position))
     }
 
     @Test
     fun `removePiece removes piece from empty position`() {
         val position = Position('e', 5)
-        sut.removePiece(position)
-
-        assertNull(sut.getPiece(position))
+        assertNull(sut.removePiece(position).getPiece(position))
     }
 
     //isPositionOccupied
@@ -130,7 +123,7 @@ class BoardMethodsTests {
 
     @Test
     fun `placePieceFromSpecialMoves places rook from long castle with king correctly`(){
-        val sut = Board(
+        var sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
                 "pppppppp" +
@@ -147,7 +140,7 @@ class BoardMethodsTests {
 
         assertNotNull(piece)
 
-        sut.placePieceFromSpecialMoves(move, piece)
+        sut = sut.placePieceFromSpecialMoves(move, piece)
 
         assertEquals(
             "rnbqkbnr" +
@@ -162,7 +155,7 @@ class BoardMethodsTests {
 
     @Test
     fun `placePieceFromSpecialMoves places rook from short castle with king correctly`(){
-        val sut = Board(
+        var sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
                 "pppppppp" +
@@ -179,7 +172,7 @@ class BoardMethodsTests {
 
         assertNotNull(piece)
 
-        sut.placePieceFromSpecialMoves(move, piece)
+        sut = sut.placePieceFromSpecialMoves(move, piece)
 
         assertEquals(
             "rnbqkbnr" +

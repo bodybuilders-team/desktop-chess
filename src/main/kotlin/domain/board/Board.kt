@@ -36,21 +36,27 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
 
 
     /**
-     * Sets [piece] in [pos]
-     * @param pos position to set
-     * @param piece piece to put in [pos]
+     * Place [piece] in [pos], returning new board
+     * @param pos position to place piece in
+     * @param piece piece to place in [pos]
+     * @return new board with the piece place in the position
      */
-    fun setPiece(pos: Position, piece: Piece) {
-        matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = piece
+    fun placePiece(pos: Position, piece: Piece): Board {
+        val newBoard = this.copy()
+        newBoard.matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = piece
+        return newBoard
     }
 
 
     /**
-     * Removes piece from [pos]
+     * Removes piece from [pos], returning new board
      * @param pos position to remove the piece
+     * @return new board with the removed piece
      */
-    fun removePiece(pos: Position) {
-        matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = null
+    fun removePiece(pos: Position): Board {
+        val newBoard = this.copy()
+        newBoard.matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = null
+        return newBoard
     }
 
 
@@ -72,16 +78,13 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
         requireNotNull(piece) { "Move.invoke() is not throwing IllegalMoveException in case of invalid from position." }
 
         val newBoard = this.copy()
+            .removePiece(move.from)
+            .placePiece(move.to, if (move.promotion == null) piece else getPieceFromSymbol(move.promotion, piece.army))
+            .placePieceFromSpecialMoves(move, piece)
 
-        newBoard.apply {
-            removePiece(move.from)
-            setPiece(move.to, if (move.promotion == null) piece else getPieceFromSymbol(move.promotion, piece.army))
+        if (newBoard.isKingInCheck(piece.army))
+            throw IllegalMoveException(toString(), "Your King is in check! You must protect your King.")
 
-            placePieceFromSpecialMoves(move, piece)
-
-            if (isKingInCheck(piece.army))
-                throw IllegalMoveException(move.toString(), "Your King is in check! You must protect your King.")
-        }
         return newBoard
     }
 
