@@ -75,15 +75,9 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
         val piece = getPiece(move.from)
         requireNotNull(piece) { "Move is not validated! Invalid from position." }
 
-        val newBoard = this.copy()
-            .removePiece(move.from)
+        return removePiece(move.from)
             .placePiece(move.to, if (move.promotion == null) piece else getPieceFromSymbol(move.promotion, piece.army))
             .placePieceFromSpecialMoves(move, piece)
-
-        if (newBoard.isKingInCheck(piece.army))
-            throw IllegalMoveException(toString(), "Your King is in check! You must protect your King.")
-
-        return newBoard
     }
 
 

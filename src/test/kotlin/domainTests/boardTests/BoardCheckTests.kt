@@ -1,4 +1,4 @@
-package boardTests
+package domainTests.boardTests
 
 import domain.board.*
 import domain.pieces.Army
@@ -96,7 +96,6 @@ class BoardCheckTests {
                 "        " +
                 "        ")
         )
-        //TODO("Finish isKingInStaleMate, by creating hasAvailableMoves()")
         assertTrue(sut.isKingInStaleMate(Army.WHITE, emptyList()))
     }
 

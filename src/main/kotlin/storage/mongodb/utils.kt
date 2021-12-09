@@ -62,3 +62,12 @@ fun <T> MongoCollection<T>.createDocument(document: T): Boolean = this.insertOne
  * @return  the documents in the collection
  */
 fun <T> MongoCollection<T>.getAll(): Iterable<T> = this.find()
+
+
+/**
+ * Extension function of [MongoDatabase] that gets all documents from a collection.
+ * @param id collection id
+ * @return the documents in the collection
+ */
+inline fun <reified T : Any> MongoDatabase.getAllDocuments(id: String): Iterable<T> =
+    getCollectionWithId<T>(id).getAll()

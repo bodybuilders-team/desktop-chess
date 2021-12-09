@@ -25,7 +25,7 @@ class PlayCommand(private val db: GameState, private val chess: Session) : Comma
         cmdRequire(chess.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
         cmdRequireNotNull(parameter) { "Missing move." }
 
-        val move = Move.getValidatedMove(parameter, chess.board, chess.moves)
+        val move = Move.validated(parameter, chess.board, chess.moves)
 
         val piece = chess.board.getPiece(move.from)
         requireNotNull(piece) { "Move.getValidatedMove() is not throwing IllegalMoveException in case of invalid from position." }

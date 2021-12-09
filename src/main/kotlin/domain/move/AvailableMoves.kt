@@ -5,7 +5,6 @@ import domain.pieces.Army
 import domain.board.Board.Position
 
 
-//TODO("Test")
 /**
  * Gets a given position's available moves.
  * @param position position to get the available moves
@@ -16,7 +15,6 @@ fun Board.getAvailableMoves(position: Position, previousMoves: List<Move>) =
     getPiece(position)?.getAvailableMoves(this, position, previousMoves) ?: emptyList()
 
 
-//TODO("Test")
 /**
  * Checks if a given army has any available valid moves to make.
  * @param army army to make the move

@@ -9,30 +9,30 @@ import domain.move.Move
 interface GameState {
 
     /**
-     * Returns all the moves from game [game]
-     * @param game game name
+     * Returns all the moves from game [gameName]
+     * @param gameName game name
      * @return list of moves in string
      */
-    fun getAllMoves(game: String): List<Move>
+    fun getAllMoves(gameName: String): List<Move>
 
     /**
-     * Post a move in the game [game]
-     * @param game game name
+     * Post a move in the game [gameName]
+     * @param gameName game name
      * @param move move in string to post
      * @return true if the operation was successful
      */
-    fun postMove(game: String, move: Move): Boolean
+    fun postMove(gameName: String, move: Move): Boolean
 
     /**
      * Creates a game
-     * @param game game name
+     * @param gameName game name
      */
-    fun createGame(game: String)
+    fun createGame(gameName: String)
 
     /**
      * Checks if the game with the specified name exists
-     * @param game game name
+     * @param gameName game name
      * @return true if the game exists
      */
-    fun gameExists(game: String): Boolean
+    fun gameExists(gameName: String): Boolean
 }

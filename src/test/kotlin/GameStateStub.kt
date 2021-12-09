@@ -8,26 +8,26 @@ import storage.GameState
 class GameStateStub : GameState {
     private val database: MutableMap<String, MutableList<Move>> = mutableMapOf()
 
-    override fun getAllMoves(game: String): List<Move> {
-        val moves = database[game]
+    override fun getAllMoves(gameName: String): List<Move> {
+        val moves = database[gameName]
         requireNotNull(moves)
         return moves
     }
 
-    override fun postMove(game: String, move: Move): Boolean {
-        val moves = database[game]
+    override fun postMove(gameName: String, move: Move): Boolean {
+        val moves = database[gameName]
         requireNotNull(moves)
         moves.add(move)
 
         return true
     }
 
-    override fun createGame(game: String) {
-        require(!gameExists(game))
-        database[game] = mutableListOf()
+    override fun createGame(gameName: String) {
+        require(!gameExists(gameName))
+        database[gameName] = mutableListOf()
     }
 
-    override fun gameExists(game: String): Boolean {
-        return game in database
+    override fun gameExists(gameName: String): Boolean {
+        return gameName in database
     }
 }

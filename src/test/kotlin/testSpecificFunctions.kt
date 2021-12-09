@@ -1,6 +1,6 @@
 import domain.board.Board
-import domain.move.IllegalMoveException
-import domain.move.Move
+import domain.move.*
+
 
 /**
  * Makes a move in the board.
@@ -10,8 +10,9 @@ import domain.move.Move
  * @return new board with the move made
  */
 fun Board.makeMove(moveInString: String): Board {
-    return makeMove(Move.getValidatedMove(moveInString, this, emptyList()))
+    return makeMove(Move.validated(moveInString, this, emptyList()))
 }
+
 
 /**
  * Checks if a move [moveInString] is valid.
@@ -24,7 +25,7 @@ fun Board.makeMove(moveInString: String): Board {
  */
 fun Board.isValidMove(moveInString: String): Boolean {
     try {
-        Move.getValidatedMove(moveInString, this, emptyList())
+        Move.validated(moveInString, this, emptyList())
     } catch (err: IllegalMoveException) {
         return false
     }

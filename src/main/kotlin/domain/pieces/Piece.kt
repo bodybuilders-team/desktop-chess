@@ -1,7 +1,7 @@
 package domain.pieces
 
 import domain.board.Board
-import domain.move.IllegalMoveException
+import domain.board.isKingInCheck
 import domain.move.Move
 import domain.move.MoveType
 
@@ -61,14 +61,7 @@ interface Piece {
             optionalToPos = true,
             board = board,
             previousMoves = previousMoves
-        ).filter { move ->
-            try {
-                board.makeMove(move)
-            } catch (err: IllegalMoveException) {
-                if (err.message == "Your King is in check! You must protect your King.") return@filter false
-            }
-            true
-        }
+        ).filter { move -> !board.makeMove(move).isKingInCheck(army) }
 }
 
 

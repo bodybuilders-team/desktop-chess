@@ -52,7 +52,7 @@ data class Move(
          * @return the validated move
          * @throws IllegalMoveException if move is not possible in [board] or multiple possible moves were found
          */
-        fun getValidatedMove(moveInString: String, board: Board, previousMoves: List<Move>): Move {
+        fun validated(moveInString: String, board: Board, previousMoves: List<Move>): Move {
             val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(moveInString)
             val validMoves =
                 searchMoves(move, optionalFromCol, optionalFromRow, optionalToPos = false, board, previousMoves)
@@ -306,6 +306,8 @@ fun Move.getValidatedMove(piece: Piece, board: Board, previousMoves: List<Move>)
         piece.isValidMove(board, this) && isValidCapture(piece, board) -> copy(type = MoveType.NORMAL)
         else -> return null
     }
+
+    if (board.makeMove(validMove).isKingInCheck(piece.army)) return null
 
     return validMove.copy(capture = board.isPositionOccupied(validMove.to))
 }

@@ -3,6 +3,7 @@ package storage
 import com.mongodb.MongoException
 import domain.move.Move
 import com.mongodb.client.MongoDatabase
+import org.litote.kmongo.replaceOne
 import storage.mongodb.*
 
 
@@ -17,6 +18,9 @@ fun <T> tryDataBaseAccess(codeBlock: () -> T) =
         throw GameStateAccessException(err.message ?: "")
     }
 
+const val COLLECTION_ID = "games"
+private data class Game(val name: String, val moves: List<String>)
+
 
 /**
  * Implementation of GameState with MongoDB.
@@ -24,20 +28,32 @@ fun <T> tryDataBaseAccess(codeBlock: () -> T) =
  */
 class MongoDBGameState(private val db: MongoDatabase) : GameState {
 
-    override fun getAllMoves(game: String): List<Move> {
-        return tryDataBaseAccess { db.getCollectionWithId<Move>(game).getAll().toList() }
+    override fun getAllMoves(gameName: String): List<Move> {
+        return tryDataBaseAccess {
+            db.getAllDocuments<Game>(COLLECTION_ID).first { it.name == gameName }.moves.map { Move(it) }
+        }
     }
 
-    override fun postMove(game: String, move: Move): Boolean {
-        return tryDataBaseAccess { db.createDocument(game, move) }
+    override fun postMove(gameName: String, move: Move): Boolean {
+        return tryDataBaseAccess {
+            val oldGame = db.getAllDocuments<Game>(COLLECTION_ID).first { it.name == gameName }
+            db.getCollectionWithId<Game>(COLLECTION_ID).replaceOne(
+                "{name: \"$gameName\"}", oldGame.copy(moves = oldGame.moves + move.toString())
+            )
+            true
+        }
     }
 
-    override fun createGame(game: String) {
-        require(!gameExists(game))
-        tryDataBaseAccess { db.createCollection(game) }
+    override fun createGame(gameName: String) {
+        require(!gameExists(gameName))
+        tryDataBaseAccess {
+            db.createDocument(COLLECTION_ID, Game(name = gameName, moves = emptyList()))
+        }
     }
 
-    override fun gameExists(game: String): Boolean {
-        return tryDataBaseAccess { game in db.getRootCollectionsIds() }
+    override fun gameExists(gameName: String): Boolean {
+        return tryDataBaseAccess {
+            db.getAllDocuments<Game>(COLLECTION_ID).any { it.name == gameName }
+        }
     }
 }

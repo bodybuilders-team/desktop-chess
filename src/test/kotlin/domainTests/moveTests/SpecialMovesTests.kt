@@ -1,4 +1,4 @@
-package moveTests
+package domainTests.moveTests
 
 import domain.board.*
 import domain.move.*

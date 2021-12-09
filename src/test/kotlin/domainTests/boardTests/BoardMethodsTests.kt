@@ -1,4 +1,4 @@
-package boardTests
+package domainTests.boardTests
 
 import domain.board.*
 import domain.board.Board.*

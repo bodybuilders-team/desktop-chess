@@ -1,4 +1,4 @@
-package moveTests
+package domainTests.moveTests
 
 import domain.board.*
 import domain.move.*
@@ -293,7 +293,7 @@ class MoveMethodsTests {
     fun `getValidatedMove returns validated move with the correct move type information`() {
         val sut = Board(
             getMatrix2DFromString(
-                "rnbqkbNr" +
+                "rnbqkbnr" +
                 "pppppppp" +
                 "        " +
                 "        " +

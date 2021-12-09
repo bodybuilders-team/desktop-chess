@@ -1,4 +1,4 @@
-package piecesTests
+package domainTests.piecesTests
 
 import domain.board.*
 import kotlin.test.*

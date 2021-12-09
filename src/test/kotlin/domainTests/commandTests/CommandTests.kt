@@ -1,4 +1,4 @@
-package commandTests
+package domainTests.commandTests
 
 import domain.*
 import GameStateStub
@@ -6,7 +6,6 @@ import domain.board.*
 import domain.commands.*
 import domain.move.Move
 import domain.pieces.Army
-import java.lang.IllegalArgumentException
 import kotlin.test.*
 
 
@@ -124,7 +123,7 @@ class CommandTests {
 
         assertTrue(result.isSuccess)
         assertEquals(SessionState.WAITING_FOR_OPPONENT, chess.state)
-        assertEquals(listOf(Move.getValidatedMove(move, session.board, session.moves)), chess.moves)
+        assertEquals(listOf(Move.validated(move, session.board, session.moves)), chess.moves)
     }
 
     @Test

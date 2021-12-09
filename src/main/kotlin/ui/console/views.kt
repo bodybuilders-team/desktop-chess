@@ -10,8 +10,6 @@ import domain.board.*
 typealias View = (Session) -> Unit
 
 
-//TODO("Discuss checkmate views")
-
 /**
  * Prints the board of the opened game.
  * @param game opened game
