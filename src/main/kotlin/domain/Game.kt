@@ -3,9 +3,17 @@ package domain
 import domain.board.*
 import domain.move.*
 
-data class Game(val board: Board, val moves: List<Move>)
 
-//TODO("Use Game data class")
+/**
+ * A chess game.
+ * @property board game board
+ * @property moves previously played moves
+ */
+data class Game(
+    val board: Board,
+    val moves: List<Move>
+)
+
 
 /**
  * Returns a new board with all the moves in [moves] made.
@@ -29,7 +37,7 @@ fun boardWithMoves(moves: List<Move>): Board {
  * @param movesInString moves in string
  * @return new game with the moves [movesInString] consecutively made and validated in the board
  */
-fun gameFromMoves(vararg movesInString: String): Pair<Board, List<Move>> {
+fun gameFromMoves(vararg movesInString: String): Game {
     var newBoard = Board()
     val previousMoves = mutableListOf<Move>()
 
@@ -39,5 +47,5 @@ fun gameFromMoves(vararg movesInString: String): Pair<Board, List<Move>> {
         previousMoves.add(validatedMove)
     }
 
-    return Pair(newBoard, previousMoves)
+    return Game(board = newBoard, moves = previousMoves)
 }

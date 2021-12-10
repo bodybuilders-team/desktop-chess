@@ -16,7 +16,7 @@ class QueenMoveTests {
             "        " +
             " Q      " +
             "       K"
-    )
+        )
     )
 
     @Test

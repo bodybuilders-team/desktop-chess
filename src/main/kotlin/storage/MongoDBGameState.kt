@@ -18,7 +18,15 @@ fun <T> tryDataBaseAccess(codeBlock: () -> T) =
         throw GameStateAccessException(err.message ?: "")
     }
 
+
 const val COLLECTION_ID = "games"
+
+
+/**
+ * Storage game with name and played moves.
+ * @property name game name
+ * @property moves previously played moves
+ */
 private data class Game(val name: String, val moves: List<String>)
 
 

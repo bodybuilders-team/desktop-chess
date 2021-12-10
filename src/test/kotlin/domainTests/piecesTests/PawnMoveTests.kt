@@ -60,9 +60,9 @@ class PawnMoveTests {
     fun `Pawn move to same place is not valid`() {
         assertFalse(sut.isValidMove("Pe2e2"))
     }
-    
-    //Pawn double move with piece in the way is invalid
-    
+
+    // Pawn double move with piece in the way is invalid
+
     private val sut2 = Board(
         getMatrix2DFromString(
             "        " +
@@ -81,7 +81,7 @@ class PawnMoveTests {
         assertFalse(sut2.isValidMove("Pe2e4"))
     }
 
-    //En passant
+    // En passant
 
     @Test
     fun `Pawn capture en passant to the left move is valid`() {
@@ -97,7 +97,7 @@ class PawnMoveTests {
                 "RNBQKBNR"
             )
         )
-        
+
         assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5e6", sutEnPassant, listOf(Move("Pe7e5"))).type)
     }
 
@@ -115,7 +115,7 @@ class PawnMoveTests {
                 "RNBQKBNR"
             )
         )
-        
+
         assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5g6", sutEnPassant, listOf(Move("Pg7g5"))).type)
     }
 }

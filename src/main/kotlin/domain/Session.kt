@@ -10,17 +10,19 @@ import domain.pieces.Army
  * @property name session name
  * @property state current session state
  * @property army session army
- * @property board current board
- * @property moves list of previously played moves
+ * @property game game with current board and list of previously played moves
  */
 data class Session(
     val name: String,
     val state: SessionState,
     val army: Army,
-    val board: Board,
-    val moves: List<Move>,
+    val game: Game,
     val currentCheck: Check
 )
+
+
+// Session Constants
+const val NO_NAME = ""
 
 
 /**

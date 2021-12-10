@@ -17,18 +17,18 @@ data class CommandHandler(
 
 /**
  * Gets the container bearing the associations between user entered strings and the corresponding CommandHandler.
- * @param chess current chess game
+ * @param session current session
  * @param db database where the game is stored
  * @return the container with the command handler mappings
  */
-fun buildCommandsHandler(chess: Session, db: GameState): Map<String, CommandHandler> {
+fun buildCommandsHandler(session: Session, db: GameState): Map<String, CommandHandler> {
     return mapOf(
-        "open"    to CommandHandler(action = OpenCommand(db),            display = ::openView),
-        "join"    to CommandHandler(action = JoinCommand(db),            display = ::joinView),
-        "play"    to CommandHandler(action = PlayCommand(db, chess),     display = ::playView),
-        "refresh" to CommandHandler(action = RefreshCommand(db, chess),  display = ::refreshView),
-        "moves"   to CommandHandler(action = MovesCommand(db, chess),    display = ::movesView),
-        "exit"    to CommandHandler(action = ExitCommand(),              display = { }),
-        "help"    to CommandHandler(action = HelpCommand(chess),         display = ::helpView)
+        "open"    to CommandHandler(action = OpenCommand(db),             display = ::openView),
+        "join"    to CommandHandler(action = JoinCommand(db),             display = ::joinView),
+        "play"    to CommandHandler(action = PlayCommand(db, session),    display = ::playView),
+        "refresh" to CommandHandler(action = RefreshCommand(db, session), display = ::refreshView),
+        "moves"   to CommandHandler(action = MovesCommand(db, session),   display = ::movesView),
+        "exit"    to CommandHandler(action = ExitCommand(),               display = { }),
+        "help"    to CommandHandler(action = HelpCommand(session),        display = ::helpView)
     )
 }

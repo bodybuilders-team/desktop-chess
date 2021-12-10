@@ -16,7 +16,7 @@ class RookMoveTests {
             "        " +
             " R      " +
             "       K"
-    )
+        )
     )
 
     @Test

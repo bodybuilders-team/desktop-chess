@@ -31,20 +31,19 @@ fun main() {
 
     driver.use {
         try {
-            var chess = Session(
-                name = "",
+            var session = Session(
+                name = NO_NAME,
                 state = SessionState.LOGGING,
                 army = Army.WHITE,
-                board = Board(),
-                moves = emptyList(),
+                game = Game(board = Board(), moves = emptyList()),
                 currentCheck = Check.NO_CHECK
             )
             val dataBase = MongoDBGameState(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
 
             while (true) {
                 try {
-                    val dispatcher = buildCommandsHandler(chess, dataBase)
-                    val (command, parameter) = readCommand(getPrompt(chess))
+                    val dispatcher = buildCommandsHandler(session, dataBase)
+                    val (command, parameter) = readCommand(getPrompt(session))
 
                     val handler = dispatcher[command]
                     if (handler == null)
@@ -52,8 +51,8 @@ fun main() {
                     else {
                         val result = handler.action(parameter)
                         if (result.isSuccess) {
-                            chess = result.getOrThrow()
-                            handler.display(chess)
+                            session = result.getOrThrow()
+                            handler.display(session)
                         } else break
                     }
                 } catch (err: Exception) {

@@ -18,7 +18,7 @@ class KingMoveTests {
             "   p    " +
             "    K   " +
             "        "
-    )
+        )
     )
 
     @Test
@@ -70,8 +70,8 @@ class KingMoveTests {
     fun `King move to same place is not valid`() {
         assertFalse(sut.isValidMove("Ke2e2"))
     }
-    
-    //Castle
+
+    // Castle
 
     private val sutCastle = Board(
         getMatrix2DFromString(

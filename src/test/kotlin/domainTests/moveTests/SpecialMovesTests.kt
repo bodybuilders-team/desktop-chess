@@ -2,16 +2,16 @@ package domainTests.moveTests
 
 import domain.board.*
 import domain.move.*
-import domain.pieces.Army
-import domain.pieces.Pawn
+import domain.pieces.*
 import kotlin.test.*
 
+
 class SpecialMovesTests {
-    
-    //isValidEnPassant
-    
+
+    // isValidEnPassant
+
     @Test
-    fun `isValidEnPassant returns true if the move is a valid en passant`(){
+    fun `isValidEnPassant returns true if the move is a valid en passant`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -21,20 +21,23 @@ class SpecialMovesTests {
                 "        " +
                 "        " +
                 "PPPPP PP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
-        
+
         val move = Move("Pf5e6")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Pf2f4"), Move("Pf4f5"),
-                                    Move("Pe7e5"))
-        
+        val previousMoves = listOf(
+            Move("Pf2f4"), Move("Pf4f5"),
+            Move("Pe7e5")
+        )
+
         assertNotNull(piece)
         assertTrue(move.isValidEnPassant(piece, sut, previousMoves))
     }
 
     @Test
-    fun `isValidEnPassant returns false if the move isn't a valid en passant`(){
+    fun `isValidEnPassant returns false if the move isn't a valid en passant`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -44,7 +47,8 @@ class SpecialMovesTests {
                 "     P  " +
                 "        " +
                 "PPPPP PP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pf4f5")
@@ -54,11 +58,11 @@ class SpecialMovesTests {
         assertNotNull(piece)
         assertFalse(move.isValidEnPassant(piece, sut, previousMoves))
     }
-    
-    //isValidCastle
+
+    // isValidCastle
 
     @Test
-    fun `isValidCastle returns true if the move is a valid long castle with king`(){
+    fun `isValidCastle returns true if the move is a valid long castle with king`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -68,7 +72,8 @@ class SpecialMovesTests {
                 "     P  " +
                 "        " +
                 "PPPPP PP" +
-                "R   KBNR")
+                "R   KBNR"
+            )
         )
 
         val move = Move("Ke1c1")
@@ -80,7 +85,7 @@ class SpecialMovesTests {
     }
 
     @Test
-    fun `isValidCastle returns false if the move isn't a valid long castle with king`(){
+    fun `isValidCastle returns false if the move isn't a valid long castle with king`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -90,7 +95,8 @@ class SpecialMovesTests {
                 "     P  " +
                 "        " +
                 "PPPPP PP" +
-                "R   KBNR")
+                "R   KBNR"
+            )
         )
 
         val move = Move("Ke1c1")
@@ -102,7 +108,7 @@ class SpecialMovesTests {
     }
 
     @Test
-    fun `isValidCastle returns true if the move is a valid short castle with king`(){
+    fun `isValidCastle returns true if the move is a valid short castle with king`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -112,7 +118,8 @@ class SpecialMovesTests {
                 "     P  " +
                 "        " +
                 "PPPPP PP" +
-                "RNBQK  R")
+                "RNBQK  R"
+            )
         )
 
         val move = Move("Ke1g1")
@@ -124,7 +131,7 @@ class SpecialMovesTests {
     }
 
     @Test
-    fun `isValidCastle returns false if the move isn't a valid short castle with king`(){
+    fun `isValidCastle returns false if the move isn't a valid short castle with king`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -134,7 +141,8 @@ class SpecialMovesTests {
                 "     P  " +
                 "        " +
                 "PPPPP PP" +
-                "RNBQK  R")
+                "RNBQK  R"
+            )
         )
 
         val move = Move("Ke1g1")
@@ -145,43 +153,47 @@ class SpecialMovesTests {
         assertFalse(move.isValidCastle(piece, sut, previousMoves))
     }
 
-    //isEnPassantPossible
+    // isEnPassantPossible
 
     @Test
-    fun `isEnPassantPossible returns true if an en passant move is possible to be made`(){
+    fun `isEnPassantPossible returns true if an en passant move is possible to be made`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
-                        "pppp ppp" +
-                        "        " +
-                        "    pP  " +
-                        "        " +
-                        "        " +
-                        "PPPPP PP" +
-                        "RNBQKBNR")
+                "pppp ppp" +
+                "        " +
+                "    pP  " +
+                "        " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pf5e6")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Pf2f4"), Move("Pf4f5"),
-            Move("Pe7e5"))
+        val previousMoves = listOf(
+            Move("Pf2f4"), Move("Pf4f5"),
+            Move("Pe7e5")
+        )
 
         assertNotNull(piece)
         assertTrue(move.isEnPassantPossible(piece, previousMoves))
     }
 
     @Test
-    fun `isEnPassantPossible returns false if an en passant move isn't possible to be made`(){
+    fun `isEnPassantPossible returns false if an en passant move isn't possible to be made`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
-                        "ppp pppp" +
-                        "   p    " +
-                        "        " +
-                        "     P  " +
-                        "        " +
-                        "PPPPP PP" +
-                        "RNBQKBNR")
+                "ppp pppp" +
+                "   p    " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pf4f5")
@@ -191,11 +203,11 @@ class SpecialMovesTests {
         assertNotNull(piece)
         assertFalse(move.isEnPassantPossible(piece, previousMoves))
     }
-    
-    //isCastlePossible
+
+    // isCastlePossible
 
     @Test
-    fun `isCastlePossible returns true if a castle move is possible to be made`(){
+    fun `isCastlePossible returns true if a castle move is possible to be made`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -205,7 +217,8 @@ class SpecialMovesTests {
                 "     P  " +
                 "        " +
                 "PPPPP PP" +
-                "R   KBNR")
+                "R   KBNR"
+            )
         )
 
         val move = Move("Ra1d1")
@@ -217,7 +230,7 @@ class SpecialMovesTests {
     }
 
     @Test
-    fun `isCastlePossible returns false if a castle move isn't possible to be made`(){
+    fun `isCastlePossible returns false if a castle move isn't possible to be made`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -227,7 +240,8 @@ class SpecialMovesTests {
                 "     P  " +
                 "        " +
                 "PPPPP PP" +
-                "R   KBNR")
+                "R   KBNR"
+            )
         )
 
         val move = Move("Ra1d1")
@@ -238,40 +252,49 @@ class SpecialMovesTests {
         assertFalse(isCastlePossible(piece, previousMoves))
     }
 
-    //Castle.getRookPosition
-    
+    // Castle.getRookPosition
+
     @Test
-    fun `getRookPosition with valid short castle king toPos returns correct rook fromPos`(){
-        assertEquals(Board.Position(col = INITIAL_ROOK_COL_CLOSER_TO_KING, row = WHITE_FIRST_ROW),
-            Castle.getRookPosition(Board.Position(col = SHORT_CASTLE_KING_COL, row = WHITE_FIRST_ROW)))
+    fun `getRookPosition with valid short castle king toPos returns correct rook fromPos`() {
+        assertEquals(
+            Board.Position(col = INITIAL_ROOK_COL_CLOSER_TO_KING, row = WHITE_FIRST_ROW),
+            Castle.getRookPosition(Board.Position(col = SHORT_CASTLE_KING_COL, row = WHITE_FIRST_ROW))
+        )
     }
 
     @Test
-    fun `getRookPosition with valid long castle king toPos returns correct rook fromPos`(){
-        assertEquals(Board.Position(col = INITIAL_ROOK_COL_FURTHER_FROM_KING, row = WHITE_FIRST_ROW),
-            Castle.getRookPosition(Board.Position(col = LONG_CASTLE_KING_COL, row = WHITE_FIRST_ROW)))
+    fun `getRookPosition with valid long castle king toPos returns correct rook fromPos`() {
+        assertEquals(
+            Board.Position(col = INITIAL_ROOK_COL_FURTHER_FROM_KING, row = WHITE_FIRST_ROW),
+            Castle.getRookPosition(Board.Position(col = LONG_CASTLE_KING_COL, row = WHITE_FIRST_ROW))
+        )
     }
 
-    //Castle.getRookToPosition
+    // Castle.getRookToPosition
 
     @Test
-    fun `getRookToPosition with valid short castle king toPos returns correct rook toPos`(){
-        assertEquals(Board.Position(col = SHORT_CASTLE_ROOK_COL, row = WHITE_FIRST_ROW),
-            Castle.getRookToPosition(Board.Position(col = SHORT_CASTLE_KING_COL, row = WHITE_FIRST_ROW)))
+    fun `getRookToPosition with valid short castle king toPos returns correct rook toPos`() {
+        assertEquals(
+            Board.Position(col = SHORT_CASTLE_ROOK_COL, row = WHITE_FIRST_ROW),
+            Castle.getRookToPosition(Board.Position(col = SHORT_CASTLE_KING_COL, row = WHITE_FIRST_ROW))
+        )
     }
 
     @Test
-    fun `getRookToPosition with valid long castle king toPos returns correct rook toPos`(){
-        assertEquals(Board.Position(col = LONG_CASTLE_ROOK_COL, row = WHITE_FIRST_ROW),
-            Castle.getRookToPosition(Board.Position(col = LONG_CASTLE_KING_COL, row = WHITE_FIRST_ROW)))
+    fun `getRookToPosition with valid long castle king toPos returns correct rook toPos`() {
+        assertEquals(
+            Board.Position(col = LONG_CASTLE_ROOK_COL, row = WHITE_FIRST_ROW),
+            Castle.getRookToPosition(Board.Position(col = LONG_CASTLE_KING_COL, row = WHITE_FIRST_ROW))
+        )
     }
 
-    //getEnPassantCapturedPawnPosition
+    // getEnPassantCapturedPawnPosition
 
     @Test
-    fun `getEnPassantCapturedPawnPosition with valid attackerPos returns correct captured pawn position`(){
-        assertEquals(Board.Position(col = 'b', row = 5),
-            getEnPassantCapturedPawnPosition(Board.Position(col = 'b', row = 6), Pawn(Army.WHITE)))
+    fun `getEnPassantCapturedPawnPosition with valid attackerPos returns correct captured pawn position`() {
+        assertEquals(
+            Board.Position(col = 'b', row = 5),
+            getEnPassantCapturedPawnPosition(Board.Position(col = 'b', row = 6), Pawn(Army.WHITE))
+        )
     }
-    
 }

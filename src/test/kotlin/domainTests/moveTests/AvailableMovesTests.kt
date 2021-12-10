@@ -7,11 +7,11 @@ import kotlin.test.*
 
 
 class AvailableMovesTests {
-    
-    //getAvailableMoves
-    
+
+    // getAvailableMoves
+
     @Test
-    fun `getAvailableMoves returns emptyList when there are no available moves for queen`(){
+    fun `getAvailableMoves returns emptyList when there are no available moves for queen`() {
         val sut = Board()
         val position = Board.Position('d', 1)
         val piece = sut.getPiece(position)
@@ -21,17 +21,18 @@ class AvailableMovesTests {
     }
 
     @Test
-    fun `getAvailableMoves returns available moves for queen`(){
+    fun `getAvailableMoves returns available moves for queen`() {
         val sut = Board(
             getMatrix2DFromString(
-                        "rnbqkbnr" +
-                        "pppppppp" +
-                        "        " +
-                        "        " +
-                        "        " +
-                        " P P    " +
-                        "PP  PPPP" +
-                        "RN QKBNR")
+                "rnbqkbnr" +
+                "pppppppp" +
+                "        " +
+                "        " +
+                "        " +
+                " P P    " +
+                "PP  PPPP" +
+                "RN QKBNR"
+            )
         )
         val position = Board.Position('d', 1)
         val piece = sut.getPiece(position)
@@ -44,7 +45,7 @@ class AvailableMovesTests {
     }
 
     @Test
-    fun `getAvailableMoves returns available moves, including castle move, for king`(){
+    fun `getAvailableMoves returns available moves, including castle move, for king`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -54,7 +55,8 @@ class AvailableMovesTests {
                 "        " +
                 "        " +
                 "PPPPPPPP" +
-                "R   KBNR")
+                "R   KBNR"
+            )
         )
         val position = Board.Position('e', 1)
         val piece = sut.getPiece(position)
@@ -67,7 +69,7 @@ class AvailableMovesTests {
     }
 
     @Test
-    fun `getAvailableMoves returns available moves, including en passant move, for pawn`(){
+    fun `getAvailableMoves returns available moves, including en passant move, for pawn`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -77,7 +79,8 @@ class AvailableMovesTests {
                 "        " +
                 "        " +
                 "PPPP PPP" +
-                "R   KBNR")
+                "R   KBNR"
+            )
         )
         val position = Board.Position('e', 5)
         val piece = sut.getPiece(position)
@@ -90,24 +93,24 @@ class AvailableMovesTests {
         )
     }
 
-    //hasAvailableMoves
-    
+    // hasAvailableMoves
+
     @Test
-    fun `hasAvailableMoves returns true with default board`(){
+    fun `hasAvailableMoves returns true with default board`() {
         val sut = Board()
         assertTrue(sut.hasAvailableMoves(Army.WHITE, emptyList()))
         assertTrue(sut.hasAvailableMoves(Army.BLACK, emptyList()))
     }
 
     @Test
-    fun `hasAvailableMoves returns false with empty board`(){
+    fun `hasAvailableMoves returns false with empty board`() {
         val sut = Board(getMatrix2DFromString("        ".repeat(BOARD_SIDE_LENGTH)))
         assertFalse(sut.hasAvailableMoves(Army.WHITE, emptyList()))
         assertFalse(sut.hasAvailableMoves(Army.BLACK, emptyList()))
     }
 
-    //currentTurnArmy
-    
+    // currentTurnArmy
+
     @Test
     fun `currentTurnArmy returns White when number of moves is even`() {
         assertEquals(Army.WHITE, currentTurnArmy(emptyList()))
@@ -117,8 +120,8 @@ class AvailableMovesTests {
     fun `currentTurnArmy returns Black when number of moves is odd`() {
         assertEquals(Army.BLACK, currentTurnArmy(listOf(Move("Pe2e4"))))
     }
-    
-    //isWhiteTurn
+
+    // isWhiteTurn
 
     @Test
     fun `isWhiteTurn returns true when number of moves is even`() {

@@ -27,8 +27,7 @@ class JoinCommand(private val db: GameState) : Command {
                 name = parameter,
                 state = state,
                 army = Army.BLACK,
-                board = board,
-                moves = moves,
+                game = Game(board, moves),
                 currentCheck =
                 if (state == SessionState.YOUR_TURN && board.isKingInCheck(Army.BLACK)) Check.CHECK
                 else Check.NO_CHECK

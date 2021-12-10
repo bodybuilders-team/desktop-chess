@@ -1,8 +1,6 @@
 package domain.commands
 
 import domain.*
-import domain.board.Board
-import domain.move.Move
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 

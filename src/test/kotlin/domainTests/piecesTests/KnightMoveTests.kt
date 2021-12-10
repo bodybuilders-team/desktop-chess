@@ -16,7 +16,7 @@ class KnightMoveTests {
             "  N     " +
             "        " +
             "K       "
-    )
+        )
     )
 
     @Test

@@ -2,13 +2,12 @@ package domainTests.moveTests
 
 import domain.board.*
 import domain.move.*
-import domain.pieces.PieceType
 import kotlin.test.*
 
 
 class MoveMethodsTests {
 
-    //Move.invoke(string)
+    // Move.invoke(string)
 
     @Test
     fun `Move constructor with string returns unvalidated move correctly`() {
@@ -42,15 +41,16 @@ class MoveMethodsTests {
         )
     }
 
-    //Move.validated()
-    
+    // Move.validated()
+
     @Test
     fun `validated returns validated move correctly if move is valid`() {
         val sut = Board()
-        
+
         assertEquals(
             Move("Pe2e4"),
-            Move.validated("Pe2e4", sut, emptyList()))
+            Move.validated("Pe2e4", sut, emptyList())
+        )
     }
 
     @Test
@@ -73,15 +73,16 @@ class MoveMethodsTests {
                 "    P P " +
                 "        " +
                 "PPPP PPP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
-        
+
         assertFailsWith<IllegalMoveException> {
             Move.validated("Pf5", sut, emptyList())
         }
     }
 
-    //Move.searchMoves()
+    // Move.searchMoves()
 
     @Test
     fun `searchMoves returns a list containing the only valid move`() {
@@ -89,8 +90,11 @@ class MoveMethodsTests {
 
         assertEquals(
             setOf(Move("Pe2e4")),
-            Move.searchMoves(Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false,
-                sut, emptyList()).toSet())
+            Move.searchMoves(
+                Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false,
+                sut, emptyList()
+            ).toSet()
+        )
     }
 
     @Test
@@ -99,8 +103,11 @@ class MoveMethodsTests {
 
         assertEquals(
             setOf(Move("Pe2e4")),
-            Move.searchMoves(Move("Pee4"), optionalFromCol = false, optionalFromRow = true, optionalToPos = false,
-                sut, emptyList()).toSet())
+            Move.searchMoves(
+                Move("Pee4"), optionalFromCol = false, optionalFromRow = true, optionalToPos = false,
+                sut, emptyList()
+            ).toSet()
+        )
     }
 
     @Test
@@ -109,8 +116,11 @@ class MoveMethodsTests {
 
         assertEquals(
             setOf(Move("Pe2e4")),
-            Move.searchMoves(Move("P2e4"), optionalFromCol = true, optionalFromRow = false, optionalToPos = false,
-                sut, emptyList()).toSet())
+            Move.searchMoves(
+                Move("P2e4"), optionalFromCol = true, optionalFromRow = false, optionalToPos = false,
+                sut, emptyList()
+            ).toSet()
+        )
     }
 
     @Test
@@ -119,8 +129,11 @@ class MoveMethodsTests {
 
         assertEquals(
             setOf(Move("Pe2e4")),
-            Move.searchMoves(Move("Pe4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = false,
-                sut, emptyList()).toSet())
+            Move.searchMoves(
+                Move("Pe4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = false,
+                sut, emptyList()
+            ).toSet()
+        )
     }
 
     @Test
@@ -129,8 +142,11 @@ class MoveMethodsTests {
 
         assertEquals(
             setOf(Move("Pe2e3"), Move("Pe2e4")),
-            Move.searchMoves(Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = true,
-                sut, emptyList()).toSet())
+            Move.searchMoves(
+                Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = true,
+                sut, emptyList()
+            ).toSet()
+        )
     }
 
     @Test
@@ -139,23 +155,28 @@ class MoveMethodsTests {
 
         assertEquals(
             emptyList(),
-            Move.searchMoves(Move("Pe2e5"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false,
-                sut, emptyList()))
+            Move.searchMoves(
+                Move("Pe2e5"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false,
+                sut, emptyList()
+            )
+        )
     }
 
     @Test
     fun `searchMoves returns a list containing all available moves of the piece type, if optional fromPos and toPos`() {
         val sut = Board()
-        
+
         assertEquals(
             (COLS_RANGE.map { Move("P${it}2${it}3") } + COLS_RANGE.map { Move("P${it}2${it}4") } +
-                COLS_RANGE.map { Move("P${it}7${it}6") } + COLS_RANGE.map { Move("P${it}7${it}5") }
-            ).toSet(),
-            Move.searchMoves(Move("Pe2e4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = true,
-                sut, emptyList()).toSet())
+                    COLS_RANGE.map { Move("P${it}7${it}6") } + COLS_RANGE.map { Move("P${it}7${it}5") }
+                    ).toSet(),
+            Move.searchMoves(
+                Move("Pe2e4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = true,
+                sut, emptyList()
+            ).toSet())
     }
-    
-    //extractMoveInfo
+
+    // extractMoveInfo
 
     @Test
     fun `extractMoveInfo extracts information from move correctly`() {
@@ -171,7 +192,7 @@ class MoveMethodsTests {
                 ),
                 optionalFromCol = false,
                 optionalFromRow = false
-            ), 
+            ),
             Move.extractMoveInfo("Pe2e4")
         )
     }
@@ -251,9 +272,9 @@ class MoveMethodsTests {
             Move.extractMoveInfo("Pe2e4=Q")
         )
     }
-    
-    //Directions
-    
+
+    // Directions
+
     @Test
     fun `Move to same place isn't vertical, horizontal, straight nor diagonal`() {
         assertFalse(Move("e2e2").isVertical())
@@ -261,8 +282,8 @@ class MoveMethodsTests {
         assertFalse(Move("e2e2").isStraight())
         assertFalse(Move("e2e2").isDiagonal())
     }
-    
-    //Vertical
+
+    // Vertical
 
     @Test
     fun `isVertical with vertical move works`() {
@@ -273,9 +294,9 @@ class MoveMethodsTests {
     fun `isVertical with horizontal move doesn't work`() {
         assertFalse(Move("e2f2").isVertical())
     }
-    
-    //Horizontal
-    
+
+    // Horizontal
+
     @Test
     fun `isHorizontal with horizontal move works`() {
         assertTrue(Move("e2f2").isHorizontal())
@@ -285,8 +306,8 @@ class MoveMethodsTests {
     fun `isHorizontal with vertical move doesn't work`() {
         assertFalse(Move("e2e4").isHorizontal())
     }
-    
-    //Straight
+
+    // Straight
 
     @Test
     fun `isStraight with horizontal move works`() {
@@ -302,8 +323,8 @@ class MoveMethodsTests {
     fun `isStraight with diagonal move doesn't work`() {
         assertFalse(Move("e2g4").isStraight())
     }
-    
-    //Diagonal
+
+    // Diagonal
 
     @Test
     fun `isDiagonal with diagonal move works`() {
@@ -315,8 +336,8 @@ class MoveMethodsTests {
         assertFalse(Move("e2f4").isDiagonal())
     }
 
-    //Distances
-    
+    // Distances
+
     @Test
     fun `rowsDistance works`() {
         assertEquals(2, Move("e2e4").rowsDistance())
@@ -357,8 +378,8 @@ class MoveMethodsTests {
         assertEquals(0, Move("h2h7").colsAbsoluteDistance())
     }
 
-    //toString
-    
+    // toString
+
     @Test
     fun `toString works`() {
         assertEquals("Pe2e4", Move("Pe2e4").toString())
@@ -370,11 +391,11 @@ class MoveMethodsTests {
         assertEquals("Pee4", Move("Pee4").toString(optionalFromCol = false, optionalFromRow = true))
         assertEquals("P2e4", Move("P2e4").toString(optionalFromCol = true, optionalFromRow = false))
     }
-    
-    //isValidCapture
+
+    // isValidCapture
 
     @Test
-    fun `isValidCapture returns true with valid capture to empty square`(){
+    fun `isValidCapture returns true with valid capture to empty square`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -384,7 +405,8 @@ class MoveMethodsTests {
                 "        " +
                 "        " +
                 "PPPPPPPP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Ng1f3")
@@ -395,7 +417,7 @@ class MoveMethodsTests {
     }
 
     @Test
-    fun `isValidCapture returns true with valid capture to occupied square`(){
+    fun `isValidCapture returns true with valid capture to occupied square`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -405,7 +427,8 @@ class MoveMethodsTests {
                 "        " +
                 "     N  " +
                 "PPPPPPPP" +
-                "RNBQKB R")
+                "RNBQKB R"
+            )
         )
 
         val move = Move("Nf3e5")
@@ -416,7 +439,7 @@ class MoveMethodsTests {
     }
 
     @Test
-    fun `isValidCapture returns false with invalid capture`(){
+    fun `isValidCapture returns false with invalid capture`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -426,7 +449,8 @@ class MoveMethodsTests {
                 "        " +
                 "     N  " +
                 "PPPPPPPP" +
-                "RNBQKB R")
+                "RNBQKB R"
+            )
         )
 
         val move = Move("Pf2f3")
@@ -437,7 +461,7 @@ class MoveMethodsTests {
     }
 
     @Test
-    fun `isValidCapture returns false with valid capture to empty square with wrong capture information`(){
+    fun `isValidCapture returns false with valid capture to empty square with wrong capture information`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -447,7 +471,8 @@ class MoveMethodsTests {
                 "        " +
                 "        " +
                 "PPPPPPPP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pe2e4").copy(capture = true)
@@ -458,7 +483,7 @@ class MoveMethodsTests {
     }
 
     @Test
-    fun `isValidCapture returns true with valid promotion`(){
+    fun `isValidCapture returns true with valid promotion`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkb r" +
@@ -468,7 +493,8 @@ class MoveMethodsTests {
                 "        " +
                 "        " +
                 "PPPPPPPP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pg7g8=Q")
@@ -479,7 +505,7 @@ class MoveMethodsTests {
     }
 
     @Test
-    fun `isValidCapture returns false with invalid promotion (invalid pawn position)`(){
+    fun `isValidCapture returns false with invalid promotion (invalid pawn position)`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkb r" +
@@ -489,7 +515,8 @@ class MoveMethodsTests {
                 "        " +
                 "        " +
                 "PPPPPPPP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pg5g6=Q")
@@ -504,13 +531,14 @@ class MoveMethodsTests {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkb r" +
-                        "ppppppPp" +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "PPPPPPPP" +
-                        "RNBQKBNR")
+                "ppppppPp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pg7g8")
@@ -520,7 +548,7 @@ class MoveMethodsTests {
         assertFalse(move.isValidCapture(piece, sut))
     }
 
-    //getValidatedMove
+    // getValidatedMove
 
     @Test
     fun `getValidatedMove returns validated move with the correct move type information`() {
@@ -533,7 +561,8 @@ class MoveMethodsTests {
                 "        " +
                 "        " +
                 "PPPPPPPP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pe2e4").copy(type = MoveType.CASTLE)
@@ -554,7 +583,8 @@ class MoveMethodsTests {
                 "    p   " +
                 "     P  " +
                 "PPPPP PP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pf3e4")
@@ -575,7 +605,8 @@ class MoveMethodsTests {
                 "        " +
                 "        " +
                 "PPPPPPPP" +
-                "RNBQKBNR")
+                "RNBQKBNR"
+            )
         )
 
         val move = Move("Pe2e6")

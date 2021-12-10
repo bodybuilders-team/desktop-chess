@@ -11,41 +11,41 @@ typealias View = (Session) -> Unit
 
 
 /**
- * Prints the board of the opened game.
- * @param game opened game
+ * Prints the board of the opened session.
+ * @param session opened session
  */
-fun openView(game: Session) {
-    printBoard(game.board)
-    println("Game ${game.name} opened. Play with white pieces.")
+fun openView(session: Session) {
+    printBoard(session.game.board)
+    println("Game ${session.name} opened. Play with white pieces.")
 
-    if (game.state == SessionState.ENDED)
+    if (session.state == SessionState.ENDED)
         println("Game ended.")
-    else if (game.currentCheck == Check.CHECK)
+    else if (session.currentCheck == Check.CHECK)
         println("Your King is in check.")
 }
 
 
 /**
- * Prints the board of the joined game.
- * @param game joined game
+ * Prints the board of the joined session.
+ * @param session joined session
  */
-fun joinView(game: Session) {
-    printBoard(game.board)
-    println("Join to game ${game.name}. Play with black pieces.")
-    if (game.state == SessionState.ENDED)
+fun joinView(session: Session) {
+    printBoard(session.game.board)
+    println("Join to game ${session.name}. Play with black pieces.")
+    if (session.state == SessionState.ENDED)
         println("Game ended.")
-    else if (game.currentCheck == Check.CHECK)
+    else if (session.currentCheck == Check.CHECK)
         println("Your King is in check.")
 }
 
 
 /**
  * Prints the board after the play is made.
- * @param game game where the play happens
+ * @param session game where the play happens
  */
-fun playView(game: Session) {
-    printBoard(game.board)
-    when (game.currentCheck) {
+fun playView(session: Session) {
+    printBoard(session.game.board)
+    when (session.currentCheck) {
         Check.CHECK      -> println("Enemy King is in check.")
         Check.CHECK_MATE -> println("Enemy King is in checkmate. Game ended.")
         Check.STALE_MATE -> println("Enemy King is in stalemate. Game ended.")
@@ -57,33 +57,33 @@ fun playView(game: Session) {
 
 /**
  * Prints the board refreshed.
- * @param game current game
+ * @param session current session
  */
-fun refreshView(game: Session) {
-    printBoard(game.board)
-    if (game.state == SessionState.ENDED)
+fun refreshView(session: Session) {
+    printBoard(session.game.board)
+    if (session.state == SessionState.ENDED)
         println("Your King is in checkmate or stalemate. Game ended.")
-    else if (game.currentCheck == Check.CHECK)
+    else if (session.currentCheck == Check.CHECK)
         println("Your King is in check.")
 }
 
 
 /**
  * Prints all the moves made in the game
- * @param game game where the play happens
+ * @param session session where the play happens
  */
-fun movesView(game: Session) {
-    game.moves.forEachIndexed { index, move -> println("${index + 1}. $move") }
+fun movesView(session: Session) {
+    session.game.moves.forEachIndexed { index, move -> println("${index + 1}. $move") }
 }
 
 
 /**
  * Prints all the possible commands.
- * @param game game where the play happens
+ * @param session session where the play happens
  */
-fun helpView(game: Session) {
+fun helpView(session: Session) {
     println(
-        "${game.name} -> These are the application commands you can use:\n" +
+        "${session.name} -> These are the application commands you can use:\n" +
                 "open <game> - Opens or joins the game named <game> to play with the White pieces\n" +
                 "join <game> - Joins the game named <game> to play with the Black pieces\n" +
                 "play <move> - Makes the <move> play\n" +

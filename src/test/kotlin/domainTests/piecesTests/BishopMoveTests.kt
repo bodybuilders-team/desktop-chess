@@ -16,7 +16,7 @@ class BishopMoveTests {
             "     p  " +
             "    B   " +
             "K       "
-    )
+        )
     )
 
     @Test

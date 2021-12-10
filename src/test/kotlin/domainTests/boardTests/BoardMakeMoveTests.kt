@@ -7,7 +7,7 @@ import kotlin.test.*
 
 
 class BoardMakeMoveTests {
-    
+
     @Test
     fun `MakeMove in Board`() {
         val sut = Board().makeMove("Pe2e4").makeMove("Pe7e5").makeMove("Nb1c3")
@@ -24,7 +24,7 @@ class BoardMakeMoveTests {
     }
 
     //Pawn promotion
-    
+
     @Test
     fun `Promote pawn to queen`() {
         val sut = Board().makeMove("Pf2f4").makeMove("Pg7g5").makeMove("Pf4xg5").makeMove("Pg5g6").makeMove("Pg6g7")
@@ -52,7 +52,8 @@ class BoardMakeMoveTests {
                 "        " +
                 "    K   " +
                 "        " +
-                "        ")
+                "        "
+            )
         )
 
         assertFailsWith<IllegalMoveException> { sut.makeMove("Be5d6") }
@@ -69,7 +70,8 @@ class BoardMakeMoveTests {
                 "        " +
                 "     K  " +
                 "        " +
-                "        ")
+                "        "
+            )
         )
 
         assertFailsWith<IllegalMoveException> { sut.makeMove("Kf3e3") }

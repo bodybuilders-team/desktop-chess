@@ -4,12 +4,12 @@ import domain.board.Board
 import domain.move.*
 import domain.board.Board.*
 import domain.board.getMatrix2DFromString
-import java.lang.IllegalArgumentException
 import kotlin.test.*
+
 
 class PathUtilsTests {
 
-    //anyPositionInStraightPath
+    // anyPositionInStraightPath
 
     @Test
     fun `anyPositionInStraightPath returns true if any position in the straight path matches predicate`() {
@@ -75,7 +75,7 @@ class PathUtilsTests {
         }
     }
 
-    //anyPositionInDiagonalPath
+    // anyPositionInDiagonalPath
 
     @Test
     fun `anyPositionInDiagonalPath returns true if any position in the diagonal path matches predicate`() {
@@ -140,8 +140,8 @@ class PathUtilsTests {
             }
         }
     }
-    
-    //isStraightPathOccupied
+
+    // isStraightPathOccupied
 
     @Test
     fun `isStraightPathOccupied returns true if the straight path is occupied`() {
@@ -157,7 +157,7 @@ class PathUtilsTests {
                 "        "
             )
         )
-        
+
         val move = Move("Re2e5")
         assertTrue(move.isStraight())
         assertTrue(isStraightPathOccupied(sut, move))
@@ -183,8 +183,8 @@ class PathUtilsTests {
         assertFalse(isStraightPathOccupied(sut, move))
     }
 
-    //isDiagonalPathOccupied
-    
+    // isDiagonalPathOccupied
+
     @Test
     fun `isDiagonalPathOccupied returns true if the diagonal path is occupied`() {
         val sut = Board(
@@ -225,7 +225,7 @@ class PathUtilsTests {
         assertFalse(isDiagonalPathOccupied(sut, move))
     }
 
-    //isValidStraightMove
+    // isValidStraightMove
 
     @Test
     fun `isValidStraightMove returns true if the move is a valid straight move`() {
@@ -265,7 +265,7 @@ class PathUtilsTests {
         assertFalse(isValidStraightMove(sut, move))
     }
 
-    //isValidDiagonalMove
+    // isValidDiagonalMove
 
     @Test
     fun `isValidDiagonalMove returns true if the move is a valid diagonal move`() {

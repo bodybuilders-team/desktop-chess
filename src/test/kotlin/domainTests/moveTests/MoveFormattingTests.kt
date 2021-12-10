@@ -50,7 +50,7 @@ class MoveFormattingTests {
     fun `Valid promotion symbol and piece is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("Pe7e8=Q"))
     }
-    
+
     @Test
     fun `Invalid promotion symbol is incorrectly formatted`() {
         assertFalse(Move.isCorrectlyFormatted("Pe7e8+Q"))

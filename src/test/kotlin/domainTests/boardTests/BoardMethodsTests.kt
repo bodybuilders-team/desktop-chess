@@ -22,8 +22,8 @@ class BoardMethodsTests {
             "RNBQKBNR", sut.toString()
         )
     }
-    
-    //getPiece
+
+    // getPiece
 
     @Test
     fun `getPiece on an occupied position returns piece`() {
@@ -37,7 +37,7 @@ class BoardMethodsTests {
         assertNull(sut.getPiece(Position('e', 5)))
     }
 
-    //placePiece
+    // placePiece
 
     @Test
     fun `placePiece places piece in the position`() {
@@ -47,8 +47,8 @@ class BoardMethodsTests {
         assertEquals(piece, sut.placePiece(position, piece).getPiece(position))
     }
 
-    //removePiece
-    
+    // removePiece
+
     @Test
     fun `removePiece removes piece from occupied position`() {
         val position = Position('e', 2)
@@ -61,8 +61,8 @@ class BoardMethodsTests {
         assertNull(sut.removePiece(position).getPiece(position))
     }
 
-    //isPositionOccupied
-    
+    // isPositionOccupied
+
     @Test
     fun `isPositionOccupied with an occupied position returns true`() {
         assertTrue(sut.isPositionOccupied(Position('e', 2)))
@@ -73,11 +73,11 @@ class BoardMethodsTests {
         assertFalse(sut.isPositionOccupied(Position('e', 5)))
     }
 
-    //copy
+    // copy
 
     @Test
     fun `Board copy works as expected`() {
-        val sut =   "pppppppp" +
+        val sut = "pppppppp" +
                 "pppppppp" +
                 "pppppppp" +
                 "pppppppp" +
@@ -94,11 +94,11 @@ class BoardMethodsTests {
         assertEquals(stringBoard, stringCopy)
         assertNotEquals(board, boardCopy)
     }
-    
-    //placePieceFromSpecialMoves
+
+    // placePieceFromSpecialMoves
 
     @Test
-    fun `placePieceFromSpecialMoves places rook from long castle with king correctly`(){
+    fun `placePieceFromSpecialMoves places rook from long castle with king correctly`() {
         var sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -108,7 +108,8 @@ class BoardMethodsTests {
                 "     P  " +
                 "        " +
                 "PPPPP PP" +
-                "R   KBNR")
+                "R   KBNR"
+            )
         )
 
         val move = Move("Ke1c1").copy(type = MoveType.CASTLE)
@@ -126,11 +127,12 @@ class BoardMethodsTests {
             "     P  " +
             "        " +
             "PPPPP PP" +
-            "   RKBNR", sut.toString())
+            "   RKBNR", sut.toString()
+        )
     }
 
     @Test
-    fun `placePieceFromSpecialMoves places rook from short castle with king correctly`(){
+    fun `placePieceFromSpecialMoves places rook from short castle with king correctly`() {
         var sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -140,7 +142,8 @@ class BoardMethodsTests {
                 "     P  " +
                 "        " +
                 "PPPPP PP" +
-                "RNBQK  R")
+                "RNBQK  R"
+            )
         )
 
         val move = Move("Ke1g1").copy(type = MoveType.CASTLE)
@@ -158,11 +161,12 @@ class BoardMethodsTests {
             "     P  " +
             "        " +
             "PPPPP PP" +
-            "RNBQKR  ", sut.toString())
+            "RNBQKR  ", sut.toString()
+        )
     }
 
     @Test
-    fun `placePieceFromSpecialMoves removes captured piece from en passant correctly`(){
+    fun `placePieceFromSpecialMoves removes captured piece from en passant correctly`() {
         var sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -172,7 +176,8 @@ class BoardMethodsTests {
                 "        " +
                 "        " +
                 "PPPPP PP" +
-                "RNBQK  R")
+                "RNBQK  R"
+            )
         )
 
         val move = Move("Pf5e6").copy(type = MoveType.EN_PASSANT)
@@ -190,14 +195,15 @@ class BoardMethodsTests {
             "        " +
             "        " +
             "PPPPP PP" +
-            "RNBQK  R", sut.toString())
+            "RNBQK  R", sut.toString()
+        )
     }
 
     //getMatrix2DFromString
 
     @Test
     fun `getMatrix2DFromString returns a Matrix containing the respective pieces`() {
-        val sut =   "pppppppp" +
+        val sut = "pppppppp" +
                 "pppppppp" +
                 "pppppppp" +
                 "pppppppp" +

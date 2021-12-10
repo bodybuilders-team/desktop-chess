@@ -5,11 +5,11 @@ import domain.Session
 
 /**
  * Prints all the commands of the application.
- * @param chess current chess game
+ * @param session current session
  */
-class HelpCommand(private val chess: Session) : Command {
+class HelpCommand(private val session: Session) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
-        return Result.success(chess)
+        return Result.success(session)
     }
 }

@@ -5,13 +5,13 @@ import domain.*
 
 /**
  * Returns the prompt indicating the game´s turn to the user
- * @param chess current session
+ * @param session current session
  * @return prompt
  */
-fun getPrompt(chess: Session): String {
-    if (chess.name.isEmpty()) return ""
-    val turn = (if (chess.state == SessionState.WAITING_FOR_OPPONENT) chess.army.other() else chess.army).toString()
-    return "${chess.name}:${turn.first() + turn.substring(1).lowercase()}"
+fun getPrompt(session: Session): String {
+    if (session.name.isEmpty()) return ""
+    val turn = (if (session.state == SessionState.WAITING_FOR_OPPONENT) session.army.other() else session.army).toString()
+    return "${session.name}:${turn.first() + turn.substring(1).lowercase()}"
 }
 
 
