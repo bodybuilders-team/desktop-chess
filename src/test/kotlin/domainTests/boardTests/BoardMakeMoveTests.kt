@@ -23,8 +23,10 @@ class BoardMakeMoveTests {
         )
     }
 
+    //Pawn promotion
+    
     @Test
-    fun `Move pawn to promotion`() {
+    fun `Promote pawn to queen`() {
         val sut = Board().makeMove("Pf2f4").makeMove("Pg7g5").makeMove("Pf4xg5").makeMove("Pg5g6").makeMove("Pg6g7")
             .makeMove("Ng8f6").makeMove("Pg7g8=Q")
         assertEquals(

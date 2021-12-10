@@ -7,6 +7,9 @@ import kotlin.test.*
 
 
 class AvailableMovesTests {
+    
+    //getAvailableMoves
+    
     @Test
     fun `getAvailableMoves returns emptyList when there are no available moves for queen`(){
         val sut = Board()
@@ -87,6 +90,8 @@ class AvailableMovesTests {
         )
     }
 
+    //hasAvailableMoves
+    
     @Test
     fun `hasAvailableMoves returns true with default board`(){
         val sut = Board()
@@ -99,5 +104,29 @@ class AvailableMovesTests {
         val sut = Board(getMatrix2DFromString("        ".repeat(BOARD_SIDE_LENGTH)))
         assertFalse(sut.hasAvailableMoves(Army.WHITE, emptyList()))
         assertFalse(sut.hasAvailableMoves(Army.BLACK, emptyList()))
+    }
+
+    //currentTurnArmy
+    
+    @Test
+    fun `currentTurnArmy returns White when number of moves is even`() {
+        assertEquals(Army.WHITE, currentTurnArmy(emptyList()))
+    }
+
+    @Test
+    fun `currentTurnArmy returns Black when number of moves is odd`() {
+        assertEquals(Army.BLACK, currentTurnArmy(listOf(Move("Pe2e4"))))
+    }
+    
+    //isWhiteTurn
+
+    @Test
+    fun `isWhiteTurn returns true when number of moves is even`() {
+        assertTrue(isWhiteTurn(emptyList()))
+    }
+
+    @Test
+    fun `isWhiteTurn returns false when number of moves is odd`() {
+        assertFalse(isWhiteTurn(listOf(Move("Pe2e4"))))
     }
 }

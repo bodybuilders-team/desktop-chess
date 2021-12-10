@@ -1,6 +1,8 @@
 package domainTests.piecesTests
 
 import domain.board.*
+import domain.move.Move
+import domain.move.MoveType
 import kotlin.test.*
 import isValidMove
 
@@ -57,5 +59,43 @@ class PawnMoveTests {
     @Test
     fun `Pawn move to same place is not valid`() {
         assertFalse(sut.isValidMove("Pe2e2"))
+    }
+
+    //En passant
+
+    @Test
+    fun `Pawn capture en passant to the left move is valid`() {
+        val sutEnPassant = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "pppp ppp" +
+                "        " +
+                "    pP  " +
+                "        " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR"
+            )
+        )
+        
+        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5e6", sutEnPassant, listOf(Move("Pe7e5"))).type)
+    }
+
+    @Test
+    fun `Pawn capture en passant to the right move is valid`() {
+        val sutEnPassant = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "pppppp p" +
+                "        " +
+                "     Pp " +
+                "        " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR"
+            )
+        )
+        
+        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5g6", sutEnPassant, listOf(Move("Pg7g5"))).type)
     }
 }

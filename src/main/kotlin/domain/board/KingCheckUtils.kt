@@ -2,7 +2,6 @@ package domain.board
 
 import domain.pieces.*
 import domain.board.Board.*
-import domain.commands.currentTurnArmy
 import domain.move.*
 
 
@@ -56,13 +55,14 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
 /**
  * Checks if the king of the [army] is in stalemate.
  *
- * The king is in stalemate if the king isn't in check but the army has no valid moves.
+ * The king is in stalemate if the king isn't in check, but it's the army's turn and the army has no valid moves.
  * @param army army of the king to stalemate
  * @param previousMoves previous moves made
  * @return true if the king is in stalemate
  */
 fun Board.isKingInStaleMate(army: Army, previousMoves: List<Move>) =
-    !isKingInCheck(getKingPosition(army), army) && !hasAvailableMoves(army, previousMoves)
+    !isKingInCheck(getKingPosition(army), army) &&
+            currentTurnArmy(previousMoves) == army && !hasAvailableMoves(army, previousMoves)
 
 
 /**
@@ -72,8 +72,7 @@ fun Board.isKingInStaleMate(army: Army, previousMoves: List<Move>) =
  */
 fun Board.isInMate(moves: List<Move>) =
     isKingInCheckMate(Army.WHITE) || isKingInCheckMate(Army.BLACK) ||
-            currentTurnArmy(moves) == Army.WHITE && isKingInStaleMate(Army.WHITE, moves) ||
-            currentTurnArmy(moves) == Army.BLACK && isKingInStaleMate(Army.BLACK, moves)
+            isKingInStaleMate(Army.WHITE, moves) || isKingInStaleMate(Army.BLACK, moves)
 
 
 /**
@@ -126,20 +125,9 @@ fun Board.isKingProtectable(position: Position, army: Army): Boolean {
  * @return true if the [army] king can move to an adjacent position
  */
 fun Board.canKingMove(position: Position, army: Army): Boolean {
-    val adjacentPositions = listOf(
-        position.copy(col = position.col - 1),
-        position.copy(col = position.col + 1),
-        position.copy(row = position.row - 1),
-        position.copy(row = position.row + 1),
-        position.copy(col = position.col - 1, row = position.row - 1),
-        position.copy(col = position.col - 1, row = position.row + 1),
-        position.copy(col = position.col + 1, row = position.row - 1),
-        position.copy(col = position.col + 1, row = position.row + 1)
-    )
-
     val dummyBoard = this.copy().removePiece(position)
 
-    return adjacentPositions.any { pos ->
+    return getAdjacentPositions(position).any { pos ->
         (!dummyBoard.isPositionOccupied(pos) || dummyBoard.getPiece(pos)?.army == army.other()) &&
                 dummyBoard.removePiece(pos).positionAttackers(pos, army.other()).isEmpty()
     }
@@ -188,4 +176,28 @@ fun Board.getKingPosition(army: Army): Position {
         }
     }
     throw IllegalArgumentException("King was not found.")
+}
+
+
+/**
+ * Returns the adjacent positions of [position].
+ * @param position position to get adjacent positions from
+ * @return list of adjacent positions of [position]
+ */
+fun getAdjacentPositions(position: Position): List<Position> {
+    val adjacentCols = listOf(position.col - 1, position.col + 1).filter { it in COLS_RANGE }
+    val adjacentRows = listOf(position.row - 1, position.row + 1).filter { it in ROWS_RANGE }
+
+    val adjacentPositions = mutableListOf<Position>()
+
+    adjacentCols.forEach { col -> adjacentPositions.add(position.copy(col = col)) }
+    adjacentRows.forEach { row -> adjacentPositions.add(position.copy(row = row)) }
+
+    adjacentCols.forEach { col ->
+        adjacentRows.forEach { row ->
+            adjacentPositions.add(Position(col, row))
+        }
+    }
+    
+    return adjacentPositions
 }

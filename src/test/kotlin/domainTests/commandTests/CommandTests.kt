@@ -127,26 +127,6 @@ class CommandTests {
     }
 
     @Test
-    fun `currentTurnArmy returns White when number of moves is even`() {
-        assertEquals(Army.WHITE, currentTurnArmy(emptyList()))
-    }
-
-    @Test
-    fun `currentTurnArmy returns Black when number of moves is odd`() {
-        assertEquals(Army.BLACK, currentTurnArmy(listOf(Move("Pe2e4"))))
-    }
-
-    @Test
-    fun `isWhiteTurn returns true when number of moves is even`() {
-        assertTrue(isWhiteTurn(emptyList()))
-    }
-
-    @Test
-    fun `isWhiteTurn returns false when number of moves is odd`() {
-        assertFalse(isWhiteTurn(listOf(Move("Pe2e4"))))
-    }
-
-    @Test
     fun `boardWithMoves works`() {
         val board = Board()
         assertEquals(board.toString(), boardWithMoves(emptyList()).toString())

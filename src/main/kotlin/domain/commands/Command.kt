@@ -3,7 +3,6 @@ package domain.commands
 import domain.*
 import domain.board.Board
 import domain.move.Move
-import domain.pieces.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -28,29 +27,18 @@ fun interface Command {
 
 
 /**
- * Returns the army playing in the current turn
- * @param moves all game moves
- * @return the army playing in the current turn
- */
-fun currentTurnArmy(moves: List<Move>) = if (moves.size % 2 == 0) Army.WHITE else Army.BLACK
-
-
-/**
- * Returns true if it's the white army turn
- * @param moves all game moves
- * @return true if it's the white army turn
- */
-fun isWhiteTurn(moves: List<Move>) = currentTurnArmy(moves) == Army.WHITE
-
-
-/**
  * Returns a new board with all the moves in [moves]
  * @param moves moves to make
  * @return board with moves
  */
 fun boardWithMoves(moves: List<Move>): Board {
     var newBoard = Board()
-    moves.forEach { move -> newBoard = newBoard.makeMove(move) }
+    val previousMoves = mutableListOf<Move>()
+    moves.forEach { move ->
+        val validatedMove = Move.validated(move.toString(), newBoard, previousMoves)
+        newBoard = newBoard.makeMove(validatedMove)
+        previousMoves.add(validatedMove)
+    }
     return newBoard
 }
 

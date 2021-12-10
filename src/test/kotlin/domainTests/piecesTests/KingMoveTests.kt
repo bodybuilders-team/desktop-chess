@@ -1,6 +1,8 @@
 package domainTests.piecesTests
 
 import domain.board.*
+import domain.move.Move
+import domain.move.MoveType
 import kotlin.test.*
 import isValidMove
 
@@ -68,6 +70,8 @@ class KingMoveTests {
     fun `King move to same place is not valid`() {
         assertFalse(sut.isValidMove("Ke2e2"))
     }
+    
+    //Castle
 
     private val sutCastle = Board(
         getMatrix2DFromString(
@@ -84,11 +88,15 @@ class KingMoveTests {
 
     @Test
     fun `King long castle move is valid`() {
-        assertTrue(sutCastle.isValidMove("Ra1c1"))
+        val moveInString = "Ke1c1"
+        assertEquals(MoveType.CASTLE, Move.validated(moveInString, sutCastle, emptyList()).type)
+        assertTrue(sutCastle.isValidMove(moveInString))
     }
 
     @Test
     fun `King short castle move is valid`() {
-        assertTrue(sutCastle.isValidMove("Rh1f1"))
+        val moveInString = "Ke1g1"
+        assertEquals(MoveType.CASTLE, Move.validated(moveInString, sutCastle, emptyList()).type)
+        assertTrue(sutCastle.isValidMove(moveInString))
     }
 }

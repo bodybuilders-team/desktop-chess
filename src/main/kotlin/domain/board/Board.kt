@@ -73,7 +73,7 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
      */
     fun makeMove(move: Move): Board {
         val piece = getPiece(move.from)
-        requireNotNull(piece) { "Move is not validated! Invalid from position." }
+        requireNotNull(piece) { "Move is not validated! Invalid from position ${move.from}." }
 
         return removePiece(move.from)
             .placePiece(move.to, if (move.promotion == null) piece else getPieceFromSymbol(move.promotion, piece.army))

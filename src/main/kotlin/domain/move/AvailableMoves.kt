@@ -35,3 +35,18 @@ fun Board.hasAvailableMoves(army: Army, previousMoves: List<Move>): Boolean {
 
     return false
 }
+
+/**
+ * Returns the army playing in the current turn
+ * @param moves all game moves
+ * @return the army playing in the current turn
+ */
+fun currentTurnArmy(moves: List<Move>) = if (moves.size % 2 == 0) Army.WHITE else Army.BLACK
+
+
+/**
+ * Returns true if it's the white army turn
+ * @param moves all game moves
+ * @return true if it's the white army turn
+ */
+fun isWhiteTurn(moves: List<Move>) = currentTurnArmy(moves) == Army.WHITE

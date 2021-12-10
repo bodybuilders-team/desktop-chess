@@ -126,11 +126,14 @@ data class Move(
         /**
          * Extracts move information from a string.
          * This move is still unvalidated in the context of a board.
+         * 
+         * The returned move will have [FIRST_COL] as the fromCol, and [FIRST_ROW] as the fromRow in case of optional column and/or row, respectively.
+         * 
          * @param moveInString move in string
-         * @return MoveExtraction containing the move, and the if the column or row are optional
+         * @return MoveExtraction containing the unvalidated move, and information on whether the column and/or row is optional
          * @throws IllegalMoveException if move string is not well formatted
          */
-        private fun extractMoveInfo(moveInString: String): MoveExtraction {
+        fun extractMoveInfo(moveInString: String): MoveExtraction {
             if (!isCorrectlyFormatted(moveInString))
                 throw IllegalMoveException(
                     moveInString, "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
@@ -281,10 +284,10 @@ data class Move(
  * @return true if the capture is valid
  */
 fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
-    val isValidPromotion =
-        if (this.promotion != null) piece is Pawn && (piece.isWhite() && to.row == BLACK_FIRST_ROW ||
-                !piece.isWhite() && to.row == WHITE_FIRST_ROW)
-        else true
+    val isPromotion = piece is Pawn && (piece.isWhite() && to.row == BLACK_FIRST_ROW ||
+            !piece.isWhite() && to.row == WHITE_FIRST_ROW)
+    
+    val isValidPromotion = isPromotion == (promotion != null)
 
     val capturedPiece = board.getPiece(to) ?: return !capture && isValidPromotion
 

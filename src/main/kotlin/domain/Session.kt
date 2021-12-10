@@ -1,8 +1,7 @@
 package domain
 
 import domain.board.*
-import domain.commands.currentTurnArmy
-import domain.move.Move
+import domain.move.*
 import domain.pieces.Army
 
 

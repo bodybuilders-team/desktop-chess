@@ -37,10 +37,10 @@ class BoardMethodsTests {
         assertNull(sut.getPiece(Position('e', 5)))
     }
 
-    //setPiece
+    //placePiece
 
     @Test
-    fun `setPiece places piece in the position`() {
+    fun `placePiece places piece in the position`() {
         val piece = Pawn(Army.WHITE)
         val position = Position('e', 5)
 
@@ -73,42 +73,18 @@ class BoardMethodsTests {
         assertFalse(sut.isPositionOccupied(Position('e', 5)))
     }
 
-    //getMatrix2DFromString
-    
-    @Test
-    fun `getMatrix2DFromString returns a Matrix containing the respective pieces`() {
-        val sut =   "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp"
-
-        val expected = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) {
-            Array(BOARD_SIDE_LENGTH) { Pawn(Army.BLACK) }
-        }
-        
-        val matrix = getMatrix2DFromString(sut)
-        
-        expected.forEachIndexed { rowIdx, arrayOfPieces ->
-            assertEquals(arrayOfPieces.map { it?.toChar() }, matrix[rowIdx].map { it?.toChar() })
-        }
-    }
-
     //copy
-    
+
     @Test
     fun `Board copy works as expected`() {
         val sut =   "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp" +
-                    "pppppppp"
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp"
 
         val board = Board(getMatrix2DFromString(sut))
         val stringBoard = board.toString()
@@ -183,5 +159,61 @@ class BoardMethodsTests {
             "        " +
             "PPPPP PP" +
             "RNBQKR  ", sut.toString())
+    }
+
+    @Test
+    fun `placePieceFromSpecialMoves removes captured piece from en passant correctly`(){
+        var sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "pppp ppp" +
+                "        " +
+                "    pP  " +
+                "        " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R")
+        )
+
+        val move = Move("Pf5e6").copy(type = MoveType.EN_PASSANT)
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+
+        sut = sut.placePieceFromSpecialMoves(move, piece)
+
+        assertEquals(
+            "rnbqkbnr" +
+            "pppp ppp" +
+            "        " +
+            "     P  " +
+            "        " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQK  R", sut.toString())
+    }
+
+    //getMatrix2DFromString
+
+    @Test
+    fun `getMatrix2DFromString returns a Matrix containing the respective pieces`() {
+        val sut =   "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp"
+
+        val expected = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) {
+            Array(BOARD_SIDE_LENGTH) { Pawn(Army.BLACK) }
+        }
+
+        val matrix = getMatrix2DFromString(sut)
+
+        expected.forEachIndexed { rowIdx, arrayOfPieces ->
+            assertEquals(arrayOfPieces.map { it?.toChar() }, matrix[rowIdx].map { it?.toChar() })
+        }
     }
 }
