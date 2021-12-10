@@ -101,12 +101,12 @@ fun Board.isKingProtectable(position: Position, army: Army): Boolean {
     kingAttackers(position, army).forEach { attackingMove ->
         return when {
             attackingMove.isStraight() ->
-                applyToPositionsInStraightPath(attackingMove, includeFromPos = true) { pos ->
+                anyPositionInStraightPath(attackingMove, includeFromPos = true) { pos ->
                     positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
                 }
 
             attackingMove.isDiagonal() ->
-                applyToPositionsInDiagonalPath(attackingMove, includeFromPos = true) { pos ->
+                anyPositionInDiagonalPath(attackingMove, includeFromPos = true) { pos ->
                     positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
                 }
 

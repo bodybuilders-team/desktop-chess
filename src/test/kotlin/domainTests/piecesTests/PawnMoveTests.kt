@@ -18,7 +18,7 @@ class PawnMoveTests {
             "   n    " +
             "    P   " +
             "K       "
-    )
+        )
     )
 
     @Test
@@ -59,6 +59,26 @@ class PawnMoveTests {
     @Test
     fun `Pawn move to same place is not valid`() {
         assertFalse(sut.isValidMove("Pe2e2"))
+    }
+    
+    //Pawn double move with piece in the way is invalid
+    
+    private val sut2 = Board(
+        getMatrix2DFromString(
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "    N   " +
+            "    P   " +
+            "K       "
+        )
+    )
+
+    @Test
+    fun `Pawn double move with piece in the way is invalid`() {
+        assertFalse(sut2.isValidMove("Pe2e4"))
     }
 
     //En passant

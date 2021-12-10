@@ -7,20 +7,22 @@ import kotlin.math.abs
 
 
 /**
- * Apply [testPos] to all positions in the straight path between fromPos and toPos of [move].
+ * Returns true if at least one position in the straight path matches the given [predicate].
  *
  * The straight path might be horizontal or vertical.
  * @param move move with the positions to check
  * @param includeFromPos if the fromPos is to be included
- * @param testPos function that tests the position and returns boolean
- * @return true if [testPos] returns true
+ * @param predicate predicate that tests the position and returns boolean
+ * @return true if at least one position in the straight path matches the given [predicate]
  */
-fun applyToPositionsInStraightPath(move: Move, includeFromPos: Boolean, testPos: (Position) -> Boolean): Boolean {
+fun anyPositionInStraightPath(move: Move, includeFromPos: Boolean, predicate: (Position) -> Boolean): Boolean {
+    require(move.isStraight()) { "Move should be straight." }
+    
     var distance = distanceWithoutToPosition(if (move.isHorizontal()) move.colsDistance() else move.rowsDistance())
 
     while (abs(distance) >= if (includeFromPos) 0 else 1) {
-        if (move.isHorizontal() && testPos(move.from.copy(col = move.from.col + distance))
-            || move.isVertical() && testPos(move.from.copy(row = move.from.row + distance))
+        if (move.isHorizontal() && predicate(move.from.copy(col = move.from.col + distance))
+            || move.isVertical() && predicate(move.from.copy(row = move.from.row + distance))
         )
             return true
 
@@ -34,18 +36,20 @@ fun applyToPositionsInStraightPath(move: Move, includeFromPos: Boolean, testPos:
 
 
 /**
- * Apply [testPos] to all positions in the diagonal path between fromPos and toPos of [move].
+ * Returns true if at least one position in the diagonal path matches the given [predicate].
  * @param move move with the positions to check
  * @param includeFromPos if the fromPos is to be included
- * @param testPos function that tests the position and returns boolean
- * @return true if [testPos] returns true
+ * @param predicate predicate that tests the position and returns boolean
+ * @return true if at least one position in the diagonal path matches the given [predicate]
  */
-fun applyToPositionsInDiagonalPath(move: Move, includeFromPos: Boolean, testPos: (Position) -> Boolean): Boolean {
+fun anyPositionInDiagonalPath(move: Move, includeFromPos: Boolean, predicate: (Position) -> Boolean): Boolean {
+    require(move.isDiagonal()) { "Move should be diagonal." }
+    
     var rowsDistance = distanceWithoutToPosition(move.rowsDistance())
     var colsDistance = distanceWithoutToPosition(move.colsDistance())
 
     for (step in abs(move.rowsDistance()) - ONE_MOVE downTo if (includeFromPos) 0 else 1) {
-        if (testPos(move.from.copy(col = move.from.col + colsDistance, row = move.from.row + rowsDistance)))
+        if (predicate(move.from.copy(col = move.from.col + colsDistance, row = move.from.row + rowsDistance)))
             return true
 
         colsDistance = updatedDistance(colsDistance)
@@ -62,10 +66,10 @@ fun applyToPositionsInDiagonalPath(move: Move, includeFromPos: Boolean, testPos:
  * The straight path might be horizontal or vertical.
  * @param board board where [move] will happen
  * @param move move with the positions to check
- * @return true if there are pieces between straight path
+ * @return true if there are pieces in straight path
  */
 fun isStraightPathOccupied(board: Board, move: Move) =
-    applyToPositionsInStraightPath(move, includeFromPos = false) { pos ->
+    anyPositionInStraightPath(move, includeFromPos = false) { pos ->
         board.isPositionOccupied(pos)
     }
 
@@ -74,10 +78,10 @@ fun isStraightPathOccupied(board: Board, move: Move) =
  * Returns true if there are pieces in the diagonal path between fromPos and toPos of [move].
  * @param board board where [move] will happen
  * @param move move with the positions to check
- * @return true if there are pieces between diagonal
+ * @return true if there are pieces in diagonal path
  */
 fun isDiagonalPathOccupied(board: Board, move: Move) =
-    applyToPositionsInDiagonalPath(move, includeFromPos = false) { pos ->
+    anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
         board.isPositionOccupied(pos)
     }
 

@@ -27,23 +27,6 @@ fun interface Command {
 
 
 /**
- * Returns a new board with all the moves in [moves]
- * @param moves moves to make
- * @return board with moves
- */
-fun boardWithMoves(moves: List<Move>): Board {
-    var newBoard = Board()
-    val previousMoves = mutableListOf<Move>()
-    moves.forEach { move ->
-        val validatedMove = Move.validated(move.toString(), newBoard, previousMoves)
-        newBoard = newBoard.makeMove(validatedMove)
-        previousMoves.add(validatedMove)
-    }
-    return newBoard
-}
-
-
-/**
  * Exception thrown when an error occurs while executing a command.
  * @param message cause of the error
  */

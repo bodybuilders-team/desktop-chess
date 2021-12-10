@@ -29,7 +29,8 @@ class Pawn(override val army: Army) : Piece {
     private fun isValidPawnVerticalMove(board: Board, move: Move): Boolean {
         val defaultMove = move.rowDistanceIsOne()
         val isInInitialRow = move.from.row == if (isWhite()) WHITE_PAWN_INITIAL_ROW else BLACK_PAWN_INITIAL_ROW
-        val doubleMove = isInInitialRow && move.rowsDistance() == if (isWhite()) DOUBLE_MOVE else -DOUBLE_MOVE
+        val doubleMove = isInInitialRow && move.rowsDistance() == (if (isWhite()) DOUBLE_MOVE else -DOUBLE_MOVE) &&
+                !isStraightPathOccupied(board, move)
 
         return (defaultMove || doubleMove) && !board.isPositionOccupied(move.to)
     }
