@@ -2,9 +2,7 @@ package domain.pieces
 
 import domain.*
 import domain.board.Board
-import domain.board.isKingInCheck
 import domain.move.Move
-import domain.move.MoveType
 
 
 // Constants.
@@ -38,7 +36,7 @@ interface Piece {
      * @param move move to test
      * @return true if the move is possible
      */
-    abstract fun isValidMove(board: Board, move: Move): Boolean
+    fun isValidMove(board: Board, move: Move): Boolean
 
     /**
      * Gets all available moves based on the piece type and the position in the board.

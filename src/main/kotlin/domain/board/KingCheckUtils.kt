@@ -35,7 +35,7 @@ private fun Board.isKingInCheck(position: Position, army: Army) = kingAttackers(
  * @param army army of the king to check
  * @return true if the king is in check
  */
-fun Board.isKingInCheck(army: Army) = kingAttackers(getKingPosition(army), army).isNotEmpty()
+fun Board.isKingInCheck(army: Army) = isKingInCheck(getKingPosition(army), army)
 
 
 /**

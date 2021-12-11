@@ -47,8 +47,8 @@ fun playView(session: Session) {
     printBoard(session.game.board)
     when (session.currentCheck) {
         Check.CHECK      -> println("Enemy King is in check.")
-        Check.CHECK_MATE -> println("Enemy King is in checkmate. Game ended.")
-        Check.STALE_MATE -> println("Enemy King is in stalemate. Game ended.")
+        Check.CHECKMATE -> println("Enemy King is in checkmate. Game ended.")
+        Check.STALEMATE -> println("Enemy King is in stalemate. Game ended.")
         else -> {}
     }
 
