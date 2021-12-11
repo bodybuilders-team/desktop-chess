@@ -39,7 +39,7 @@ class SessionTests {
                 "        "
             )
         )
-        assertEquals(SessionState.ENDED, getCurrentState(board, emptyList(), Army.WHITE))
+        assertEquals(SessionState.ENDED, getCurrentState(Game(board, emptyList()), Army.WHITE))
     }
 
     @Test
@@ -56,20 +56,20 @@ class SessionTests {
                 "        "
             )
         )
-        assertEquals(SessionState.ENDED, getCurrentState(board, emptyList(), Army.WHITE))
+        assertEquals(SessionState.ENDED, getCurrentState(Game(board, emptyList()), Army.WHITE))
     }
 
     @Test
     fun `getCurrentState returns YOUR_TURN if it's the army's turn`() {
         val board = Board()
-        assertEquals(SessionState.YOUR_TURN, getCurrentState(board, emptyList(), Army.WHITE))
-        assertEquals(SessionState.YOUR_TURN, getCurrentState(board, listOf(Move("Pe2e4")), Army.BLACK))
+        assertEquals(SessionState.YOUR_TURN, getCurrentState(Game(board, emptyList()), Army.WHITE))
+        assertEquals(SessionState.YOUR_TURN, getCurrentState(Game(board, listOf(Move("Pe2e4"))), Army.BLACK))
     }
 
     @Test
     fun `getCurrentState returns WAITING_FOR_OPPONENT if it's not the army's turn`() {
         val board = Board()
-        assertEquals(SessionState.WAITING_FOR_OPPONENT, getCurrentState(board, listOf(Move("Pe2e4")), Army.WHITE))
-        assertEquals(SessionState.WAITING_FOR_OPPONENT, getCurrentState(board, emptyList(), Army.BLACK))
+        assertEquals(SessionState.WAITING_FOR_OPPONENT, getCurrentState(Game(board, listOf(Move("Pe2e4"))), Army.WHITE))
+        assertEquals(SessionState.WAITING_FOR_OPPONENT, getCurrentState(Game(board, emptyList()), Army.BLACK))
     }
 }

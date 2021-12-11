@@ -1,5 +1,6 @@
 package domain.move
 
+import domain.Game
 import domain.board.*
 import domain.board.Board.*
 import domain.pieces.*
@@ -15,25 +16,23 @@ const val SHORT_CASTLE_KING_COL = 'g'
 /**
  * Checks if the move is a valid en passant.
  * @param piece piece to check if the move is a valid en passant
- * @param board board where the move will happen
- * @param previousMoves previous moves made
+ * @param game game where the move will happen
  * @return true if the move is a valid en passant
  */
-fun Move.isValidEnPassant(piece: Piece, board: Board, previousMoves: List<Move>) =
-    isEnPassantPossible(piece, previousMoves) &&
+fun Move.isValidEnPassant(piece: Piece, game: Game) =
+    isEnPassantPossible(piece, game.moves) &&
             piece is Pawn &&
-            piece.isValidEnPassant(board, this)
+            piece.isValidEnPassant(game.board, this)
 
 
 /**
  * Checks if the move is a valid castle.
  * @param piece piece to check if the move is a valid castle
- * @param board board where the move will happen
- * @param previousMoves previous moves made
+ * @param game game where the move will happen
  * @return true if the move is a valid castle
  */
-fun Move.isValidCastle(piece: Piece, board: Board, previousMoves: List<Move>) =
-    isCastlePossible(piece, previousMoves) && piece is King && piece.isValidCastle(board, this)
+fun Move.isValidCastle(piece: Piece, game: Game) =
+    isCastlePossible(piece, game.moves) && piece is King && piece.isValidCastle(game.board, this)
 
 
 /**

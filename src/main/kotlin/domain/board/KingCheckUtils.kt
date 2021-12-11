@@ -1,5 +1,6 @@
 package domain.board
 
+import domain.Game
 import domain.pieces.*
 import domain.board.Board.*
 import domain.move.*
@@ -57,22 +58,20 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
  *
  * The king is in stalemate if the king isn't in check, but it's the army's turn and the army has no valid moves.
  * @param army army of the king to stalemate
- * @param previousMoves previous moves made
  * @return true if the king is in stalemate
  */
-fun Board.isKingInStaleMate(army: Army, previousMoves: List<Move>) =
-    !isKingInCheck(getKingPosition(army), army) &&
-            currentTurnArmy(previousMoves) == army && !hasAvailableMoves(army, previousMoves)
+fun Game.isKingInStaleMate(army: Army) =
+    !board.isKingInCheck(board.getKingPosition(army), army) &&
+            currentTurnArmy(moves) == army && !hasAvailableMoves(army)
 
 
 /**
  * Checks if any king in the board is in mate (checkmate or stalemate).
- * @param moves all moves played in board
  * @return true if any king in the board is in mate
  */
-fun Board.isInMate(moves: List<Move>) =
-    isKingInCheckMate(Army.WHITE) || isKingInCheckMate(Army.BLACK) ||
-            isKingInStaleMate(Army.WHITE, moves) || isKingInStaleMate(Army.BLACK, moves)
+fun Game.isInMate() =
+    board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK) ||
+            isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK)
 
 
 /**
@@ -150,6 +149,7 @@ fun Board.positionAttackers(position: Position, armyThatAttacks: Army): List<Mov
             if (piece.army != armyThatAttacks) continue
 
             val move = Move(piece.type.symbol, fromPos, capture = false, position, promotion = null, MoveType.NORMAL)
+            //TODO("Validate in the context of a game - special moves are currently not being counted here")
             if (piece.isValidMove(this, move) && move.isValidCapture(piece, this))
                 attackingMoves += move
         }

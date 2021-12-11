@@ -24,7 +24,7 @@ class RefreshCommand(private val db: GameState, private val session: Session) : 
         val moves = db.getAllMoves(session.name)
         val game = gameFromMoves(*moves.map { it.toString() }.toTypedArray())
 
-        val inMate = game.board.isKingInCheckMate(session.army) || game.board.isKingInStaleMate(session.army, moves)
+        val inMate = game.board.isKingInCheckMate(session.army) || game.isKingInStaleMate(session.army)
         
         val state = when {
             inMate                                 -> SessionState.ENDED

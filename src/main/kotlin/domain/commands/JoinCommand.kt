@@ -20,7 +20,7 @@ class JoinCommand(private val db: GameState) : Command {
 
         val moves = db.getAllMoves(parameter)
         val game = gameFromMoves(*moves.map { it.toString() }.toTypedArray())
-        val state = getCurrentState(game.board, moves, Army.BLACK)
+        val state = getCurrentState(game, Army.BLACK)
 
         return Result.success(
             Session(

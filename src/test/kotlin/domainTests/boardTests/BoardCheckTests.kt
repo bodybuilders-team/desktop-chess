@@ -1,5 +1,6 @@
 package domainTests.boardTests
 
+import domain.Game
 import domain.board.*
 import domain.board.Board.*
 import domain.move.*
@@ -103,7 +104,7 @@ class BoardCheckTests {
                 "        "
             )
         )
-        assertTrue(sut.isKingInStaleMate(Army.WHITE, emptyList()))
+        assertTrue(Game(sut, emptyList()).isKingInStaleMate(Army.WHITE))
     }
 
     @Test
@@ -120,7 +121,7 @@ class BoardCheckTests {
                 "        "
             )
         )
-        assertFalse(sut.isKingInStaleMate(Army.WHITE, listOf(Move("Pe2e4"))))
+        assertFalse(Game(sut, listOf(Move("Pe2e4"))).isKingInStaleMate(Army.WHITE))
     }
 
     @Test
@@ -137,7 +138,7 @@ class BoardCheckTests {
                 "k       "
             )
         )
-        assertTrue(sut.isKingInStaleMate(Army.BLACK, listOf(Move("Pe2e4"))))
+        assertTrue(Game(sut, listOf(Move("Pe2e4"))).isKingInStaleMate(Army.BLACK))
     }
 
     @Test
@@ -154,7 +155,7 @@ class BoardCheckTests {
                 "k       "
             )
         )
-        assertFalse(sut.isKingInStaleMate(Army.BLACK, emptyList()))
+        assertFalse(Game(sut, emptyList()).isKingInStaleMate(Army.BLACK))
     }
 
     @Test
@@ -172,7 +173,7 @@ class BoardCheckTests {
             )
         )
 
-        assertFalse(sut.isKingInStaleMate(Army.WHITE, emptyList()))
+        assertFalse(Game(sut, emptyList()).isKingInStaleMate(Army.WHITE))
     }
 
     @Test
@@ -190,7 +191,7 @@ class BoardCheckTests {
             )
         )
 
-        assertFalse(sut.isKingInStaleMate(Army.BLACK, listOf(Move("Pe2e4"))))
+        assertFalse(Game(sut, listOf(Move("Pe2e4"))).isKingInStaleMate(Army.BLACK))
     }
 
     // isInMate
@@ -209,7 +210,7 @@ class BoardCheckTests {
                 "        "
             )
         )
-        assertTrue(sut.isInMate(emptyList()))
+        assertTrue(Game(sut, emptyList()).isInMate())
     }
 
     @Test
@@ -226,7 +227,7 @@ class BoardCheckTests {
                 "k       "
             )
         )
-        assertTrue(sut.isInMate(listOf(Move("Pe2e4"))))
+        assertTrue(Game(sut, listOf(Move("Pe2e4"))).isInMate())
     }
 
     @Test
@@ -244,7 +245,7 @@ class BoardCheckTests {
             )
         )
 
-        assertTrue(sut.isInMate(emptyList()))
+        assertTrue(Game(sut, emptyList()).isInMate())
     }
 
     @Test
@@ -262,7 +263,7 @@ class BoardCheckTests {
             )
         )
 
-        assertTrue(sut.isInMate(listOf(Move("Pe2e4"))))
+        assertTrue(Game(sut, listOf(Move("Pe2e4"))).isInMate())
     }
 
     @Test
@@ -280,7 +281,7 @@ class BoardCheckTests {
             )
         )
 
-        assertFalse(sut.isInMate(emptyList()))
+        assertFalse(Game(sut, emptyList()).isInMate())
     }
 
     @Test
@@ -298,7 +299,7 @@ class BoardCheckTests {
             )
         )
 
-        assertFalse(sut.isInMate(listOf(Move("Pe2e4"))))
+        assertFalse(Game(sut, listOf(Move("Pe2e4"))).isInMate())
     }
 
     // kingAttackers

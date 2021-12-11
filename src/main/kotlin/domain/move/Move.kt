@@ -1,5 +1,6 @@
 package domain.move
 
+import domain.Game
 import domain.board.*
 import kotlin.math.abs
 import domain.board.Board.Position
@@ -43,19 +44,18 @@ data class Move(
 
 
         /**
-         * Returns a move already validated in the context of a board/chess game.
+         * Returns a move already validated in the context of a chess game.
          *
-         * Move properties are extracted from the [moveInString], and searching the [board], it's verified if the move is possible.
+         * Move properties are extracted from [moveInString], it's verified if the move is possible by searching the [game] board.
          * @param moveInString move in string format
-         * @param board board where the move will happen
-         * @param previousMoves the previous moves in board
+         * @param game game where the move will happen
          * @return the validated move
-         * @throws IllegalMoveException if move is not possible in [board] or multiple possible moves were found
+         * @throws IllegalMoveException if move is not possible in [game] or multiple possible moves were found
          */
-        fun validated(moveInString: String, board: Board, previousMoves: List<Move>): Move {
+        fun validated(moveInString: String, game: Game): Move {
             val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(moveInString)
             val validMoves =
-                searchMoves(move, optionalFromCol, optionalFromRow, optionalToPos = false, board, previousMoves)
+                searchMoves(move, optionalFromCol, optionalFromRow, optionalToPos = false, game)
 
             if (validMoves.size != 1) throw IllegalMoveException(
                 move.toString(optionalFromCol, optionalFromRow),
@@ -76,13 +76,11 @@ data class Move(
          * @param optionalFromCol if the search isn't in a specific column
          * @param optionalFromRow if the search isn't in a specific row
          * @param optionalToPos if the search isn't in a specific to position
-         * @param board board to search for the move in
-         * @param previousMoves previous moves made
+         * @param game game to search for the move in
          * @return all valid moves
          */
         fun searchMoves(
-            move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, optionalToPos: Boolean,
-            board: Board, previousMoves: List<Move>
+            move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, optionalToPos: Boolean, game: Game
         ): List<Move> {
             val foundMoves: MutableList<Move> = mutableListOf()
 
@@ -97,13 +95,13 @@ data class Move(
                     for (toRow in toRowSearchRange) {
                         for (toCol in toColSearchRange) {
                             val fromPos = Position(fromCol, fromRow)
-                            val piece = board.getPiece(fromPos) ?: continue
+                            val piece = game.board.getPiece(fromPos) ?: continue
                             if (piece.type.symbol != move.symbol) continue
 
                             val validatedMove = move.copy(
                                 from = fromPos,
                                 to = Position(toCol, toRow)
-                            ).getValidatedMove(piece, board, previousMoves)
+                            ).getValidatedMove(piece, game)
                             if (validatedMove != null) foundMoves.add(validatedMove)
                         }
                     }
@@ -298,21 +296,20 @@ fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
 /**
  * Gets a validated move, with information of its move type and capture, or null if the move isn't valid.
  * @param piece piece of the move's from position
- * @param board board where the move will happen
- * @param previousMoves previous moves made
+ * @param game game where the move will happen
  * @return validated move, with information of its move type and capture, or null if the move isn't valid.
  */
-fun Move.getValidatedMove(piece: Piece, board: Board, previousMoves: List<Move>): Move? {
+fun Move.getValidatedMove(piece: Piece, game: Game): Move? {
     val validMove = when {
-        isValidEnPassant(piece, board, previousMoves) -> copy(type = MoveType.EN_PASSANT)
-        isValidCastle(piece, board, previousMoves) -> copy(type = MoveType.CASTLE)
-        piece.isValidMove(board, this) && isValidCapture(piece, board) -> copy(type = MoveType.NORMAL)
+        isValidEnPassant(piece, game) -> copy(type = MoveType.EN_PASSANT)
+        isValidCastle(piece, game) -> copy(type = MoveType.CASTLE)
+        piece.isValidMove(game.board, this) && isValidCapture(piece, game.board) -> copy(type = MoveType.NORMAL)
         else -> return null
     }
 
-    if (board.makeMove(validMove).isKingInCheck(piece.army)) return null
+    if (game.board.makeMove(validMove).isKingInCheck(piece.army)) return null
 
-    return validMove.copy(capture = board.isPositionOccupied(validMove.to))
+    return validMove.copy(capture = game.board.isPositionOccupied(validMove.to))
 }
 
 

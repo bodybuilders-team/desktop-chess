@@ -1,5 +1,6 @@
 package domainTests.moveTests
 
+import domain.Game
 import domain.board.*
 import domain.move.*
 import kotlin.test.*
@@ -49,7 +50,7 @@ class MoveMethodsTests {
 
         assertEquals(
             Move("Pe2e4"),
-            Move.validated("Pe2e4", sut, emptyList())
+            Move.validated("Pe2e4", Game(sut, emptyList()))
         )
     }
 
@@ -58,7 +59,7 @@ class MoveMethodsTests {
         val sut = Board()
 
         assertFailsWith<IllegalMoveException> {
-            Move.validated("Pe2e5", sut, emptyList())
+            Move.validated("Pe2e5", Game(sut, emptyList()))
         }
     }
 
@@ -78,7 +79,7 @@ class MoveMethodsTests {
         )
 
         assertFailsWith<IllegalMoveException> {
-            Move.validated("Pf5", sut, emptyList())
+            Move.validated("Pf5", Game(sut, emptyList()))
         }
     }
 
@@ -92,7 +93,7 @@ class MoveMethodsTests {
             setOf(Move("Pe2e4")),
             Move.searchMoves(
                 Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false,
-                sut, emptyList()
+                Game(sut, emptyList())
             ).toSet()
         )
     }
@@ -105,7 +106,7 @@ class MoveMethodsTests {
             setOf(Move("Pe2e4")),
             Move.searchMoves(
                 Move("Pee4"), optionalFromCol = false, optionalFromRow = true, optionalToPos = false,
-                sut, emptyList()
+                Game(sut, emptyList())
             ).toSet()
         )
     }
@@ -118,7 +119,7 @@ class MoveMethodsTests {
             setOf(Move("Pe2e4")),
             Move.searchMoves(
                 Move("P2e4"), optionalFromCol = true, optionalFromRow = false, optionalToPos = false,
-                sut, emptyList()
+                Game(sut, emptyList())
             ).toSet()
         )
     }
@@ -131,7 +132,7 @@ class MoveMethodsTests {
             setOf(Move("Pe2e4")),
             Move.searchMoves(
                 Move("Pe4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = false,
-                sut, emptyList()
+                Game(sut, emptyList())
             ).toSet()
         )
     }
@@ -144,7 +145,7 @@ class MoveMethodsTests {
             setOf(Move("Pe2e3"), Move("Pe2e4")),
             Move.searchMoves(
                 Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = true,
-                sut, emptyList()
+                Game(sut, emptyList())
             ).toSet()
         )
     }
@@ -157,7 +158,7 @@ class MoveMethodsTests {
             emptyList(),
             Move.searchMoves(
                 Move("Pe2e5"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false,
-                sut, emptyList()
+                Game(sut, emptyList())
             )
         )
     }
@@ -172,7 +173,7 @@ class MoveMethodsTests {
                     ).toSet(),
             Move.searchMoves(
                 Move("Pe2e4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = true,
-                sut, emptyList()
+                Game(sut, emptyList())
             ).toSet())
     }
 
@@ -569,7 +570,7 @@ class MoveMethodsTests {
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
-        assertEquals(move.copy(type = MoveType.NORMAL), move.getValidatedMove(piece, sut, emptyList()))
+        assertEquals(move.copy(type = MoveType.NORMAL), move.getValidatedMove(piece, Game(sut, emptyList())))
     }
 
     @Test
@@ -591,7 +592,7 @@ class MoveMethodsTests {
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
-        assertEquals(move.copy(capture = true), move.getValidatedMove(piece, sut, emptyList()))
+        assertEquals(move.copy(capture = true), move.getValidatedMove(piece, Game(sut, emptyList())))
     }
 
     @Test
@@ -613,6 +614,6 @@ class MoveMethodsTests {
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
-        assertNull(move.getValidatedMove(piece, sut, emptyList()))
+        assertNull(move.getValidatedMove(piece, Game(sut, emptyList())))
     }
 }

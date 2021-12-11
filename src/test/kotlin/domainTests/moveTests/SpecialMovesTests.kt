@@ -1,5 +1,6 @@
 package domainTests.moveTests
 
+import domain.Game
 import domain.board.*
 import domain.move.*
 import domain.pieces.*
@@ -27,13 +28,9 @@ class SpecialMovesTests {
 
         val move = Move("Pf5e6")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(
-            Move("Pf2f4"), Move("Pf4f5"),
-            Move("Pe7e5")
-        )
 
         assertNotNull(piece)
-        assertTrue(move.isValidEnPassant(piece, sut, previousMoves))
+        assertTrue(move.isValidEnPassant(piece, Game(sut, listOf("Pf2f4", "Pf4f5", "Pe7e5").map { Move(it) })))
     }
 
     @Test
@@ -53,10 +50,9 @@ class SpecialMovesTests {
 
         val move = Move("Pf4f5")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Pf2f4"), Move("Pd7d6"))
 
         assertNotNull(piece)
-        assertFalse(move.isValidEnPassant(piece, sut, previousMoves))
+        assertFalse(move.isValidEnPassant(piece, Game(sut, listOf("Pf2f4", "Pd7d6").map { Move(it) })))
     }
 
     // isValidCastle
@@ -78,10 +74,9 @@ class SpecialMovesTests {
 
         val move = Move("Ke1c1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Pf2f4"))
 
         assertNotNull(piece)
-        assertTrue(move.isValidCastle(piece, sut, previousMoves))
+        assertTrue(move.isValidCastle(piece, Game(sut, listOf("Pf2f4").map { Move(it) })))
     }
 
     @Test
@@ -101,10 +96,9 @@ class SpecialMovesTests {
 
         val move = Move("Ke1c1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Ra1b1"), Move("Rb1a1"))
 
         assertNotNull(piece)
-        assertFalse(move.isValidCastle(piece, sut, previousMoves))
+        assertFalse(move.isValidCastle(piece, Game(sut, listOf("Ra1b1", "Rb1a1").map { Move(it) })))
     }
 
     @Test
@@ -124,10 +118,9 @@ class SpecialMovesTests {
 
         val move = Move("Ke1g1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Pf2f4"))
 
         assertNotNull(piece)
-        assertTrue(move.isValidCastle(piece, sut, previousMoves))
+        assertTrue(move.isValidCastle(piece, Game(sut, listOf("Pf2f4").map { Move(it) })))
     }
 
     @Test
@@ -147,10 +140,9 @@ class SpecialMovesTests {
 
         val move = Move("Ke1g1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Rh1g1"), Move("Rg1h1"))
 
         assertNotNull(piece)
-        assertFalse(move.isValidCastle(piece, sut, previousMoves))
+        assertFalse(move.isValidCastle(piece, Game(sut, listOf("Rh1g1", "Rg1h1").map { Move(it) })))
     }
 
     // isEnPassantPossible

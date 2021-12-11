@@ -1,5 +1,6 @@
 package domain.move
 
+import domain.Game
 import domain.board.*
 import domain.pieces.Army
 import domain.board.Board.Position
@@ -8,28 +9,26 @@ import domain.board.Board.Position
 /**
  * Gets a given position's available moves.
  * @param position position to get the available moves
- * @param previousMoves previous moves made
  * @return list of available moves
  */
-fun Board.getAvailableMoves(position: Position, previousMoves: List<Move>) =
-    getPiece(position)?.getAvailableMoves(this, position, previousMoves) ?: emptyList()
+fun Game.getAvailableMoves(position: Position) =
+    board.getPiece(position)?.getAvailableMoves(this, position) ?: emptyList()
 
 
 /**
  * Checks if a given army has any available valid moves to make.
  * @param army army to make the move
- * @param previousMoves previous moves made
  * @return true if the army has available moves
  */
-fun Board.hasAvailableMoves(army: Army, previousMoves: List<Move>): Boolean {
+fun Game.hasAvailableMoves(army: Army): Boolean {
     for (row in ROWS_RANGE) {
         for (col in COLS_RANGE) {
             val pos = Position(col, row)
 
-            val piece = getPiece(pos) ?: continue
+            val piece = board.getPiece(pos) ?: continue
             if (piece.army != army) continue
 
-            if (getAvailableMoves(pos, previousMoves).isNotEmpty()) return true
+            if (getAvailableMoves(pos).isNotEmpty()) return true
         }
     }
 

@@ -45,14 +45,13 @@ fun Session.isLogging() = state == SessionState.LOGGING
 
 /**
  * Gets the current state of the session.
- * @param board session board
- * @param moves all moves played in board
+ * @param game game being played
  * @param army session army
  * @return current state of the session
  */
-fun getCurrentState(board: Board, moves: List<Move>, army: Army) = when {
-    board.isInMate(moves)          -> SessionState.ENDED
-    currentTurnArmy(moves) == army -> SessionState.YOUR_TURN
-    else                           -> SessionState.WAITING_FOR_OPPONENT
+fun getCurrentState(game: Game, army: Army) = when {
+    game.isInMate()                       -> SessionState.ENDED
+    currentTurnArmy(game.moves) == army   -> SessionState.YOUR_TURN
+    else                                  -> SessionState.WAITING_FOR_OPPONENT
 }
 

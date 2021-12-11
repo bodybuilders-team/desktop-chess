@@ -1,3 +1,4 @@
+import domain.Game
 import domain.board.Board
 import domain.move.*
 
@@ -10,7 +11,7 @@ import domain.move.*
  * @return new board with the move made
  */
 fun Board.makeMove(moveInString: String): Board {
-    return makeMove(Move.validated(moveInString, this, emptyList()))
+    return makeMove(Move.validated(moveInString, Game(this, emptyList())))
 }
 
 
@@ -25,7 +26,7 @@ fun Board.makeMove(moveInString: String): Board {
  */
 fun Board.isValidMove(moveInString: String): Boolean {
     try {
-        Move.validated(moveInString, this, emptyList())
+        Move.validated(moveInString, Game(this, emptyList()))
     } catch (err: IllegalMoveException) {
         return false
     }

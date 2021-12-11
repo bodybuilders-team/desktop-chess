@@ -1,5 +1,6 @@
 package domain.pieces
 
+import domain.Game
 import domain.board.Board
 import domain.board.isKingInCheck
 import domain.move.Move
@@ -41,12 +42,11 @@ interface Piece {
 
     /**
      * Gets all available moves based on the piece type and the position in the board.
-     * @param board board where the piece is situated
+     * @param game game where the piece is
      * @param position position of the piece
-     * @param previousMoves previous moves made
      * @return list of available moves
      */
-    fun getAvailableMoves(board: Board, position: Board.Position, previousMoves: List<Move>): List<Move> =
+    fun getAvailableMoves(game: Game, position: Board.Position): List<Move> =
         Move.searchMoves(
             Move(
                 symbol = type.symbol,
@@ -59,9 +59,8 @@ interface Piece {
             optionalFromCol = false,
             optionalFromRow = false,
             optionalToPos = true,
-            board = board,
-            previousMoves = previousMoves
-        ).filter { move -> !board.makeMove(move).isKingInCheck(army) }
+            game
+        ).filter { move -> !game.board.makeMove(move).isKingInCheck(army) }
 }
 
 

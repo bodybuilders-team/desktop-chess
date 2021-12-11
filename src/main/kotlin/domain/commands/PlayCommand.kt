@@ -26,30 +26,29 @@ class PlayCommand(private val db: GameState, private val session: Session) : Com
         cmdRequireNotNull(parameter) { "Missing move." }
         require(currentTurnArmy(session.game.moves) == session.army) { "It's not this army's turn! Session army is different from the current turn army." }
 
-        val move = Move.validated(parameter, session.game.board, session.game.moves)
+        val move = Move.validated(parameter, session.game)
 
         val piece = session.game.board.getPiece(move.from)
         requireNotNull(piece) { "Move.validated() is not throwing IllegalMoveException in case of invalid from position." }
 
         if (piece.army == session.army.other())
             throw IllegalMoveException(move.toString(), "You cannot move an opponent's piece.")
+        
+        val game = Game(session.game.board.makeMove(move), session.game.moves + move)
 
-        val newBoard = session.game.board.makeMove(move)
         db.postMove(session.name, move)
 
-        val moves = session.game.moves + move
-
-        val inCheckMate = newBoard.isKingInCheckMate(session.army.other())
-        val inStaleMate = newBoard.isKingInStaleMate(session.army.other(), moves)
+        val inCheckMate = game.board.isKingInCheckMate(session.army.other())
+        val inStaleMate = game.isKingInStaleMate(session.army.other())
 
         return Result.success(
             session.copy(
                 state = if (inCheckMate || inStaleMate) SessionState.ENDED else SessionState.WAITING_FOR_OPPONENT,
-                game = Game(newBoard, moves),
+                game = game,
                 currentCheck = when {
                     inCheckMate -> Check.CHECK_MATE
                     inStaleMate -> Check.STALE_MATE
-                    newBoard.isKingInCheck(session.army.other()) -> Check.CHECK
+                    game.board.isKingInCheck(session.army.other()) -> Check.CHECK
                     else -> Check.NO_CHECK
                 }
             )

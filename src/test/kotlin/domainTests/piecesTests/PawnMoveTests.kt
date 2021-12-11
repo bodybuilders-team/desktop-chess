@@ -1,5 +1,6 @@
 package domainTests.piecesTests
 
+import domain.Game
 import domain.board.*
 import domain.move.Move
 import domain.move.MoveType
@@ -98,7 +99,7 @@ class PawnMoveTests {
             )
         )
 
-        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5e6", sutEnPassant, listOf(Move("Pe7e5"))).type)
+        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5e6", Game(sutEnPassant, listOf(Move("Pe7e5")))).type)
     }
 
     @Test
@@ -116,6 +117,6 @@ class PawnMoveTests {
             )
         )
 
-        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5g6", sutEnPassant, listOf(Move("Pg7g5"))).type)
+        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5g6", Game(sutEnPassant, listOf(Move("Pg7g5")))).type)
     }
 }

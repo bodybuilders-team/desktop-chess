@@ -16,19 +16,17 @@ data class Game(
 
 
 /**
- * Returns a new game with the moves [movesInString] consecutively made and validated in the board.
+ * Returns a new game with the moves [movesInString] consecutively made and validated in the game.
  * @param movesInString moves in string
- * @return new game with the moves [movesInString] consecutively made and validated in the board
+ * @return new game with the moves [movesInString] consecutively made and validated in the game
  */
 fun gameFromMoves(vararg movesInString: String): Game {
-    var newBoard = Board()
-    val previousMoves = mutableListOf<Move>()
+    var newGame = Game(Board(), emptyList())
 
     movesInString.forEach { moveInString ->
-        val validatedMove = Move.validated(moveInString, newBoard, previousMoves)
-        newBoard = newBoard.makeMove(validatedMove)
-        previousMoves.add(validatedMove)
+        val validatedMove = Move.validated(moveInString, newGame)
+        newGame = Game(board = newGame.board.makeMove(validatedMove), moves = newGame.moves + validatedMove)
     }
 
-    return Game(board = newBoard, moves = previousMoves)
+    return newGame
 }

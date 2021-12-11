@@ -24,7 +24,7 @@ class OpenCommand(private val db: GameState) : Command {
             }
 
         val game = gameFromMoves(*moves.map { it.toString() }.toTypedArray())
-        val state = getCurrentState(game.board, moves, Army.WHITE)
+        val state = getCurrentState(game, Army.WHITE)
 
         return Result.success(
             Session(

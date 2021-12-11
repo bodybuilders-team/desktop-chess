@@ -1,5 +1,6 @@
 package domainTests.piecesTests
 
+import domain.Game
 import domain.board.*
 import domain.move.Move
 import domain.move.MoveType
@@ -89,14 +90,14 @@ class KingMoveTests {
     @Test
     fun `King long castle move is valid`() {
         val moveInString = "Ke1c1"
-        assertEquals(MoveType.CASTLE, Move.validated(moveInString, sutCastle, emptyList()).type)
+        assertEquals(MoveType.CASTLE, Move.validated(moveInString, Game(sutCastle, emptyList())).type)
         assertTrue(sutCastle.isValidMove(moveInString))
     }
 
     @Test
     fun `King short castle move is valid`() {
         val moveInString = "Ke1g1"
-        assertEquals(MoveType.CASTLE, Move.validated(moveInString, sutCastle, emptyList()).type)
+        assertEquals(MoveType.CASTLE, Move.validated(moveInString, Game(sutCastle, emptyList())).type)
         assertTrue(sutCastle.isValidMove(moveInString))
     }
 }
