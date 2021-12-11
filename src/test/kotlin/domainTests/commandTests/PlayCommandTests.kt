@@ -126,7 +126,7 @@ class PlayCommandTests {
         val db = GameStateStub()
         db.createGame(gameName)
 
-        val game = gameFromMoves("e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "2h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
+        val game = gameFromMoves("e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
             "Qd3", "Qb8", "Qh7", "Qc8", "Kg6")
         game.moves.forEach { db.postMove(gameName, it) }
 

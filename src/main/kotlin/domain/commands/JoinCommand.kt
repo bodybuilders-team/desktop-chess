@@ -19,7 +19,7 @@ class JoinCommand(private val db: GameState) : Command {
         cmdRequire(db.gameExists(parameter)) { "A game with the name \"$parameter\" does not exist: try open command." }
 
         val moves = db.getAllMoves(parameter)
-        val game = gameFromMoves(*moves.map { it.toString() }.toTypedArray())
+        val game = gameFromMoves(moves)
         val state = getCurrentState(game, Army.BLACK)
 
         return Result.success(

@@ -1,7 +1,7 @@
 package domainTests.boardTests
 
 import domain.board.*
-import domain.board.Board.*
+import domain.board.Board.Position
 import domain.move.Move
 import domain.move.MoveType
 import domain.pieces.*
@@ -76,24 +76,79 @@ class BoardMethodsTests {
     // copy
 
     @Test
-    fun `Board copy works as expected`() {
-        val sut = "pppppppp" +
+    fun `Board copy creates a new (different) board with the same contents`() {
+        val sut =
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp"
+
+        val board = Board(getMatrix2DFromString(sut))
+        val boardCopy = board.copy()
+
+        assertEquals(board.toString(), boardCopy.toString())
+        assertEquals(board, boardCopy)
+        assertNotSame(board, boardCopy)
+    }
+    
+    // equals and hashCode
+
+    @Test
+    fun `Boards with same pieces in the same positions are equal but not same`() {
+        val boardInString =
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp"
+        
+        val board = Board(getMatrix2DFromString(boardInString))
+        val board2 = Board(getMatrix2DFromString(boardInString))
+
+        assertEquals(board, board2)
+        assertEquals(board.hashCode(), board2.hashCode())
+        assertNotSame(board, board2)
+    }
+
+    @Test
+    fun `Boards with same pieces in the different positions aren't equal`() {
+        val board = Board(
+            getMatrix2DFromString(
                 "pppppppp" +
+                "ppp   pp" +
                 "pppppppp" +
-                "pppppppp" +
+                "pp    pp" +
                 "pppppppp" +
                 "pppppppp" +
                 "pppppppp" +
                 "pppppppp"
+            )
+        )
+        val board2 = Board(
+            getMatrix2DFromString(
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "pp   ppp" +
+                "pppppppp" +
+                "pppppppp" +
+                "p p   pp"
+            )
+        )
 
-        val board = Board(getMatrix2DFromString(sut))
-        val stringBoard = board.toString()
-        val boardCopy = board.copy()
-        val stringCopy = boardCopy.toString()
-
-        assertEquals(stringBoard, stringCopy)
-        assertNotEquals(board, boardCopy)
+        assertNotEquals(board, board2)
+        assertNotEquals(board.hashCode(), board2.hashCode())
+        assertNotSame(board, board2)
     }
+    
 
     // placePieceFromSpecialMoves
 
@@ -203,18 +258,34 @@ class BoardMethodsTests {
 
     @Test
     fun `getMatrix2DFromString returns a Matrix containing the respective pieces`() {
-        val sut = "pppppppp" +
-                "pppppppp" +
-                "pppppppp" +
-                "pppppppp" +
-                "pppppppp" +
-                "pppppppp" +
-                "pppppppp" +
-                "pppppppp"
-
-        val expected = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) {
-            Array(BOARD_SIDE_LENGTH) { Pawn(Army.BLACK) }
-        }
+        val sut =
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR"
+        
+        val expected = (0 until BOARD_SIDE_LENGTH).map { row ->
+            when (row) {
+                0, 7 -> {
+                    arrayOf<Piece?>(
+                        Rook(if (row == 0) Army.BLACK else Army.WHITE),
+                        Knight(if (row == 0) Army.BLACK else Army.WHITE),
+                        Bishop(if (row == 0) Army.BLACK else Army.WHITE),
+                        Queen(if (row == 0) Army.BLACK else Army.WHITE),
+                        King(if (row == 0) Army.BLACK else Army.WHITE),
+                        Bishop(if (row == 0) Army.BLACK else Army.WHITE),
+                        Knight(if (row == 0) Army.BLACK else Army.WHITE),
+                        Rook(if (row == 0) Army.BLACK else Army.WHITE),
+                    )
+                }
+                1, 6 -> Array<Piece?>(BOARD_SIDE_LENGTH) { Pawn(if (row == 1) Army.BLACK else Army.WHITE) }
+                else -> arrayOfNulls(BOARD_SIDE_LENGTH)
+            }
+        }.toTypedArray()
 
         val matrix = getMatrix2DFromString(sut)
 

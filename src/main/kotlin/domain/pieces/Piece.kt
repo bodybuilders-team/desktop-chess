@@ -1,6 +1,6 @@
 package domain.pieces
 
-import domain.Game
+import domain.*
 import domain.board.Board
 import domain.board.isKingInCheck
 import domain.move.Move
@@ -20,9 +20,9 @@ const val NO_MOVE = 0
  * @property type piece type
  * @property army piece army (White or Black)
  */
-interface Piece {
-    val army: Army
-    val type: PieceType
+abstract class Piece {
+    abstract val army: Army
+    abstract val type: PieceType
 
     /**
      * Returns character representation of the piece as seen in game
@@ -37,17 +37,16 @@ interface Piece {
      * @param move move to test
      * @return true if the move is possible
      */
-    fun isValidMove(board: Board, move: Move): Boolean
-
+    abstract fun isValidMove(board: Board, move: Move): Boolean
 
     /**
      * Gets all available moves based on the piece type and the position in the board.
-     * @param game game where the piece is
+     * @param game game where the piece is and where the available moves will be searched for
      * @param position position of the piece
      * @return list of available moves
      */
     fun getAvailableMoves(game: Game, position: Board.Position): List<Move> =
-        Move.searchMoves(
+        game.searchMoves(
             Move(
                 symbol = type.symbol,
                 from = position,
@@ -58,8 +57,7 @@ interface Piece {
             ),
             optionalFromCol = false,
             optionalFromRow = false,
-            optionalToPos = true,
-            game
+            optionalToPos = true
         ).filter { move -> !game.board.makeMove(move).isKingInCheck(army) }
 }
 
@@ -107,8 +105,6 @@ enum class PieceType(val symbol: Char) {
     BISHOP('B'),
     KING('K'),
     QUEEN('Q');
-
-    override fun toString(): String = this.symbol.toString()
 
     companion object {
         /**

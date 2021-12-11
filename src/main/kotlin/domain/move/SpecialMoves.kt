@@ -13,6 +13,7 @@ const val SHORT_CASTLE_ROOK_COL = 'f'
 const val LONG_CASTLE_KING_COL = 'c'
 const val SHORT_CASTLE_KING_COL = 'g'
 
+
 /**
  * Checks if the move is a valid en passant.
  * @param piece piece to check if the move is a valid en passant
@@ -32,7 +33,8 @@ fun Move.isValidEnPassant(piece: Piece, game: Game) =
  * @return true if the move is a valid castle
  */
 fun Move.isValidCastle(piece: Piece, game: Game) =
-    isCastlePossible(piece, game.moves) && piece is King && piece.isValidCastle(game.board, this)
+    isCastlePossible(piece, game.moves) && piece is King && !game.board.isKingInCheck(piece.army) &&
+            piece.isValidCastle(game.board, this)
 
 
 /**

@@ -1,6 +1,6 @@
 package domainTests.moveTests
 
-import domain.Game
+import domain.*
 import domain.board.*
 import domain.move.*
 import kotlin.test.*
@@ -81,100 +81,6 @@ class MoveMethodsTests {
         assertFailsWith<IllegalMoveException> {
             Move.validated("Pf5", Game(sut, emptyList()))
         }
-    }
-
-    // Move.searchMoves()
-
-    @Test
-    fun `searchMoves returns a list containing the only valid move`() {
-        val sut = Board()
-
-        assertEquals(
-            setOf(Move("Pe2e4")),
-            Move.searchMoves(
-                Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false,
-                Game(sut, emptyList())
-            ).toSet()
-        )
-    }
-
-    @Test
-    fun `searchMoves returns a list containing the only valid move, if optional fromRow`() {
-        val sut = Board()
-
-        assertEquals(
-            setOf(Move("Pe2e4")),
-            Move.searchMoves(
-                Move("Pee4"), optionalFromCol = false, optionalFromRow = true, optionalToPos = false,
-                Game(sut, emptyList())
-            ).toSet()
-        )
-    }
-
-    @Test
-    fun `searchMoves returns a list containing the only valid move, if optional fromCol`() {
-        val sut = Board()
-
-        assertEquals(
-            setOf(Move("Pe2e4")),
-            Move.searchMoves(
-                Move("P2e4"), optionalFromCol = true, optionalFromRow = false, optionalToPos = false,
-                Game(sut, emptyList())
-            ).toSet()
-        )
-    }
-
-    @Test
-    fun `searchMoves returns a list containing the only valid move, if optional fromPos`() {
-        val sut = Board()
-
-        assertEquals(
-            setOf(Move("Pe2e4")),
-            Move.searchMoves(
-                Move("Pe4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = false,
-                Game(sut, emptyList())
-            ).toSet()
-        )
-    }
-
-    @Test
-    fun `searchMoves returns a list containing the valid moves, if optional toPos`() {
-        val sut = Board()
-
-        assertEquals(
-            setOf(Move("Pe2e3"), Move("Pe2e4")),
-            Move.searchMoves(
-                Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = true,
-                Game(sut, emptyList())
-            ).toSet()
-        )
-    }
-
-    @Test
-    fun `searchMoves returns empty list, if no valid moves`() {
-        val sut = Board()
-
-        assertEquals(
-            emptyList(),
-            Move.searchMoves(
-                Move("Pe2e5"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false,
-                Game(sut, emptyList())
-            )
-        )
-    }
-
-    @Test
-    fun `searchMoves returns a list containing all available moves of the piece type, if optional fromPos and toPos`() {
-        val sut = Board()
-
-        assertEquals(
-            (COLS_RANGE.map { Move("P${it}2${it}3") } + COLS_RANGE.map { Move("P${it}2${it}4") } +
-                    COLS_RANGE.map { Move("P${it}7${it}6") } + COLS_RANGE.map { Move("P${it}7${it}5") }
-                    ).toSet(),
-            Move.searchMoves(
-                Move("Pe2e4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = true,
-                Game(sut, emptyList())
-            ).toSet())
     }
 
     // extractMoveInfo

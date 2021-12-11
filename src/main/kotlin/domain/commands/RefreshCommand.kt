@@ -22,7 +22,7 @@ class RefreshCommand(private val db: GameState, private val session: Session) : 
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. There aren't any new moves." }
 
         val moves = db.getAllMoves(session.name)
-        val game = gameFromMoves(*moves.map { it.toString() }.toTypedArray())
+        val game = gameFromMoves(moves)
 
         val inMate = game.board.isKingInCheckMate(session.army) || game.isKingInStaleMate(session.army)
         

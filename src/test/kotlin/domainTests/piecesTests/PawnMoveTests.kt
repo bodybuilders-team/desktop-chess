@@ -89,9 +89,9 @@ class PawnMoveTests {
         val sutEnPassant = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
-                "pppp ppp" +
+                " ppp ppp" +
                 "        " +
-                "    pP  " +
+                "p   pP  " +
                 "        " +
                 "        " +
                 "PPPPP PP" +
@@ -99,7 +99,9 @@ class PawnMoveTests {
             )
         )
 
-        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5e6", Game(sutEnPassant, listOf(Move("Pe7e5")))).type)
+        val moves = listOf("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5").map { Move(it) }
+
+        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5e6", Game(sutEnPassant, moves)).type)
     }
 
     @Test
@@ -107,16 +109,17 @@ class PawnMoveTests {
         val sutEnPassant = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
-                "pppppp p" +
+                " ppppp p" +
                 "        " +
-                "     Pp " +
+                "p    Pp " +
                 "        " +
                 "        " +
                 "PPPPP PP" +
                 "RNBQKBNR"
             )
         )
+        val moves = listOf("Pf2f4", "Pa7a5", "Pf4f5", "Pg7g5").map { Move(it) }
 
-        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5g6", Game(sutEnPassant, listOf(Move("Pg7g5")))).type)
+        assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5g6", Game(sutEnPassant, moves)).type)
     }
 }

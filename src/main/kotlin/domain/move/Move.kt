@@ -1,10 +1,20 @@
 package domain.move
 
-import domain.Game
+import domain.*
 import domain.board.*
 import kotlin.math.abs
 import domain.board.Board.Position
 import domain.pieces.*
+
+
+/**
+ * Type of the move.
+ */
+enum class MoveType {
+    NORMAL,
+    CASTLE,
+    EN_PASSANT
+}
 
 
 /**
@@ -14,6 +24,7 @@ import domain.pieces.*
  * @property capture true if the piece will capture enemy piece
  * @property to new piece position
  * @property promotion new PieceType of promotion or null
+ * @property type move type
  */
 data class Move(
     val symbol: Char,
@@ -36,7 +47,7 @@ data class Move(
         /**
          * Move constructor that receives a String.
          * @param moveInString move in string format
-         * @return the move extracted from the string, unvalidated in the context of the board
+         * @return the move extracted from the string, unvalidated in the context of a game
          */
         operator fun invoke(moveInString: String): Move {
             return extractMoveInfo(moveInString).move
@@ -44,7 +55,7 @@ data class Move(
 
 
         /**
-         * Returns a move already validated in the context of a chess game.
+         * Returns a move already validated in the context of a game.
          *
          * Move properties are extracted from [moveInString], it's verified if the move is possible by searching the [game] board.
          * @param moveInString move in string format
@@ -54,8 +65,7 @@ data class Move(
          */
         fun validated(moveInString: String, game: Game): Move {
             val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(moveInString)
-            val validMoves =
-                searchMoves(move, optionalFromCol, optionalFromRow, optionalToPos = false, game)
+            val validMoves = game.searchMoves(move, optionalFromCol, optionalFromRow, optionalToPos = false)
 
             if (validMoves.size != 1) throw IllegalMoveException(
                 move.toString(optionalFromCol, optionalFromRow),
@@ -65,56 +75,11 @@ data class Move(
 
             return validMoves.first()
         }
-
-
-        /**
-         * Searches for valid moves given a move and if the search is in a specific column or row.
-         *
-         * If [optionalFromCol] is true, all columns are searched. The same applies to [optionalFromRow].
-         *
-         * @param move move to search for
-         * @param optionalFromCol if the search isn't in a specific column
-         * @param optionalFromRow if the search isn't in a specific row
-         * @param optionalToPos if the search isn't in a specific to position
-         * @param game game to search for the move in
-         * @return all valid moves
-         */
-        fun searchMoves(
-            move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, optionalToPos: Boolean, game: Game
-        ): List<Move> {
-            val foundMoves: MutableList<Move> = mutableListOf()
-
-            val fromColSearchRange = if (optionalFromCol) COLS_RANGE else move.from.col..move.from.col
-            val fromRowSearchRange = if (optionalFromRow) ROWS_RANGE else move.from.row..move.from.row
-
-            val toColSearchRange = if (optionalToPos) COLS_RANGE else move.to.col..move.to.col
-            val toRowSearchRange = if (optionalToPos) ROWS_RANGE else move.to.row..move.to.row
-
-            for (fromRow in fromRowSearchRange) {
-                for (fromCol in fromColSearchRange) {
-                    for (toRow in toRowSearchRange) {
-                        for (toCol in toColSearchRange) {
-                            val fromPos = Position(fromCol, fromRow)
-                            val piece = game.board.getPiece(fromPos) ?: continue
-                            if (piece.type.symbol != move.symbol) continue
-
-                            val validatedMove = move.copy(
-                                from = fromPos,
-                                to = Position(toCol, toRow)
-                            ).getValidatedMove(piece, game)
-                            if (validatedMove != null) foundMoves.add(validatedMove)
-                        }
-                    }
-                }
-            }
-
-            return foundMoves
-        }
-
+        
 
         /**
          * Move extraction
-         * @param move extracted move
+         * @param move unvalidated extracted move
          * @param optionalFromCol if from column is optional
          * @param optionalFromRow if from row is optional
          */
@@ -123,7 +88,7 @@ data class Move(
 
         /**
          * Extracts move information from a string.
-         * This move is still unvalidated in the context of a board.
+         * This move is still unvalidated in the context of a game.
          * 
          * The returned move will have [FIRST_COL] as the fromCol, and [FIRST_ROW] as the fromRow in case of optional column and/or row, respectively.
          * 
@@ -272,26 +237,6 @@ data class Move(
                 if (promotion != null) "=$promotion" else ""
 }
 
-/**
- * Checks if the capture in the move is valid.
- *
- * Also checking, if the capture is a promotion, if it's a valid promotion.
- * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.
- * @param piece move with the capture
- * @param board board where the move happens
- * @return true if the capture is valid
- */
-fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
-    val isPromotion = piece is Pawn && (piece.isWhite() && to.row == BLACK_FIRST_ROW ||
-            !piece.isWhite() && to.row == WHITE_FIRST_ROW)
-    
-    val isValidPromotion = isPromotion == (promotion != null)
-
-    val capturedPiece = board.getPiece(to) ?: return !capture && isValidPromotion
-
-    return piece.army != capturedPiece.army && isValidPromotion
-}
-
 
 /**
  * Gets a validated move, with information of its move type and capture, or null if the move isn't valid.
@@ -312,12 +257,22 @@ fun Move.getValidatedMove(piece: Piece, game: Game): Move? {
     return validMove.copy(capture = game.board.isPositionOccupied(validMove.to))
 }
 
-
 /**
- * Type of the move.
+ * Checks if the capture in the move is valid.
+ *
+ * Also checking, if the capture is a promotion, if it's a valid promotion.
+ * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.
+ * @param piece move with the capture
+ * @param board board where the move happens
+ * @return true if the capture is valid
  */
-enum class MoveType {
-    NORMAL,
-    CASTLE,
-    EN_PASSANT
+fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
+    val isPromotion = piece is Pawn && (piece.isWhite() && to.row == BLACK_FIRST_ROW ||
+            !piece.isWhite() && to.row == WHITE_FIRST_ROW)
+    
+    val isValidPromotion = isPromotion == (promotion != null)
+
+    val capturedPiece = board.getPiece(to) ?: return !capture && isValidPromotion
+
+    return piece.army != capturedPiece.army && isValidPromotion
 }

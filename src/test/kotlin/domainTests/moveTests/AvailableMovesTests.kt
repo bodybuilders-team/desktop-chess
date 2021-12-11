@@ -2,6 +2,7 @@ package domainTests.moveTests
 
 import domain.Game
 import domain.board.*
+import domain.gameFromMoves
 import domain.move.*
 import domain.pieces.Army
 import kotlin.test.*
@@ -74,17 +75,17 @@ class AvailableMovesTests {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
-                "ppp pppp" +
+                " pp pppp" +
                 "        " +
-                "   pP   " +
+                "p  pP   " +
                 "        " +
                 "        " +
                 "PPPP PPP" +
-                "R   KBNR"
+                "RNBQKBNR"
             )
         )
         val position = Board.Position('e', 5)
-        val previousMoves = listOf(Move("Pd7d5"))
+        val previousMoves = listOf("Pe2e4", "Pa7a5", "Pe4e5", "Pd7d5").map { Move(it) }
 
         val piece = sut.getPiece(position)
 
@@ -98,17 +99,26 @@ class AvailableMovesTests {
     // hasAvailableMoves
 
     @Test
-    fun `hasAvailableMoves returns true with default board`() {
-        val sut = Board()
-        assertTrue(Game(sut, emptyList()).hasAvailableMoves(Army.WHITE))
-        assertTrue(Game(sut, emptyList()).hasAvailableMoves(Army.BLACK))
+    fun `hasAvailableMoves with the army returns true if it's the army's turn and there are available moves`() {
+        val game = Game(Board(), emptyList())
+        assertTrue(game.hasAvailableMoves(Army.WHITE))
+        assertFalse(game.hasAvailableMoves(Army.BLACK))
+    }
+
+    @Test
+    fun `hasAvailableMoves with the army returns false if it's the army's turn and there are no available moves`() {
+        val game = gameFromMoves(
+            "e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
+            "Qd3", "Qb8", "Qh7", "Qc8", "Kg6", "Qe6"
+        )
+        assertFalse(game.hasAvailableMoves(Army.BLACK))
     }
 
     @Test
     fun `hasAvailableMoves returns false with empty board`() {
-        val sut = Board(getMatrix2DFromString("        ".repeat(BOARD_SIDE_LENGTH)))
-        assertFalse(Game(sut, emptyList()).hasAvailableMoves(Army.WHITE))
-        assertFalse(Game(sut, emptyList()).hasAvailableMoves(Army.BLACK))
+        val game = Game(Board(getMatrix2DFromString("        ".repeat(BOARD_SIDE_LENGTH))), emptyList())
+        assertFalse(game.hasAvailableMoves(Army.WHITE))
+        assertFalse(game.hasAvailableMoves(Army.BLACK))
     }
 
     // currentTurnArmy

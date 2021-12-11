@@ -12,9 +12,11 @@ import domain.move.*
  * Moves one and only one position in all directions.
  * @param army piece army
  */
-class King(override val army: Army) : Piece {
+data class King(override val army: Army) : Piece() {
 
     override val type = PieceType.KING
+
+    override fun toString() = "$army $type"
 
     override fun isValidMove(board: Board, move: Move) =
         move.rowsAbsoluteDistance() in NO_MOVE..ONE_MOVE &&

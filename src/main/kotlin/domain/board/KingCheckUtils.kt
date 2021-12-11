@@ -7,7 +7,8 @@ import domain.move.*
 
 
 // King Check Constants
-const val MAX_KING_ATTACKERS = 2
+const val DOUBLE_CHECK = 2
+const val MAX_KING_ATTACKERS = DOUBLE_CHECK
 
 
 /**
@@ -90,35 +91,43 @@ fun Board.kingAttackers(position: Position, army: Army): List<Move> {
 
 
 /**
- * Checks if the king of the [army] can be protected.
+ * Checks if the king of the [army] can be protected from a check by an ally piece.
+ * 
+ * The king can't be protected by an ally in a double check (king must move).
+ * 
+ * The king is protectable when:
+ * - an ally piece can be placed between the king and the attacking piece.
+ * - an ally piece can capture the attacking piece.
  * @param position position of the king
- * @param army army of the king to check
- * @return true if the king of the [army] can be protected.
- * @throws IllegalArgumentException if the king isn't in check, therefore not needing to be protected
+ * @param army army of the king to protect
+ * @return true if the king of the [army] can be protected from a check.
  */
 fun Board.isKingProtectable(position: Position, army: Army): Boolean {
-    kingAttackers(position, army).forEach { attackingMove ->
+    val kingAttackers = kingAttackers(position, army)
+    if(kingAttackers.size == DOUBLE_CHECK) return false
+
+    kingAttackers.first().apply {
         return when {
-            attackingMove.isStraight() ->
-                anyPositionInStraightPath(attackingMove, includeFromPos = true) { pos ->
+            isStraight() ->
+                anyPositionInStraightPath(this, includeFromPos = true) { pos ->
                     positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
                 }
 
-            attackingMove.isDiagonal() ->
-                anyPositionInDiagonalPath(attackingMove, includeFromPos = true) { pos ->
+            isDiagonal() ->
+                anyPositionInDiagonalPath(this, includeFromPos = true) { pos ->
                     positionAttackers(pos, army).any { it.symbol != PieceType.KING.symbol }
                 }
 
-            else -> positionAttackers(attackingMove.from, army).any { it.symbol != PieceType.KING.symbol }
+            else -> positionAttackers(this.from, army).any { it.symbol != PieceType.KING.symbol }
         }
     }
-
-    return false
 }
 
 
 /**
- * Checks if the [army] king can move to an adjacent position.
+ * Checks if the [army] king can move to one of its adjacent positions.
+ * 
+ * The king can only move to an adjacent position if it is not occupied by an ally piece and not attacked by an enemy piece.
  * @param position position of the king
  * @param army army of the king to move
  * @return true if the [army] king can move to an adjacent position
@@ -149,7 +158,6 @@ fun Board.positionAttackers(position: Position, armyThatAttacks: Army): List<Mov
             if (piece.army != armyThatAttacks) continue
 
             val move = Move(piece.type.symbol, fromPos, capture = false, position, promotion = null, MoveType.NORMAL)
-            //TODO("Validate in the context of a game - special moves are currently not being counted here")
             if (piece.isValidMove(this, move) && move.isValidCapture(piece, this))
                 attackingMoves += move
         }

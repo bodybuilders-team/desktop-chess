@@ -10,9 +10,11 @@ import domain.move.*
  * Moves one or two slots vertically or one diagonally (when capturing)
  * @param army piece army
  */
-class Pawn(override val army: Army) : Piece {
+data class Pawn(override val army: Army) : Piece() {
 
     override val type = PieceType.PAWN
+
+    override fun toString() = "$army $type"
 
     override fun isValidMove(board: Board, move: Move) =
         move.isVertical() && isValidPawnVerticalMove(board, move) ||

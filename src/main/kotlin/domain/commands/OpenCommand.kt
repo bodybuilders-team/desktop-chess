@@ -23,7 +23,7 @@ class OpenCommand(private val db: GameState) : Command {
                 emptyList()
             }
 
-        val game = gameFromMoves(*moves.map { it.toString() }.toTypedArray())
+        val game = gameFromMoves(moves)
         val state = getCurrentState(game, Army.WHITE)
 
         return Result.success(

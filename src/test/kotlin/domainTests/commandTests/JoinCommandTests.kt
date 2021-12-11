@@ -82,7 +82,7 @@ class JoinCommandTests {
         // Fastest stalemate known - https://www.chess.com/forum/view/game-showcase/fastest-stalemate-known-in-chess
         val movesForFastestStalemate =
             gameFromMoves(
-                "e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "2h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
+                "e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
                 "Qd3", "Qb8", "Qh7", "Qc8", "Kg6", "Qe6"
             ).moves
 

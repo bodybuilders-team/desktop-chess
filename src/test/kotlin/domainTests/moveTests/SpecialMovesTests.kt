@@ -145,6 +145,58 @@ class SpecialMovesTests {
         assertFalse(move.isValidCastle(piece, Game(sut, listOf("Rh1g1", "Rg1h1").map { Move(it) })))
     }
 
+    @Test
+    fun `isValidCastle returns false if the move is a valid long castle with king but the king is in check`() {
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqk nr" +
+                "ppp  ppp" +
+                "        " +
+                "        " +
+                "     P b" +
+                "        " +
+                "PPPPP PP" +
+                "R   KBNR"
+            )
+        )
+        
+        val game = Game(sut, listOf("Pf2f4").map { Move(it) })
+
+        val move = Move("Ke1c1")
+        val piece = sut.getPiece(move.from)
+
+        assertTrue(game.board.isKingInCheck(Army.WHITE))
+
+        assertNotNull(piece)
+        assertFalse(move.isValidCastle(piece, game))
+    }
+
+    @Test
+    fun `isValidCastle returns false if the move is a valid short castle with king but the king is in check`() {
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqk nr" +
+                "ppp  ppp" +
+                "        " +
+                "        " +
+                "     P b" +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
+            )
+        )
+
+        val game = Game(sut, listOf("Pf2f4").map { Move(it) })
+
+        val move = Move("Ke1g1")
+        val piece = sut.getPiece(move.from)
+
+        assertTrue(game.board.isKingInCheck(Army.WHITE))
+
+        assertNotNull(piece)
+        assertFalse(move.isValidCastle(piece, game))
+    }
+
     // isEnPassantPossible
 
     @Test

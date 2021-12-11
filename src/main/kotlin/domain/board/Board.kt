@@ -8,7 +8,7 @@ import domain.pieces.*
  * Represents the game board with the pieces.
  * @property matrix 2DMatrix with the pieces
  */
-class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_DEFAULT_BOARD)) {
+data class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_DEFAULT_BOARD)) {
 
     /**
      * Position of each board slot
@@ -104,5 +104,18 @@ class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_
         }
 
         return newBoard
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Board) return false
+
+        if (!matrix.contentDeepEquals(other.matrix)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return matrix.contentDeepHashCode()
     }
 }

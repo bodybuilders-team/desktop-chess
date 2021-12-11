@@ -11,11 +11,12 @@ import storage.GameState
  * @param db database where the moves are stored
  * @param session current session
  * @throws CommandException if game has not been initialized yet
- * @throws CommandException if it is not the user's turn
+ * @throws CommandException if it is not the player's turn
  * @throws CommandException if the game ended
  * @throws CommandException if move to be made not specified
+ * @throws IllegalArgumentException if it's not this army's turn but SessionState is YOUR_TURN (database modified?)
  * @throws IllegalArgumentException if there's no piece in the specified from position in move
- * @throws IllegalMoveException if the user tried to play with an opponent's piece
+ * @throws IllegalMoveException if the player tried to play with an opponent's piece
  */
 class PlayCommand(private val db: GameState, private val session: Session) : Command {
 
@@ -34,7 +35,7 @@ class PlayCommand(private val db: GameState, private val session: Session) : Com
         if (piece.army == session.army.other())
             throw IllegalMoveException(move.toString(), "You cannot move an opponent's piece.")
         
-        val game = Game(session.game.board.makeMove(move), session.game.moves + move)
+        val game = session.game.makeMove(move)
 
         db.postMove(session.name, move)
 

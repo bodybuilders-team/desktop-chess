@@ -7,9 +7,9 @@ import domain.board.Board.Position
 
 
 /**
- * Gets a given position's available moves.
+ * Gets a given position's available moves in the game.
  * @param position position to get the available moves
- * @return list of available moves
+ * @return list of available moves from a position in the game
  */
 fun Game.getAvailableMoves(position: Position) =
     board.getPiece(position)?.getAvailableMoves(this, position) ?: emptyList()
