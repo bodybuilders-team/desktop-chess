@@ -23,17 +23,17 @@ class OpenCommand(private val db: GameState) : Command {
                 emptyList()
             }
 
-        val board = boardWithMoves(moves)
-        val state = getCurrentState(board, moves, Army.WHITE)
+        val game = gameFromMoves(*moves.map { it.toString() }.toTypedArray())
+        val state = getCurrentState(game.board, moves, Army.WHITE)
 
         return Result.success(
             Session(
                 name = parameter,
                 state = state,
                 army = Army.WHITE,
-                game = Game(board, moves),
+                game = game,
                 currentCheck =
-                    if (state == SessionState.YOUR_TURN && board.isKingInCheck(Army.WHITE)) Check.CHECK
+                    if (state == SessionState.YOUR_TURN && game.board.isKingInCheck(Army.WHITE)) Check.CHECK
                     else Check.NO_CHECK
             )
         )

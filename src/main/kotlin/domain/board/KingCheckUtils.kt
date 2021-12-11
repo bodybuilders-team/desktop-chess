@@ -41,7 +41,7 @@ fun Board.isKingInCheck(army: Army) = kingAttackers(getKingPosition(army), army)
  *
  * The king is in checkmate if all these conditions apply:
  * - The king is in check;
- * - The king is unprotectable, meaning no ally piece can remove the check, protecting the king (by being placed in front or killing the attacker);
+ * - The king is not protectable, meaning no ally piece can remove the check, protecting the king (by being placed in front or killing the attacker);
  * - The king has nowhere to go. All adjacent positions are either occupied or attacked by an enemy piece.
  * @param army army of the king to check mate
  * @return true if the king is in check mate

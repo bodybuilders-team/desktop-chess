@@ -24,11 +24,12 @@ class PlayCommand(private val db: GameState, private val session: Session) : Com
         cmdRequire(session.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
         cmdRequireNotNull(parameter) { "Missing move." }
+        require(currentTurnArmy(session.game.moves) == session.army) { "It's not this army's turn! Session army is different from the current turn army." }
 
         val move = Move.validated(parameter, session.game.board, session.game.moves)
 
         val piece = session.game.board.getPiece(move.from)
-        requireNotNull(piece) { "Move.getValidatedMove() is not throwing IllegalMoveException in case of invalid from position." }
+        requireNotNull(piece) { "Move.validated() is not throwing IllegalMoveException in case of invalid from position." }
 
         if (piece.army == session.army.other())
             throw IllegalMoveException(move.toString(), "You cannot move an opponent's piece.")
@@ -37,18 +38,18 @@ class PlayCommand(private val db: GameState, private val session: Session) : Com
         db.postMove(session.name, move)
 
         val moves = session.game.moves + move
-        
+
         val inCheckMate = newBoard.isKingInCheckMate(session.army.other())
         val inStaleMate = newBoard.isKingInStaleMate(session.army.other(), moves)
 
         return Result.success(
             session.copy(
                 state = if (inCheckMate || inStaleMate) SessionState.ENDED else SessionState.WAITING_FOR_OPPONENT,
-                game =  Game(newBoard, moves),
+                game = Game(newBoard, moves),
                 currentCheck = when {
-                    newBoard.isKingInCheck(session.army.other()) -> Check.CHECK
                     inCheckMate -> Check.CHECK_MATE
                     inStaleMate -> Check.STALE_MATE
+                    newBoard.isKingInCheck(session.army.other()) -> Check.CHECK
                     else -> Check.NO_CHECK
                 }
             )

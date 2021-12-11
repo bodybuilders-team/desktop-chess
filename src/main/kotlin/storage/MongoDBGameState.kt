@@ -37,12 +37,16 @@ private data class Game(val name: String, val moves: List<String>)
 class MongoDBGameState(private val db: MongoDatabase) : GameState {
 
     override fun getAllMoves(gameName: String): List<Move> {
+        require(gameExists(gameName)) { "A game with the name \"$gameName\" does not exist." }
+        
         return tryDataBaseAccess {
             db.getAllDocuments<Game>(COLLECTION_ID).first { it.name == gameName }.moves.map { Move(it) }
         }
     }
 
     override fun postMove(gameName: String, move: Move): Boolean {
+        require(gameExists(gameName)) { "A game with the name \"$gameName\" does not exist." }
+        
         return tryDataBaseAccess {
             val oldGame = db.getAllDocuments<Game>(COLLECTION_ID).first { it.name == gameName }
             db.getCollectionWithId<Game>(COLLECTION_ID).replaceOne(
@@ -53,7 +57,7 @@ class MongoDBGameState(private val db: MongoDatabase) : GameState {
     }
 
     override fun createGame(gameName: String) {
-        require(!gameExists(gameName))
+        require(!gameExists(gameName)) { "A game with the name \"$gameName\" already exists." }
         tryDataBaseAccess {
             db.createDocument(COLLECTION_ID, Game(name = gameName, moves = emptyList()))
         }

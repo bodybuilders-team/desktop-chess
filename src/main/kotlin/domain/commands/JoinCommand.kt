@@ -16,20 +16,20 @@ class JoinCommand(private val db: GameState) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
         cmdRequireNotNull(parameter) { "Missing game name." }
-        cmdRequire(db.gameExists(parameter)) { "Unknown game." }
+        cmdRequire(db.gameExists(parameter)) { "A game with the name \"$parameter\" does not exist: try open command." }
 
         val moves = db.getAllMoves(parameter)
-        val board = boardWithMoves(moves)
-        val state = getCurrentState(board, moves, Army.BLACK)
+        val game = gameFromMoves(*moves.map { it.toString() }.toTypedArray())
+        val state = getCurrentState(game.board, moves, Army.BLACK)
 
         return Result.success(
             Session(
                 name = parameter,
                 state = state,
                 army = Army.BLACK,
-                game = Game(board, moves),
+                game = game,
                 currentCheck =
-                if (state == SessionState.YOUR_TURN && board.isKingInCheck(Army.BLACK)) Check.CHECK
+                if (state == SessionState.YOUR_TURN && game.board.isKingInCheck(Army.BLACK)) Check.CHECK
                 else Check.NO_CHECK
             )
         )

@@ -199,7 +199,7 @@ class BoardMethodsTests {
         )
     }
 
-    //getMatrix2DFromString
+    // getMatrix2DFromString
 
     @Test
     fun `getMatrix2DFromString returns a Matrix containing the respective pieces`() {

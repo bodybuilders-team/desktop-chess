@@ -13,7 +13,7 @@ import storage.GameState
 class MovesCommand(private val db: GameState, private val session: Session) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
-        cmdRequire(!session.isLogging()) { "No game, no moves." }
+        cmdRequire(!session.isLogging()) { "No game, no moves: try open or join commands." }
 
         return Result.success(session)
     }

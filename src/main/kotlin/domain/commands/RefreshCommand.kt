@@ -22,22 +22,22 @@ class RefreshCommand(private val db: GameState, private val session: Session) : 
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. There aren't any new moves." }
 
         val moves = db.getAllMoves(session.name)
-        val board = boardWithMoves(moves)
+        val game = gameFromMoves(*moves.map { it.toString() }.toTypedArray())
 
-        val inMate = board.isKingInCheckMate(session.army) || board.isKingInStaleMate(session.army, moves)
+        val inMate = game.board.isKingInCheckMate(session.army) || game.board.isKingInStaleMate(session.army, moves)
         
         val state = when {
-            inMate                               -> SessionState.ENDED
+            inMate                                 -> SessionState.ENDED
             currentTurnArmy(moves) == session.army -> SessionState.YOUR_TURN
-            else                                 -> SessionState.WAITING_FOR_OPPONENT
+            else                                   -> SessionState.WAITING_FOR_OPPONENT
         }
 
         return Result.success(
             session.copy(
                 state = state,
-                game =  Game(board, moves),
+                game = game,
                 currentCheck =
-                if (state == SessionState.YOUR_TURN && board.isKingInCheck(session.army)) Check.CHECK
+                if (state == SessionState.YOUR_TURN && game.board.isKingInCheck(session.army)) Check.CHECK
                 else Check.NO_CHECK
             )
         )

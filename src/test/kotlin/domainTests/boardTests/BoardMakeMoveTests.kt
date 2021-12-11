@@ -23,7 +23,7 @@ class BoardMakeMoveTests {
         )
     }
 
-    //Pawn promotion
+    // Pawn promotion
 
     @Test
     fun `Promote pawn to queen`() {

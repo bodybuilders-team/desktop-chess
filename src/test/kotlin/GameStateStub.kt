@@ -9,21 +9,19 @@ class GameStateStub : GameState {
     private val database: MutableMap<String, MutableList<Move>> = mutableMapOf()
 
     override fun getAllMoves(gameName: String): List<Move> {
-        val moves = database[gameName]
-        requireNotNull(moves)
-        return moves
+        require(gameExists(gameName)) { "A game with the name \"$gameName\" does not exist." }
+        return database[gameName]!!
     }
 
     override fun postMove(gameName: String, move: Move): Boolean {
-        val moves = database[gameName]
-        requireNotNull(moves)
-        moves.add(move)
+        require(gameExists(gameName)) { "A game with the name \"$gameName\" does not exist." }
+        database[gameName]?.add(move)
 
         return true
     }
 
     override fun createGame(gameName: String) {
-        require(!gameExists(gameName))
+        require(!gameExists(gameName)) { "A game with the name \"$gameName\" already exists." }
         database[gameName] = mutableListOf()
     }
 

@@ -1,4 +1,4 @@
-package uiTests
+package ui.consoleTests
 
 import domain.*
 import domain.board.*
@@ -8,6 +8,9 @@ import kotlin.test.*
 
 
 class UserInputTests {
+    
+    // getPrompt
+    
     @Test
     fun `getPrompt with logging session name returns empty string`() {
         val session = Session("", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
