@@ -21,9 +21,8 @@ const val SHORT_CASTLE_KING_COL = 'g'
  * @return true if the move is a valid en passant
  */
 fun Move.isValidEnPassant(piece: Piece, game: Game) =
-    isEnPassantPossible(piece, game.moves) &&
-            piece is Pawn &&
-            piece.isValidEnPassant(game.board, this)
+    piece is Pawn && piece.isValidEnPassant(game.board, this) &&
+            isEnPassantPossible(piece, game.moves)
 
 
 /**
@@ -33,8 +32,8 @@ fun Move.isValidEnPassant(piece: Piece, game: Game) =
  * @return true if the move is a valid castle
  */
 fun Move.isValidCastle(piece: Piece, game: Game) =
-    isCastlePossible(piece, game.moves) && piece is King && !game.board.isKingInCheck(piece.army) &&
-            piece.isValidCastle(game.board, this)
+    piece is King && !game.board.isKingInCheck(piece.army) &&
+            piece.isValidCastle(game.board, this) && isCastlePossible(piece, game.moves)
 
 
 /**
@@ -56,17 +55,17 @@ fun Move.isEnPassantPossible(piece: Piece, previousMoves: List<Move>) =
  * @param previousMoves previous game moves
  * @return true if the castle move is possible
  */
-fun isCastlePossible(piece: Piece, previousMoves: List<Move>) =
+fun Move.isCastlePossible(piece: Piece, previousMoves: List<Move>) =
     previousMoves.none { move ->
-        piece.isWhite() && move.from in listOf(
-            Position(INITIAL_ROOK_COL_FURTHER_FROM_KING, WHITE_FIRST_ROW),
-            Position(INITIAL_ROOK_COL_CLOSER_TO_KING, WHITE_FIRST_ROW),
-            Position(INITIAL_KING_COL, WHITE_FIRST_ROW)
-        ) ||
-                !piece.isWhite() && move.from in listOf(
-            Position(INITIAL_ROOK_COL_FURTHER_FROM_KING, BLACK_FIRST_ROW),
-            Position(INITIAL_ROOK_COL_CLOSER_TO_KING, BLACK_FIRST_ROW),
-            Position(INITIAL_KING_COL, BLACK_FIRST_ROW)
+        move.from in listOf(
+            Position(INITIAL_KING_COL, if (piece.isWhite()) WHITE_FIRST_ROW else BLACK_FIRST_ROW),
+            Position(
+                if (to.col == LONG_CASTLE_KING_COL)
+                    INITIAL_ROOK_COL_FURTHER_FROM_KING
+                else
+                    INITIAL_ROOK_COL_CLOSER_TO_KING,
+                if (piece.isWhite()) WHITE_FIRST_ROW else BLACK_FIRST_ROW
+            )
         )
     }
 

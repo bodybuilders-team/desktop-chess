@@ -15,7 +15,6 @@ data class Game(
 )
 
 
-
 /**
  * Makes a move in the board.
  * @param move move to make
@@ -23,7 +22,6 @@ data class Game(
  */
 fun Game.makeMove(move: Move) =
     Game(board = board.makeMove(move), moves = moves + move)
-
 
 
 /**

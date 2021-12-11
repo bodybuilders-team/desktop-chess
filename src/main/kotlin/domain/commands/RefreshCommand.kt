@@ -37,6 +37,7 @@ class RefreshCommand(private val db: GameState, private val session: Session) : 
                 state = state,
                 game = game,
                 currentCheck =
+                
                 if (state == SessionState.YOUR_TURN && game.board.isKingInCheck(session.army)) Check.CHECK
                 else Check.NO_CHECK
             )

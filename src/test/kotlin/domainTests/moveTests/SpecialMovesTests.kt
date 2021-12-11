@@ -251,7 +251,7 @@ class SpecialMovesTests {
     // isCastlePossible
 
     @Test
-    fun `isCastlePossible returns true if a castle move is possible to be made`() {
+    fun `isCastlePossible returns true if a long castle move is possible to be made`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -265,16 +265,19 @@ class SpecialMovesTests {
             )
         )
 
-        val move = Move("Ra1d1")
+        val previousMoves = listOf("Pf2f4").map { Move(it) }
+
+        val game = Game(sut, previousMoves)
+        val move = Move("Ke1c1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Pf2f4"))
 
         assertNotNull(piece)
-        assertTrue(isCastlePossible(piece, previousMoves))
+        assertTrue(piece is King && piece.isValidCastle(game.board, move))
+        assertTrue(move.isCastlePossible(piece, previousMoves))
     }
 
     @Test
-    fun `isCastlePossible returns false if a castle move isn't possible to be made`() {
+    fun `isCastlePossible returns false if a long castle move isn't possible to be made`() {
         val sut = Board(
             getMatrix2DFromString(
                 "rnbqkbnr" +
@@ -288,12 +291,119 @@ class SpecialMovesTests {
             )
         )
 
-        val move = Move("Ra1d1")
+        val previousMoves = listOf("Ra1b1", "Rb1a1").map { Move(it) }
+        
+        val game = Game(sut, previousMoves)
+        val move = Move("Ke1c1")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Ra1b1"), Move("Rb1a1"))
 
         assertNotNull(piece)
-        assertFalse(isCastlePossible(piece, previousMoves))
+        assertTrue(piece is King && piece.isValidCastle(game.board, move))
+        assertFalse(move.isCastlePossible(piece, previousMoves))
+    }
+
+    @Test
+    fun `isCastlePossible returns true if a long castle move is possible to be made if other rook moved`() {
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "R   KBNR"
+            )
+        )
+
+        val previousMoves = listOf("Rh1g1", "Rg1h1").map { Move(it) }
+
+        val game = Game(sut, previousMoves)
+        val move = Move("Ke1c1")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertTrue(piece is King && piece.isValidCastle(game.board, move))
+        assertTrue(move.isCastlePossible(piece, previousMoves))
+    }
+
+    @Test
+    fun `isCastlePossible returns true if a short castle move is possible to be made`() {
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
+            )
+        )
+
+        val previousMoves = listOf("Pf2f4").map { Move(it) }
+
+        val game = Game(sut, previousMoves)
+        val move = Move("Ke1g1")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertTrue(piece is King && piece.isValidCastle(game.board, move))
+        assertTrue(move.isCastlePossible(piece, previousMoves))
+    }
+
+    @Test
+    fun `isCastlePossible returns false if a short castle move isn't possible to be made`() {
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
+            )
+        )
+
+        val previousMoves = listOf("Rh1g1", "Rg1h1").map { Move(it) }
+
+        val game = Game(sut, previousMoves)
+        val move = Move("Ke1g1")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertTrue(piece is King && piece.isValidCastle(game.board, move))
+        assertFalse(move.isCastlePossible(piece, previousMoves))
+    }
+
+    @Test
+    fun `isCastlePossible returns true if a short castle move is possible to be made if other rook moved`() {
+        val sut = Board(
+            getMatrix2DFromString(
+                "rnbqkbnr" +
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
+            )
+        )
+
+        val previousMoves = listOf("Ra1b1", "Rb1a1").map { Move(it) }
+
+        val game = Game(sut, previousMoves)
+        val move = Move("Ke1g1")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertTrue(piece is King && piece.isValidCastle(game.board, move))
+        assertTrue(move.isCastlePossible(piece, previousMoves))
     }
 
     // Castle.getRookPosition

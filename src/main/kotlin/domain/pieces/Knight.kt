@@ -10,7 +10,7 @@ import domain.move.Move
  * Moves only one slot horizontally/vertically and then two slots vertically/horizontally
  * @param army piece army
  */
-data class Knight(override val army: Army) : Piece() {
+data class Knight(override val army: Army) : Piece {
 
     override val type = PieceType.KNIGHT
 

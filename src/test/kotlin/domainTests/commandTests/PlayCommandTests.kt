@@ -116,7 +116,7 @@ class PlayCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves + Move("Qd8h4"), session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.CHECK_MATE, session.currentCheck)
+        assertEquals(Check.CHECKMATE, session.currentCheck)
     }
 
     @Test
@@ -140,7 +140,7 @@ class PlayCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves + Move("Qc8e6"), session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.STALE_MATE, session.currentCheck)
+        assertEquals(Check.STALEMATE, session.currentCheck)
     }
 
     @Test

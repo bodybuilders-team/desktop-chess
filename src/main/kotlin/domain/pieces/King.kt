@@ -12,7 +12,7 @@ import domain.move.*
  * Moves one and only one position in all directions.
  * @param army piece army
  */
-data class King(override val army: Army) : Piece() {
+data class King(override val army: Army) : Piece {
 
     override val type = PieceType.KING
 

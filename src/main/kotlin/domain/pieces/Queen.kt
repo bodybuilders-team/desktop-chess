@@ -10,7 +10,7 @@ import domain.move.*
  * Moves horizontally, vertically or diagonally
  * @param army piece army
  */
-data class Queen(override val army: Army) : Piece() {
+data class Queen(override val army: Army) : Piece {
 
     override val type = PieceType.QUEEN
 

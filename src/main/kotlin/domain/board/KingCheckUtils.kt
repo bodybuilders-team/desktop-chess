@@ -17,8 +17,8 @@ const val MAX_KING_ATTACKERS = DOUBLE_CHECK
 enum class Check {
     NO_CHECK,
     CHECK,
-    CHECK_MATE,
-    STALE_MATE
+    CHECKMATE,
+    STALEMATE
 }
 
 
@@ -104,7 +104,7 @@ fun Board.kingAttackers(position: Position, army: Army): List<Move> {
  */
 fun Board.isKingProtectable(position: Position, army: Army): Boolean {
     val kingAttackers = kingAttackers(position, army)
-    if(kingAttackers.size == DOUBLE_CHECK) return false
+    if (kingAttackers.size == DOUBLE_CHECK) return false
 
     kingAttackers.first().apply {
         return when {

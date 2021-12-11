@@ -31,9 +31,6 @@ class PlayCommand(private val db: GameState, private val session: Session) : Com
 
         val piece = session.game.board.getPiece(move.from)
         requireNotNull(piece) { "Move.validated() is not throwing IllegalMoveException in case of invalid from position." }
-
-        if (piece.army == session.army.other())
-            throw IllegalMoveException(move.toString(), "You cannot move an opponent's piece.")
         
         val game = session.game.makeMove(move)
 
@@ -47,8 +44,8 @@ class PlayCommand(private val db: GameState, private val session: Session) : Com
                 state = if (inCheckMate || inStaleMate) SessionState.ENDED else SessionState.WAITING_FOR_OPPONENT,
                 game = game,
                 currentCheck = when {
-                    inCheckMate -> Check.CHECK_MATE
-                    inStaleMate -> Check.STALE_MATE
+                    inCheckMate -> Check.CHECKMATE
+                    inStaleMate -> Check.STALEMATE
                     game.board.isKingInCheck(session.army.other()) -> Check.CHECK
                     else -> Check.NO_CHECK
                 }

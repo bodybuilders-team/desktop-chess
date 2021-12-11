@@ -10,7 +10,7 @@ import domain.move.*
  * Moves diagonally.
  * @param army piece army
  */
-data class Bishop(override val army: Army) : Piece() {
+data class Bishop(override val army: Army) : Piece {
 
     override val type = PieceType.BISHOP
 

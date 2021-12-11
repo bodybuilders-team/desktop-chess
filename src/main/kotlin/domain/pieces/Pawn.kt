@@ -10,7 +10,7 @@ import domain.move.*
  * Moves one or two slots vertically or one diagonally (when capturing)
  * @param army piece army
  */
-data class Pawn(override val army: Army) : Piece() {
+data class Pawn(override val army: Army) : Piece {
 
     override val type = PieceType.PAWN
 

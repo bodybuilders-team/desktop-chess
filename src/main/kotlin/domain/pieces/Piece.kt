@@ -20,9 +20,10 @@ const val NO_MOVE = 0
  * @property type piece type
  * @property army piece army (White or Black)
  */
-abstract class Piece {
-    abstract val army: Army
-    abstract val type: PieceType
+interface Piece {
+    val army: Army
+    val type: PieceType
+
 
     /**
      * Returns character representation of the piece as seen in game
@@ -47,18 +48,11 @@ abstract class Piece {
      */
     fun getAvailableMoves(game: Game, position: Board.Position): List<Move> =
         game.searchMoves(
-            Move(
-                symbol = type.symbol,
-                from = position,
-                capture = false,
-                to = Board.Position('a', 1),
-                promotion = null,
-                type = MoveType.NORMAL
-            ),
+            Move("${type.symbol}${position}a1"),
             optionalFromCol = false,
             optionalFromRow = false,
             optionalToPos = true
-        ).filter { move -> !game.board.makeMove(move).isKingInCheck(army) }
+        )
 }
 
 
