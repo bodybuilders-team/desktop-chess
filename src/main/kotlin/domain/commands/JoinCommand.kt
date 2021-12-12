@@ -1,7 +1,6 @@
 package domain.commands
 
 import domain.*
-import domain.board.*
 import domain.pieces.Army
 import storage.GameState
 
@@ -19,19 +18,7 @@ class JoinCommand(private val db: GameState) : Command {
         cmdRequire(db.gameExists(parameter)) { "A game with the name \"$parameter\" does not exist: try open command." }
 
         val moves = db.getAllMoves(parameter)
-        val game = gameFromMoves(moves)
-        val state = getCurrentState(game, Army.BLACK)
-
-        return Result.success(
-            Session(
-                name = parameter,
-                state = state,
-                army = Army.BLACK,
-                game = game,
-                currentCheck =
-                if (state == SessionState.YOUR_TURN && game.board.isKingInCheck(Army.BLACK)) Check.CHECK
-                else Check.NO_CHECK
-            )
-        )
+        
+        return Result.success(getOpeningBoardSession(parameter, moves, Army.BLACK))
     }
 }

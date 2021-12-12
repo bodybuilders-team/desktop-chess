@@ -24,10 +24,11 @@ class RefreshCommand(private val db: GameState, private val session: Session) : 
         val moves = db.getAllMoves(session.name)
         val game = gameFromMoves(moves)
 
-        val inMate = game.board.isKingInCheckMate(session.army) || game.isKingInStaleMate(session.army)
+        val inCheckMate = game.board.isKingInCheckMate(session.army)
+        val inStaleMate = game.isKingInStaleMate(session.army)
         
         val state = when {
-            inMate                                 -> SessionState.ENDED
+            inCheckMate || inStaleMate             -> SessionState.ENDED
             currentTurnArmy(moves) == session.army -> SessionState.YOUR_TURN
             else                                   -> SessionState.WAITING_FOR_OPPONENT
         }
@@ -36,10 +37,12 @@ class RefreshCommand(private val db: GameState, private val session: Session) : 
             session.copy(
                 state = state,
                 game = game,
-                currentCheck =
-                
-                if (state == SessionState.YOUR_TURN && game.board.isKingInCheck(session.army)) Check.CHECK
-                else Check.NO_CHECK
+                currentCheck = when {
+                    inCheckMate -> Check.CHECKMATE
+                    inStaleMate -> Check.STALEMATE
+                    (state == SessionState.YOUR_TURN && game.board.isKingInCheck(session.army)) -> Check.CHECK
+                    else -> Check.NO_CHECK
+                }
             )
         )
     }

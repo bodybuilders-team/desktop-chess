@@ -2,6 +2,7 @@ package ui.console
 
 import domain.*
 import domain.board.*
+import domain.move.currentTurnArmy
 
 
 /**
@@ -11,66 +12,86 @@ typealias View = (Session) -> Unit
 
 
 /**
- * Prints the board of the opened session.
+ * Shows view after opening game.
  * @param session opened session
  */
 fun openView(session: Session) {
-    printBoard(session.game.board)
-    println("Game ${session.name} opened. Play with white pieces.")
-
-    if (session.state == SessionState.ENDED)
-        println("Game ended.")
-    else if (session.currentCheck == Check.CHECK)
-        println("Your King is in check.")
+    openingGameView(session, whiteArmy = true)
 }
 
 
 /**
- * Prints the board of the joined session.
+ * Shows view after joining game.
  * @param session joined session
  */
 fun joinView(session: Session) {
-    printBoard(session.game.board)
-    println("Join to game ${session.name}. Play with black pieces.")
-    if (session.state == SessionState.ENDED)
-        println("Game ended.")
-    else if (session.currentCheck == Check.CHECK)
-        println("Your King is in check.")
+    openingGameView(session, whiteArmy = false)
 }
 
 
 /**
- * Prints the board after the play is made.
- * @param session game where the play happens
+ * Shows view after playing a move.
+ * @param session session after play
  */
 fun playView(session: Session) {
-    printBoard(session.game.board)
-    when (session.currentCheck) {
-        Check.CHECK      -> println("Enemy King is in check.")
-        Check.CHECKMATE -> println("Enemy King is in checkmate. Game ended.")
-        Check.STALEMATE -> println("Enemy King is in stalemate. Game ended.")
-        else -> {}
-    }
-
+    afterMoveView(session, playerTurn = false)
 }
 
 
 /**
- * Prints the board refreshed.
- * @param session current session
+ * Shows view after refreshing.
+ * @param session refreshed session
  */
 fun refreshView(session: Session) {
+    afterMoveView(session, playerTurn = true)
+}
+
+
+/**
+ * Shows view for an opening game command.
+ * @param session session after opening game
+ * @param whiteArmy if the current army playing is white
+ */
+private fun openingGameView(session: Session, whiteArmy: Boolean) {
     printBoard(session.game.board)
-    if (session.state == SessionState.ENDED)
-        println("Your King is in checkmate or stalemate. Game ended.")
-    else if (session.currentCheck == Check.CHECK)
-        println("Your King is in check.")
+    println("${if (whiteArmy) "Opened" else "Joined"} game ${session.name}. Play with ${if (whiteArmy) "white" else "black"} pieces.")
+    if(session.currentCheck != Check.NO_CHECK){
+        println(
+            when (session.currentCheck) {
+                Check.CHECK     -> "Your King is in check."
+                Check.CHECKMATE -> "Game ended in checkmate, ${currentTurnArmy(session.game.moves).toString().lowercase()} won!"
+                Check.STALEMATE -> "Game ended in stalemate, it's a draw!"
+                Check.NO_CHECK   -> ""
+            }
+        )
+    }
+}
+
+
+/**
+ * Shows view for a command that makes a move in the board (Play or Refresh).
+ * @param session session after making a move in the board
+ * @param playerTurn if it's the player's turn to play
+ */
+private fun afterMoveView(session: Session, playerTurn: Boolean) {
+    printBoard(session.game.board)
+    if(session.currentCheck != Check.NO_CHECK){
+        println(
+            "${if (playerTurn) "Your" else "Enemy"} King is in " +
+                    when (session.currentCheck) {
+                        Check.CHECK     -> "check."
+                        Check.CHECKMATE -> "checkmate. Game ended, you ${if (playerTurn) "lose" else "win"}!"
+                        Check.STALEMATE -> "stalemate. Game ended, it's a draw!"
+                        Check.NO_CHECK   -> ""
+                    }
+        )
+    }
 }
 
 
 /**
  * Prints all the moves made in the game
- * @param session session where the play happens
+ * @param session current session
  */
 fun movesView(session: Session) {
     session.game.moves.forEachIndexed { index, move -> println("${index + 1}. $move") }
@@ -79,7 +100,7 @@ fun movesView(session: Session) {
 
 /**
  * Prints all the possible commands.
- * @param session session where the play happens
+ * @param session current session
  */
 fun helpView(session: Session) {
     println(

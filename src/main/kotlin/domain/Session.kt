@@ -44,14 +44,34 @@ fun Session.isLogging() = state == SessionState.LOGGING
 
 
 /**
- * Gets the current state of the session.
- * @param game game being played
+ * Gets a session of an opening game.
+ * @param gameName name of the game
+ * @param moves moves of the game
  * @param army session army
- * @return current state of the session
+ * @return session of the opened game
  */
-fun getCurrentState(game: Game, army: Army) = when {
-    game.isInMate()                       -> SessionState.ENDED
-    currentTurnArmy(game.moves) == army   -> SessionState.YOUR_TURN
-    else                                  -> SessionState.WAITING_FOR_OPPONENT
-}
+fun getOpeningBoardSession(gameName: String, moves: List<Move>, army: Army): Session {
+    val game = gameFromMoves(moves)
 
+    val inCheckMate = game.board.isKingInCheckMate(Army.WHITE) || game.board.isKingInCheckMate(Army.BLACK)
+    val inStaleMate = game.isKingInStaleMate(Army.WHITE) || game.isKingInStaleMate(Army.BLACK)
+
+    val state = when {
+        inCheckMate || inStaleMate             -> SessionState.ENDED
+        currentTurnArmy(moves) == army         -> SessionState.YOUR_TURN
+        else                                   -> SessionState.WAITING_FOR_OPPONENT
+    }
+
+    return Session(
+        name = gameName,
+        state = state,
+        army = army,
+        game = game,
+        currentCheck = when {
+            inCheckMate -> Check.CHECKMATE
+            inStaleMate -> Check.STALEMATE
+            (state == SessionState.YOUR_TURN && game.board.isKingInCheck(army)) -> Check.CHECK
+            else -> Check.NO_CHECK
+        }
+    )
+}

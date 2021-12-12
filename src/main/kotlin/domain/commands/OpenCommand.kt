@@ -1,7 +1,6 @@
 package domain.commands
 
 import domain.*
-import domain.board.*
 import domain.pieces.Army
 import storage.GameState
 
@@ -23,19 +22,6 @@ class OpenCommand(private val db: GameState) : Command {
                 emptyList()
             }
 
-        val game = gameFromMoves(moves)
-        val state = getCurrentState(game, Army.WHITE)
-
-        return Result.success(
-            Session(
-                name = parameter,
-                state = state,
-                army = Army.WHITE,
-                game = game,
-                currentCheck =
-                    if (state == SessionState.YOUR_TURN && game.board.isKingInCheck(Army.WHITE)) Check.CHECK
-                    else Check.NO_CHECK
-            )
-        )
+        return Result.success(getOpeningBoardSession(parameter, moves, Army.WHITE))
     }
 }

@@ -69,7 +69,7 @@ class JoinCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(movesForFoolsMate, session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(Check.CHECKMATE, session.currentCheck)
     }
 
     @Test
@@ -95,7 +95,7 @@ class JoinCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(movesForFastestStalemate, session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(Check.STALEMATE, session.currentCheck)
     }
 
     @Test
