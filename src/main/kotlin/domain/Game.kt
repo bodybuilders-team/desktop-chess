@@ -93,21 +93,17 @@ private fun Game.getSearchRanges(
     optionalFromRow: Boolean,
     optionalToPos: Boolean
 ): SearchRanges {
-    val fromColSearchRange = if (optionalFromCol) COLS_RANGE else listOf(move.from.col)
-
-    val fromRowSearchRange = when {
+    fun getColSearchRange(optional: Boolean, col: Char) = if (optional) COLS_RANGE else listOf(col)
+    fun getRowSearchRange(optional: Boolean, row: Int) = when {
         move.type == MoveType.CASTLE -> listOf(if (isWhiteTurn(moves)) WHITE_FIRST_ROW else BLACK_FIRST_ROW)
-        optionalFromRow -> ROWS_RANGE
-        else -> listOf(move.from.row)
+        optional -> ROWS_RANGE
+        else -> listOf(row)
     }
 
-    val toColSearchRange = if (optionalToPos) COLS_RANGE else listOf(move.to.col)
-
-    val toRowSearchRange = when {
-        move.type == MoveType.CASTLE -> listOf(if (isWhiteTurn(moves)) WHITE_FIRST_ROW else BLACK_FIRST_ROW)
-        optionalToPos -> ROWS_RANGE
-        else -> listOf(move.to.row)
-    }
+    val fromColSearchRange = getColSearchRange(optionalFromCol, move.from.col)
+    val fromRowSearchRange = getRowSearchRange(optionalFromRow, move.from.row)
+    val toColSearchRange = getColSearchRange(optionalToPos, move.to.col)
+    val toRowSearchRange = getRowSearchRange(optionalToPos, move.to.row)
 
     return SearchRanges(fromColSearchRange, fromRowSearchRange, toColSearchRange, toRowSearchRange)
 }

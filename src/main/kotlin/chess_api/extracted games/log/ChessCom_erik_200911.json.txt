@@ -1,0 +1,10 @@
+Ignored game 14 because it doesn't start on move 1.
+Ignored game 15 because it doesn't start on move 1.
+Ignored game 23 because it doesn't start on move 1.
+Ignored game 26 because it doesn't start on move 1.
+Ignored game 31 because it doesn't start on move 1.
+Ignored game 32 because it doesn't start on move 1.
+Ignored game 48 because it doesn't start on move 1.
+Ignored game 53 because it doesn't start on move 1.
+Ignored game 58 because it doesn't start on move 1.
+Extracted 54 from 63.

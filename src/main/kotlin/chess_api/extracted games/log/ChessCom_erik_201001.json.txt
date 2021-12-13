@@ -1,0 +1,2 @@
+Ignored game 27 because it doesn't start on move 1.
+Extracted 65 from 66.
