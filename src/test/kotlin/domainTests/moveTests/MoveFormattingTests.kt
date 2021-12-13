@@ -95,4 +95,14 @@ class MoveFormattingTests {
     fun `Move with optional piece symbol and optional fromPos is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("e4"))
     }
+
+    @Test
+    fun `Short castle move is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("O-O"))
+    }
+
+    @Test
+    fun `Long castle move is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("O-O-O"))
+    }
 }

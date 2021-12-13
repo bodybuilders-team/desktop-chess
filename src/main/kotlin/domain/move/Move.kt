@@ -36,7 +36,9 @@ data class Move(
 ) {
     companion object {
 
-        private const val moveRegexFormat = "^[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?\$"
+        private val normalMoveRegex = "[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?".toRegex().toString()
+        private val castleMoveRegex = "(O-O(-O)?)".toRegex().toString()
+        private val moveRegex = Regex("^($normalMoveRegex|$castleMoveRegex)\$")
         private const val CAPTURE_CHAR = 'x'
         private const val PROMOTION_CHAR = '='
         private const val MIN_STRING_LEN = 1
@@ -99,9 +101,24 @@ data class Move(
         fun extractMoveInfo(moveInString: String): MoveExtraction {
             if (!isCorrectlyFormatted(moveInString))
                 throw IllegalMoveException(
-                    moveInString, "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>]"
+                    moveInString, "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>], [O-O] or [O-O-O]"
                 )
 
+            if(moveInString in listOf("O-O", "O-O-O")){
+                return MoveExtraction(
+                    Move(
+                        'K',
+                        Position(INITIAL_KING_COL, 1),
+                        capture = false,
+                        Position(if (moveInString == "O-O") SHORT_CASTLE_KING_COL else LONG_CASTLE_KING_COL, 1),
+                        promotion = null,
+                        MoveType.CASTLE
+                    ),
+                    optionalFromCol = false,
+                    optionalFromRow = false
+                )
+            }
+            
             var str = moveInString
 
             val capture = CAPTURE_CHAR in str
@@ -166,7 +183,7 @@ data class Move(
          * @param moveInString piece move
          * @return true if the move in String is correctly formatted
          */
-        fun isCorrectlyFormatted(moveInString: String) = moveRegexFormat.toRegex().containsMatchIn(moveInString)
+        fun isCorrectlyFormatted(moveInString: String) = moveRegex.containsMatchIn(moveInString)
     }
 
 

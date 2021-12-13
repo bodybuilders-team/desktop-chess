@@ -4,6 +4,7 @@ import domain.board.*
 import domain.move.*
 
 
+//TODO("50-move rule")
 /**
  * A chess game.
  * @property board game board
@@ -12,7 +13,11 @@ import domain.move.*
 data class Game(
     val board: Board,
     val moves: List<Move>
-)
+) {
+    override fun toString(): String {
+        return board.toString().chunked(BOARD_SIDE_LENGTH).joinToString("\n")
+    }
+}
 
 
 /**
@@ -25,9 +30,9 @@ fun Game.makeMove(move: Move) =
 
 
 /**
- * Searches for valid moves given a move and if the search is in a specific column or row.
+ * Searches for valid moves given an unvalidated (extracted) [move] and if the search is in a specific column or row.
  *
- * If [optionalFromCol] is true, all columns are searched. The same applies to [optionalFromRow].
+ * If [optionalFromCol] is true, all columns are searched for the from position. The same applies to [optionalFromRow].
  *
  * @param move move to search for
  * @param optionalFromCol if the search isn't in a specific column
@@ -35,19 +40,20 @@ fun Game.makeMove(move: Move) =
  * @param optionalToPos if the search isn't in a specific to position
  * @return all valid moves
  */
-fun Game.searchMoves(move: Move, optionalFromCol: Boolean, optionalFromRow: Boolean, optionalToPos: Boolean): List<Move> {
+fun Game.searchMoves(
+    move: Move,
+    optionalFromCol: Boolean,
+    optionalFromRow: Boolean,
+    optionalToPos: Boolean
+): List<Move> {
     val foundMoves: MutableList<Move> = mutableListOf()
 
-    val fromColSearchRange = if (optionalFromCol) COLS_RANGE else move.from.col..move.from.col
-    val fromRowSearchRange = if (optionalFromRow) ROWS_RANGE else move.from.row..move.from.row
+    val searchRange = getSearchRanges(move, optionalFromCol, optionalFromRow, optionalToPos)
 
-    val toColSearchRange = if (optionalToPos) COLS_RANGE else move.to.col..move.to.col
-    val toRowSearchRange = if (optionalToPos) ROWS_RANGE else move.to.row..move.to.row
-
-    for (fromRow in fromRowSearchRange) {
-        for (fromCol in fromColSearchRange) {
-            for (toRow in toRowSearchRange) {
-                for (toCol in toColSearchRange) {
+    for (fromRow in searchRange.fromRow) {
+        for (fromCol in searchRange.fromCol) {
+            for (toRow in searchRange.toRow) {
+                for (toCol in searchRange.toCol) {
                     val fromPos = Board.Position(fromCol, fromRow)
                     val piece = board.getPiece(fromPos) ?: continue
                     if (piece.type.symbol != move.symbol) continue
@@ -66,6 +72,45 @@ fun Game.searchMoves(move: Move, optionalFromCol: Boolean, optionalFromRow: Bool
     return foundMoves
 }
 
+/**
+ * Search Ranges to be used in [searchMoves].
+ */
+private data class SearchRanges(
+    val fromCol: Iterable<Char>, val fromRow: Iterable<Int>,
+    val toCol: Iterable<Char>, val toRow: Iterable<Int>
+)
+
+/**
+ * Obtains the search ranges to be used in [searchMoves].
+ * @param move move to search for
+ * @param optionalFromCol if the search isn't in a specific column
+ * @param optionalFromRow if the search isn't in a specific row
+ * @param optionalToPos if the search isn't in a specific to position
+ */
+private fun Game.getSearchRanges(
+    move: Move,
+    optionalFromCol: Boolean,
+    optionalFromRow: Boolean,
+    optionalToPos: Boolean
+): SearchRanges {
+    val fromColSearchRange = if (optionalFromCol) COLS_RANGE else listOf(move.from.col)
+
+    val fromRowSearchRange = when {
+        move.type == MoveType.CASTLE -> listOf(if (isWhiteTurn(moves)) WHITE_FIRST_ROW else BLACK_FIRST_ROW)
+        optionalFromRow -> ROWS_RANGE
+        else -> listOf(move.from.row)
+    }
+
+    val toColSearchRange = if (optionalToPos) COLS_RANGE else listOf(move.to.col)
+
+    val toRowSearchRange = when {
+        move.type == MoveType.CASTLE -> listOf(if (isWhiteTurn(moves)) WHITE_FIRST_ROW else BLACK_FIRST_ROW)
+        optionalToPos -> ROWS_RANGE
+        else -> listOf(move.to.row)
+    }
+
+    return SearchRanges(fromColSearchRange, fromRowSearchRange, toColSearchRange, toRowSearchRange)
+}
 
 
 /**
@@ -85,9 +130,19 @@ fun gameFromMoves(vararg movesInString: String): Game {
 
 
 /**
+ * Returns a new game with the moves [movesInString] consecutively made and validated in the game.
+ * @param movesInString moves to make
+ * @return new game with the moves [movesInString] consecutively made and validated in the game
+ */
+fun gameFromMoves(movesInString: List<String>): Game =
+    gameFromMoves(*movesInString.toTypedArray())
+
+
+/**
  * Returns a new game with the moves [moves] consecutively made and validated in the game.
  * @param moves moves to make
  * @return new game with the moves [moves] consecutively made and validated in the game
  */
+@JvmName("gameFromMoves1")
 fun gameFromMoves(moves: List<Move>): Game =
-    gameFromMoves(*moves.map { it.toString() }.toTypedArray())
+    gameFromMoves(moves.map { it.toString() })

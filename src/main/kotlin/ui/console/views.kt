@@ -2,6 +2,7 @@ package ui.console
 
 import domain.*
 import domain.board.*
+import domain.move.Move
 import domain.move.currentTurnArmy
 
 
@@ -128,4 +129,27 @@ fun printBoard(board: Board) {
         println("|")
     }
     println("    ----------------- ")
+}
+
+
+//TODO("Comment")
+fun viewGameExecution(vararg movesInString: String) {
+    var newGame = Game(Board(), emptyList())
+
+    printBoard(newGame.board)
+
+    movesInString.forEach { moveInString ->
+        println("Next move: $moveInString")
+        
+        readLine()!!
+        println("\n\n".repeat(30))
+        
+        newGame = newGame.makeMove(Move.validated(moveInString, newGame))
+        
+        printBoard(newGame.board)
+    }
+}
+
+fun main(){
+    viewGameExecution("f3", "e5", "g4", "Qh4")
 }

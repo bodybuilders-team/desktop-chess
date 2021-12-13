@@ -4,6 +4,7 @@ import domain.board.*
 import domain.*
 import domain.move.IllegalMoveException
 import domain.move.Move
+import domain.move.MoveType
 import domain.pieces.Army
 import kotlin.test.*
 
@@ -104,13 +105,13 @@ class GameTests {
         val sut = Board(
             getMatrix2DFromString(
                 "        " +
-                        "        " +
-                        "        " +
-                        "    q   " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "R   K   "
+                "        " +
+                "        " +
+                "    q   " +
+                "        " +
+                "        " +
+                "        " +
+                "R   K  R"
             )
         )
 
@@ -120,7 +121,10 @@ class GameTests {
         assertTrue(game.board.isKingInCheck(army))
 
         assertFailsWith<IllegalMoveException> {
-            game.makeMove(Move.validated("Ke1c1", game)).board.isKingInCheck(army)
+            game.makeMove(Move.validated("O-O", game)).board.isKingInCheck(army)
+        }
+        assertFailsWith<IllegalMoveException> {
+            game.makeMove(Move.validated("O-O-O", game)).board.isKingInCheck(army)
         }
     }
     
@@ -182,6 +186,162 @@ class GameTests {
             setOf(Move("Pe2e3"), Move("Pe2e4")),
             game.searchMoves(
                 Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = true
+            ).toSet()
+        )
+    }
+
+    @Test
+    fun `searchMoves returns a list containing the only valid move if the move is a long castle and only long castle is possible`() {
+        val game = Game(
+            Board(
+                getMatrix2DFromString(
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K   "
+                )
+            ),
+            emptyList()
+        )
+
+        assertEquals(
+            setOf(Move("Ke1c1").copy(type = MoveType.CASTLE)),
+            game.searchMoves(
+                Move("O-O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
+            ).toSet()
+        )
+    }
+
+    @Test
+    fun `searchMoves returns a list containing the only valid move if the move is a short castle and only short castle is possible`() {
+        val game = Game(
+            Board(
+                getMatrix2DFromString(
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "    K  R"
+                )
+            ),
+            emptyList()
+        )
+
+        assertEquals(
+            setOf(Move("Ke1g1").copy(type = MoveType.CASTLE)),
+            game.searchMoves(
+                Move("O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
+            ).toSet()
+        )
+    }
+
+    @Test
+    fun `searchMoves returns empty list if the move is a short castle and only long castle is possible`() {
+        val game = Game(
+            Board(
+                getMatrix2DFromString(
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K   "
+                )
+            ),
+            emptyList()
+        )
+
+        assertEquals(
+            setOf(),
+            game.searchMoves(
+                Move("O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
+            ).toSet()
+        )
+    }
+
+    @Test
+    fun `searchMoves returns empty list if the move is a long castle and only short castle is possible`() {
+        val game = Game(
+            Board(
+                getMatrix2DFromString(
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "    K  R"
+                )
+            ),
+            emptyList()
+        )
+
+        assertEquals(
+            setOf(),
+            game.searchMoves(
+                Move("O-O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
+            ).toSet()
+        )
+    }
+
+    @Test
+    fun `searchMoves returns a list containing the only valid move if the move is a long castle and both short and long castles are possible`() {
+        val game = Game(
+            Board(
+                getMatrix2DFromString(
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K  R"
+                )
+            ),
+            emptyList()
+        )
+
+        assertEquals(
+            setOf(Move("Ke1c1").copy(type = MoveType.CASTLE)),
+            game.searchMoves(
+                Move("O-O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
+            ).toSet()
+        )
+    }
+
+    @Test
+    fun `searchMoves returns a list containing the only valid move if the move is a short castle and both short and long castles are possible`() {
+        val game = Game(
+            Board(
+                getMatrix2DFromString(
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K  R"
+                )
+            ),
+            emptyList()
+        )
+
+        assertEquals(
+            setOf(Move("Ke1g1").copy(type = MoveType.CASTLE)),
+            game.searchMoves(
+                Move("O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
             ).toSet()
         )
     }
