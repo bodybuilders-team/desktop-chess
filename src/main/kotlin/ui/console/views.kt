@@ -56,13 +56,14 @@ fun refreshView(session: Session) {
 private fun openingGameView(session: Session, whiteArmy: Boolean) {
     printBoard(session.game.board)
     println("${if (whiteArmy) "Opened" else "Joined"} game ${session.name}. Play with ${if (whiteArmy) "white" else "black"} pieces.")
-    if(session.currentCheck != Check.NO_CHECK){
+    if (session.gameState != GameState.NO_CHECK) {
         println(
-            when (session.currentCheck) {
-                Check.CHECK     -> "Your King is in check."
-                Check.CHECKMATE -> "Game ended in checkmate, ${currentTurnArmy(session.game.moves).toString().lowercase()} won!"
-                Check.STALEMATE -> "Game ended in stalemate, it's a draw!"
-                Check.NO_CHECK   -> ""
+            when (session.gameState) {
+                GameState.CHECK     -> "${if (session.state == SessionState.YOUR_TURN) "Your" else "Enemy"} King is in check."
+                GameState.CHECKMATE -> "Game ended in checkmate, ${currentTurnArmy(session.game.moves).toString().lowercase()} won!"
+                GameState.STALEMATE -> "Game ended in stalemate, it's a draw!"
+                GameState.TIE       -> "Game is tied, ..." //TODO("Type of tie")
+                GameState.NO_CHECK  -> ""
             }
         )
     }
@@ -76,15 +77,15 @@ private fun openingGameView(session: Session, whiteArmy: Boolean) {
  */
 private fun afterMoveView(session: Session, playerTurn: Boolean) {
     printBoard(session.game.board)
-    if(session.currentCheck != Check.NO_CHECK){
+    if (session.gameState != GameState.NO_CHECK) {
         println(
-            "${if (playerTurn) "Your" else "Enemy"} King is in " +
-                    when (session.currentCheck) {
-                        Check.CHECK     -> "check."
-                        Check.CHECKMATE -> "checkmate. Game ended, you ${if (playerTurn) "lose" else "win"}!"
-                        Check.STALEMATE -> "stalemate. Game ended, it's a draw!"
-                        Check.NO_CHECK   -> ""
-                    }
+                when (session.gameState) {
+                    GameState.CHECK     -> "${if (playerTurn) "Your" else "Enemy"} King is in check."
+                    GameState.CHECKMATE -> "${if (playerTurn) "Your" else "Enemy"} King is in checkmate. Game ended, you ${if (playerTurn) "lose" else "win"}!"
+                    GameState.STALEMATE -> "${if (playerTurn) "Your" else "Enemy"} King is in stalemate. Game ended, it's a draw!"
+                    GameState.TIE       -> "Game is tied, ..." //TODO("Type of tie")
+                    GameState.NO_CHECK  -> ""
+                }
         )
     }
 }
@@ -132,7 +133,12 @@ fun printBoard(board: Board) {
 }
 
 
-//TODO("Comment")
+/**
+ * Receives multiple moves to be made in a new game, and shows the step-by-step execution of the game on the console.
+ *
+ * To go to the next move, press ENTER.
+ * @param movesInString moves to make in string
+ */
 fun viewGameExecution(vararg movesInString: String) {
     var newGame = Game(Board(), emptyList())
 
@@ -140,16 +146,16 @@ fun viewGameExecution(vararg movesInString: String) {
 
     movesInString.forEach { moveInString ->
         println("Next move: $moveInString")
-        
+
         readLine()!!
         println("\n\n".repeat(30))
-        
+
         newGame = newGame.makeMove(Move.validated(moveInString, newGame))
-        
+
         printBoard(newGame.board)
     }
 }
 
-fun main(){
+fun main() {
     viewGameExecution("f3", "e5", "g4", "Qh4")
 }

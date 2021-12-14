@@ -13,13 +13,13 @@ class SessionTests {
 
     @Test
     fun `isLogging returns true if the current state is LOGGING`() {
-        val sut = Session("test", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val sut = Session("test", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
         assertTrue(sut.isLogging())
     }
 
     @Test
     fun `isLogging returns false if the current state isn't LOGGING`() {
-        val sut = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val sut = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
         assertFalse(sut.isLogging())
     }
 
@@ -31,7 +31,7 @@ class SessionTests {
         val session = getOpeningBoardSession("test", game.moves, Army.WHITE)
         
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.CHECKMATE, session.currentCheck)
+        assertEquals(GameState.CHECKMATE, session.gameState)
     }
 
     @Test
@@ -41,7 +41,7 @@ class SessionTests {
         val session = getOpeningBoardSession("test", game.moves, Army.WHITE)
         
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.STALEMATE, session.currentCheck)
+        assertEquals(GameState.STALEMATE, session.gameState)
     }
 
     @Test

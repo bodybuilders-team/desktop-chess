@@ -9,7 +9,7 @@ import domain.pieces.Army
 import kotlin.test.*
 
 class GameTests {
-    
+
     // makeMove
 
     @Test
@@ -127,7 +127,7 @@ class GameTests {
             game.makeMove(Move.validated("O-O-O", game)).board.isKingInCheck(army)
         }
     }
-    
+
     // searchMoves
 
     @Test
@@ -368,9 +368,9 @@ class GameTests {
                 Move("Pe2e4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = true
             ).toSet())
     }
-    
+
     // gameFromMoves
-    
+
     @Test
     fun `gameFromMoves return game with no moves made if no moves are passed`() {
         assertEquals(Board().toString(), gameFromMoves().board.toString())
@@ -412,15 +412,45 @@ class GameTests {
             gameFromMoves("Pe4", "Pa2a5", "Ne3", "Ke9")
         }
     }
-    
+
     // gameFromMoves(List<Move>)
 
     @Test
     fun `gameFromMoves(List-Move-) returns same game as gameFromMoves with list of movesInString`() {
         val gameFromMovesInString = gameFromMoves("Pe2e4", "Pe7e5", "Pa2a4", "Pg7g5")
         val gameFromMoves = gameFromMoves(listOf("Pe2e4", "Pe7e5", "Pa2a4", "Pg7g5").map { Move(it) })
-        
+
         assertEquals(gameFromMovesInString.board, gameFromMoves.board)
         assertEquals(gameFromMovesInString.moves, gameFromMoves.moves)
+    }
+
+    // isTiedByFiftyMoveRule
+
+    @Test
+    fun `Game is tied by 50 move rule if no pawn move and no capture happens in the last 100 moves (50 by each side)`() {
+        val moves = List(25) { listOf("Nb1c3", "Nb8c6", "Nc3b1", "Nc6b8") }.flatten()
+        assertTrue(gameFromMoves(moves).isTiedByFiftyMoveRule())
+    }
+
+    @Test
+    fun `Game is not tied by 50 move rule if a pawn moved and no capture happens in the last 100 moves (50 by each side)`() {
+        val moves = List(25) { listOf("Nb1c3", "Nb8c6", "Nc3b1", "Nc6b8") }.flatten()
+        assertFalse(gameFromMoves(moves + "Pe4").isTiedByFiftyMoveRule())
+    }
+
+    @Test
+    fun `Game is not tied by 50 move rule if no pawn moved and a capture happens in the last 100 moves (50 by each side)`() {
+        val startingMoves = listOf("Nb1c3", "Nb8c6", "Nc3b5", "Nc6d4", "Nb5xd4")
+
+        val moves = List(24) { listOf("Ng8h6", "Nd4b5", "Nh6g8", "Nb5d4") }.flatten()
+        assertFalse(gameFromMoves(startingMoves + moves).isTiedByFiftyMoveRule())
+    }
+
+    @Test
+    fun `Game is not tied by 50 move rule if a pawn moved and a capture happens in the last 100 moves (50 by each side)`() {
+        val startingMoves = listOf("e4", "d5", "d5", "h6")
+
+        val moves = List(24) { listOf("Nb1c3", "Nb8c6", "Nc3b1", "Nc6b8") }.flatten()
+        assertFalse(gameFromMoves(startingMoves + moves).isTiedByFiftyMoveRule())
     }
 }

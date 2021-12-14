@@ -21,7 +21,7 @@ class CommandTests {
 
     @Test
     fun `Help command returns successful result with the same session`() {
-        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
         val result = HelpCommand(session).invoke()
 
         assertTrue(result.isSuccess)
@@ -37,7 +37,7 @@ class CommandTests {
         val db = GameStateStub()
         db.createGame(gameName)
 
-        val session = Session("test", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val session = Session("test", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         assertEquals(
             "No game, no moves: try open or join commands.",
@@ -54,7 +54,7 @@ class CommandTests {
         val db = GameStateStub()
         db.createGame(gameName)
 
-        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         val result = MovesCommand(db, session).execute(gameName)
         val newSession = result.getOrThrow()

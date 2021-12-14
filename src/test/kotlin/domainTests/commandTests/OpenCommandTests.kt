@@ -115,7 +115,7 @@ class OpenCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(moves, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(GameState.NO_CHECK, session.gameState)
     }
 
     @Test
@@ -136,11 +136,11 @@ class OpenCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(moves, session.game.moves)
         assertEquals(SessionState.WAITING_FOR_OPPONENT, session.state)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(GameState.NO_CHECK, session.gameState)
     }
 
     @Test
-    fun `Open command currentCheck is CHECK if the white King is in Check and it's white turn`() {
+    fun `Open command gameState is CHECK if the white King is in Check and it's white turn`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -157,11 +157,11 @@ class OpenCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(movesForCheck, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(Check.CHECK, session.currentCheck)
+        assertEquals(GameState.CHECK, session.gameState)
     }
 
     @Test
-    fun `Open command currentCheck is NO_CHECK if the white King isn't in Check and it's white turn`() {
+    fun `Open command gameState is NO_CHECK if the white King isn't in Check and it's white turn`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -178,6 +178,6 @@ class OpenCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(movesForCheck, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(GameState.NO_CHECK, session.gameState)
     }
 }

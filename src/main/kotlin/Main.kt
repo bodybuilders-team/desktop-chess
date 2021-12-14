@@ -1,4 +1,5 @@
 import domain.*
+import domain.GameState
 import domain.board.*
 import domain.commands.CommandException
 import domain.move.IllegalMoveException
@@ -36,7 +37,7 @@ fun main() {
                 state = SessionState.LOGGING,
                 army = Army.WHITE,
                 game = Game(board = Board(), moves = emptyList()),
-                currentCheck = Check.NO_CHECK
+                gameState = GameState.NO_CHECK
             )
             val dataBase = MongoDBGameState(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
 

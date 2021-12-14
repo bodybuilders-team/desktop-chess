@@ -19,6 +19,6 @@ class JoinCommand(private val db: GameState) : Command {
 
         val moves = db.getAllMoves(parameter)
         
-        return Result.success(getOpeningBoardSession(parameter, moves, Army.BLACK))
+        return Result.success(getOpeningBoardSession(gameName = parameter, moves, Army.BLACK))
     }
 }

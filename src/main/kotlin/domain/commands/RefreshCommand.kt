@@ -1,8 +1,6 @@
 package domain.commands
 
 import domain.*
-import domain.board.*
-import domain.move.*
 import storage.GameState
 
 
@@ -24,25 +22,11 @@ class RefreshCommand(private val db: GameState, private val session: Session) : 
         val moves = db.getAllMoves(session.name)
         val game = gameFromMoves(moves)
 
-        val inCheckMate = game.board.isKingInCheckMate(session.army)
-        val inStaleMate = game.isKingInStaleMate(session.army)
-        
-        val state = when {
-            inCheckMate || inStaleMate             -> SessionState.ENDED
-            currentTurnArmy(moves) == session.army -> SessionState.YOUR_TURN
-            else                                   -> SessionState.WAITING_FOR_OPPONENT
-        }
-
         return Result.success(
             session.copy(
-                state = state,
+                state = getSessionState(game, session.army),
                 game = game,
-                currentCheck = when {
-                    inCheckMate -> Check.CHECKMATE
-                    inStaleMate -> Check.STALEMATE
-                    (state == SessionState.YOUR_TURN && game.board.isKingInCheck(session.army)) -> Check.CHECK
-                    else -> Check.NO_CHECK
-                }
+                gameState = game.getState()
             )
         )
     }

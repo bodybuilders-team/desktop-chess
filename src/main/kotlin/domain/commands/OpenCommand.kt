@@ -22,6 +22,6 @@ class OpenCommand(private val db: GameState) : Command {
                 emptyList()
             }
 
-        return Result.success(getOpeningBoardSession(parameter, moves, Army.WHITE))
+        return Result.success(getOpeningBoardSession(gameName = parameter, moves, Army.WHITE))
     }
 }

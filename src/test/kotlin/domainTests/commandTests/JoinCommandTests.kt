@@ -69,7 +69,7 @@ class JoinCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(movesForFoolsMate, session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.CHECKMATE, session.currentCheck)
+        assertEquals(GameState.CHECKMATE, session.gameState)
     }
 
     @Test
@@ -95,7 +95,7 @@ class JoinCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(movesForFastestStalemate, session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.STALEMATE, session.currentCheck)
+        assertEquals(GameState.STALEMATE, session.gameState)
     }
 
     @Test
@@ -136,11 +136,11 @@ class JoinCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(moves, session.game.moves)
         assertEquals(SessionState.WAITING_FOR_OPPONENT, session.state)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(GameState.NO_CHECK, session.gameState)
     }
 
     @Test
-    fun `Join command currentCheck is CHECK if the black King is in Check and it's black turn`() {
+    fun `Join command gameState is CHECK if the black King is in Check and it's black turn`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -157,11 +157,11 @@ class JoinCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(movesForCheck, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(Check.CHECK, session.currentCheck)
+        assertEquals(GameState.CHECK, session.gameState)
     }
 
     @Test
-    fun `Join command currentCheck is NO_CHECK if the black King isn't in Check and it's black turn`() {
+    fun `Join command gameState is NO_CHECK if the black King isn't in Check and it's black turn`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -178,6 +178,6 @@ class JoinCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(moves, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(GameState.NO_CHECK, session.gameState)
     }
 }

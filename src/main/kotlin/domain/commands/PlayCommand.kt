@@ -1,7 +1,6 @@
 package domain.commands
 
 import domain.*
-import domain.board.*
 import domain.move.*
 import storage.GameState
 
@@ -36,19 +35,11 @@ class PlayCommand(private val db: GameState, private val session: Session) : Com
 
         db.postMove(session.name, move)
 
-        val inCheckMate = game.board.isKingInCheckMate(session.army.other())
-        val inStaleMate = game.isKingInStaleMate(session.army.other())
-
         return Result.success(
             session.copy(
-                state = if (inCheckMate || inStaleMate) SessionState.ENDED else SessionState.WAITING_FOR_OPPONENT,
+                state = if (game.ended()) SessionState.ENDED else SessionState.WAITING_FOR_OPPONENT,
                 game = game,
-                currentCheck = when {
-                    inCheckMate -> Check.CHECKMATE
-                    inStaleMate -> Check.STALEMATE
-                    game.board.isKingInCheck(session.army.other()) -> Check.CHECK
-                    else -> Check.NO_CHECK
-                }
+                gameState = game.getState()
             )
         )
     }

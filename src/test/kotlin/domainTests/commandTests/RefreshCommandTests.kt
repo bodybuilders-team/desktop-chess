@@ -16,7 +16,7 @@ class RefreshCommandTests {
         val db = GameStateStub()
         db.createGame(gameName)
 
-        val session = Session("test", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val session = Session("test", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         assertEquals(
             "Can't refresh without a game: try open or join commands.",
@@ -33,7 +33,7 @@ class RefreshCommandTests {
         val db = GameStateStub()
         db.createGame(gameName)
 
-        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         assertEquals(
             "It's your turn: try play.",
@@ -50,7 +50,7 @@ class RefreshCommandTests {
         val db = GameStateStub()
         db.createGame(gameName)
 
-        val session = Session("test", SessionState.ENDED, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val session = Session("test", SessionState.ENDED, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         assertEquals(
             "Game ended. There aren't any new moves.",
@@ -66,7 +66,7 @@ class RefreshCommandTests {
         db.createGame("test")
 
         var session =
-            Session("test", SessionState.WAITING_FOR_OPPONENT, Army.BLACK, Game(Board(), emptyList()), Check.NO_CHECK)
+            Session("test", SessionState.WAITING_FOR_OPPONENT, Army.BLACK, Game(Board(), emptyList()), GameState.NO_CHECK)
         val move = Move("Pe2e4")
         db.postMove("test", move)
 
@@ -88,7 +88,7 @@ class RefreshCommandTests {
         val game = gameFromMoves("f3", "e5", "g4", "Qh4")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.WHITE, game, Check.NO_CHECK)
+        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.WHITE, game, GameState.NO_CHECK)
 
         val result = RefreshCommand(db, session).invoke()
         session = result.getOrThrow()
@@ -97,7 +97,7 @@ class RefreshCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves, session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.CHECKMATE, session.currentCheck)
+        assertEquals(GameState.CHECKMATE, session.gameState)
     }
 
     @Test
@@ -111,7 +111,7 @@ class RefreshCommandTests {
             "Qd3", "Qb8", "Qh7", "Qc8", "Kg6", "Qe6")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game, Check.NO_CHECK)
+        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game, GameState.NO_CHECK)
 
         val result = RefreshCommand(db, session).invoke()
         session = result.getOrThrow()
@@ -120,7 +120,7 @@ class RefreshCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves, session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.STALEMATE, session.currentCheck)
+        assertEquals(GameState.STALEMATE, session.gameState)
     }
 
     @Test
@@ -133,7 +133,7 @@ class RefreshCommandTests {
         val game = gameFromMoves("e3", "e6")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game, Check.NO_CHECK)
+        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game, GameState.NO_CHECK)
 
         val result = RefreshCommand(db, session).invoke()
         session = result.getOrThrow()
@@ -142,11 +142,11 @@ class RefreshCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves, session.game.moves)
         assertEquals(SessionState.WAITING_FOR_OPPONENT, session.state)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(GameState.NO_CHECK, session.gameState)
     }
 
     @Test
-    fun `Refresh command session state is YOUR_TURN and currentCheck is CHECK if it's your turn to play and your king is in check`() {
+    fun `Refresh command session state is YOUR_TURN and gameState is CHECK if it's your turn to play and your king is in check`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -155,7 +155,7 @@ class RefreshCommandTests {
         val game = gameFromMoves("c3", "d6", "a3", "e6", "Qa4")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game, Check.NO_CHECK)
+        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game, GameState.NO_CHECK)
 
         val result = RefreshCommand(db, session).execute(gameName)
         session = result.getOrThrow()
@@ -164,11 +164,11 @@ class RefreshCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(Check.CHECK, session.currentCheck)
+        assertEquals(GameState.CHECK, session.gameState)
     }
     
     @Test
-    fun `Refresh command session state is YOUR_TURN and currentCheck is NO_CHECK if it's your turn to play and your king isn't in check`() {
+    fun `Refresh command session state is YOUR_TURN and gameState is NO_CHECK if it's your turn to play and your king isn't in check`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -177,7 +177,7 @@ class RefreshCommandTests {
         val game = gameFromMoves("e3")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game, Check.NO_CHECK)
+        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game, GameState.NO_CHECK)
 
         val result = RefreshCommand(db, session).invoke()
         session = result.getOrThrow()
@@ -186,6 +186,6 @@ class RefreshCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(GameState.NO_CHECK, session.gameState)
     }
 }

@@ -1,6 +1,5 @@
 package domain
 
-import domain.board.*
 import domain.move.*
 import domain.pieces.Army
 
@@ -17,7 +16,7 @@ data class Session(
     val state: SessionState,
     val army: Army,
     val game: Game,
-    val currentCheck: Check
+    val gameState: GameState
 )
 
 
@@ -26,7 +25,7 @@ const val NO_NAME = ""
 
 
 /**
- * Game state.
+ * Different states the session can be in.
  */
 enum class SessionState {
     LOGGING,
@@ -44,6 +43,20 @@ fun Session.isLogging() = state == SessionState.LOGGING
 
 
 /**
+ * Returns the state of a session.
+ * @param game session game
+ * @param army session army
+ * @return session state
+ */
+fun getSessionState(game: Game, army: Army) =
+    when {
+        game.ended()                        -> SessionState.ENDED
+        currentTurnArmy(game.moves) == army -> SessionState.YOUR_TURN
+        else                                -> SessionState.WAITING_FOR_OPPONENT
+    }
+
+
+/**
  * Gets a session of an opening game.
  * @param gameName name of the game
  * @param moves moves of the game
@@ -53,25 +66,11 @@ fun Session.isLogging() = state == SessionState.LOGGING
 fun getOpeningBoardSession(gameName: String, moves: List<Move>, army: Army): Session {
     val game = gameFromMoves(moves)
 
-    val inCheckMate = game.board.isKingInCheckMate(Army.WHITE) || game.board.isKingInCheckMate(Army.BLACK)
-    val inStaleMate = game.isKingInStaleMate(Army.WHITE) || game.isKingInStaleMate(Army.BLACK)
-
-    val state = when {
-        inCheckMate || inStaleMate             -> SessionState.ENDED
-        currentTurnArmy(moves) == army         -> SessionState.YOUR_TURN
-        else                                   -> SessionState.WAITING_FOR_OPPONENT
-    }
-
     return Session(
         name = gameName,
-        state = state,
+        state = getSessionState(game, army),
         army = army,
         game = game,
-        currentCheck = when {
-            inCheckMate -> Check.CHECKMATE
-            inStaleMate -> Check.STALEMATE
-            (state == SessionState.YOUR_TURN && game.board.isKingInCheck(army)) -> Check.CHECK
-            else -> Check.NO_CHECK
-        }
+        gameState = game.getState()
     )
 }

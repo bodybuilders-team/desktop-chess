@@ -2,9 +2,9 @@ package domain
 
 import domain.board.*
 import domain.move.*
+import domain.pieces.Army
 
 
-//TODO("50-move rule")
 /**
  * A chess game.
  * @property board game board
@@ -17,6 +17,18 @@ data class Game(
     override fun toString(): String {
         return board.toString().chunked(BOARD_SIDE_LENGTH).joinToString("\n")
     }
+}
+
+
+/**
+ * Different states the game can be in.
+ */
+enum class GameState {
+    NO_CHECK,
+    CHECK,
+    CHECKMATE,
+    STALEMATE,
+    TIE
 }
 
 
@@ -107,6 +119,52 @@ private fun Game.getSearchRanges(
 
     return SearchRanges(fromColSearchRange, fromRowSearchRange, toColSearchRange, toRowSearchRange)
 }
+
+const val NUMBER_OF_MOVES_TO_DRAW = 100
+
+
+/**
+ * Checks if the game is tied by the 50 move rule:
+ *
+ * The fifty-move rule in chess states that a player can claim a draw if no capture has been made and no pawn
+ * has been moved in the last fifty consecutive moves.
+ *
+ * It is designed to stop endgames going on forever when one (or both) players have no idea how to end the game.
+ *
+ * @return true if the game is tied by the 50 move rule
+ */
+fun Game.isTiedByFiftyMoveRule() =
+    moves.size >= NUMBER_OF_MOVES_TO_DRAW && moves.takeLast(NUMBER_OF_MOVES_TO_DRAW).none { move ->
+        move.capture || move.symbol == 'P'
+    }
+
+
+/**
+ * Gets the current state of the game.
+ * @return state of the game
+ */
+fun Game.getState(): GameState =
+    when {
+        board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK)  -> GameState.CHECKMATE
+        isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK)              -> GameState.STALEMATE
+        isTiedByFiftyMoveRule()                                                     -> GameState.TIE
+        board.isKingInCheck(Army.WHITE) || board.isKingInCheck(Army.BLACK)          -> GameState.CHECK
+        else -> GameState.NO_CHECK
+    }
+
+
+/**
+ * Checks if the game ended.
+ *
+ * A game ends when:
+ * - there's a checkmate
+ * - there's a stalemate
+ * - the 50 move rule is applied
+ *
+ * @return true if the game ended
+ */
+fun Game.ended() =
+    getState() in listOf(GameState.CHECKMATE, GameState.STALEMATE, GameState.TIE)
 
 
 /**

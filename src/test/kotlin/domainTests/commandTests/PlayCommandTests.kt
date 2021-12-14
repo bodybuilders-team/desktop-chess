@@ -16,7 +16,7 @@ class PlayCommandTests {
         val db = GameStateStub()
         db.createGame(gameName)
 
-        val session = Session(gameName, SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val session = Session(gameName, SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         assertEquals(
             "Can't play without a game: try open or join commands.",
@@ -33,7 +33,7 @@ class PlayCommandTests {
         val db = GameStateStub()
         db.createGame(gameName)
 
-        val session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         assertEquals(
             "Wait for your turn: try refresh command.",
@@ -50,7 +50,7 @@ class PlayCommandTests {
         val db = GameStateStub()
         db.createGame(gameName)
 
-        val session = Session(gameName, SessionState.ENDED, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+        val session = Session(gameName, SessionState.ENDED, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         assertEquals(
             "Game ended. Can't play any more moves.",
@@ -68,7 +68,7 @@ class PlayCommandTests {
         db.createGame(gameName)
 
         val session =
-            Session(gameName, SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), Check.NO_CHECK)
+            Session(gameName, SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         assertEquals(
             "Missing move.",
@@ -86,7 +86,7 @@ class PlayCommandTests {
         db.createGame(gameName)
 
         val session =
-            Session(gameName, SessionState.YOUR_TURN, Army.BLACK, Game(Board(), emptyList()), Check.NO_CHECK)
+            Session(gameName, SessionState.YOUR_TURN, Army.BLACK, Game(Board(), emptyList()), GameState.NO_CHECK)
 
         assertEquals(
             "It's not this army's turn! Session army is different from the current turn army.",
@@ -97,7 +97,7 @@ class PlayCommandTests {
     }
 
     @Test
-    fun `Play command session state is ENDED and currentCheck is CHECK_MATE if the king from the other army is in checkmate after the move`() {
+    fun `Play command session state is ENDED and gameState is CHECK_MATE if the king from the other army is in checkmate after the move`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -106,7 +106,7 @@ class PlayCommandTests {
         val game = gameFromMoves("f3", "e5", "g4")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.YOUR_TURN, Army.BLACK, game, Check.NO_CHECK)
+        var session = Session(gameName, SessionState.YOUR_TURN, Army.BLACK, game, GameState.NO_CHECK)
 
         val move = "Qh4"
         val result = PlayCommand(db, session).execute(move)
@@ -116,11 +116,11 @@ class PlayCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves + Move("Qd8h4"), session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.CHECKMATE, session.currentCheck)
+        assertEquals(GameState.CHECKMATE, session.gameState)
     }
 
     @Test
-    fun `Play command session state is ENDED and currentCheck is STALE_MATE if the king from the other army is in stalemate after the move`() {
+    fun `Play command session state is ENDED and gameState is STALE_MATE if the king from the other army is in stalemate after the move`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -130,7 +130,7 @@ class PlayCommandTests {
             "Qd3", "Qb8", "Qh7", "Qc8", "Kg6")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.YOUR_TURN, Army.WHITE, game, Check.NO_CHECK)
+        var session = Session(gameName, SessionState.YOUR_TURN, Army.WHITE, game, GameState.NO_CHECK)
 
         val move = "Qe6"
         val result = PlayCommand(db, session).execute(move)
@@ -140,11 +140,11 @@ class PlayCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves + Move("Qc8e6"), session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(Check.STALEMATE, session.currentCheck)
+        assertEquals(GameState.STALEMATE, session.gameState)
     }
 
     @Test
-    fun `Play command session state is WAITING_FOR_OPPONENT and currentCheck is CHECK if the king from the other army is in check after the move`() {
+    fun `Play command session state is WAITING_FOR_OPPONENT and gameState is CHECK if the king from the other army is in check after the move`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -153,7 +153,7 @@ class PlayCommandTests {
         val game = gameFromMoves("c3", "d6", "a3", "e6")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.YOUR_TURN, Army.WHITE, game, Check.NO_CHECK)
+        var session = Session(gameName, SessionState.YOUR_TURN, Army.WHITE, game, GameState.NO_CHECK)
 
         val move = "Qa4"
         val result = PlayCommand(db, session).execute(move)
@@ -163,11 +163,11 @@ class PlayCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(game.moves + Move("Qd1a4"), session.game.moves)
         assertEquals(SessionState.WAITING_FOR_OPPONENT, session.state)
-        assertEquals(Check.CHECK, session.currentCheck)
+        assertEquals(GameState.CHECK, session.gameState)
     }
 
     @Test
-    fun `Play command session state is WAITING_FOR_OPPONENT and currentCheck is NO_CHECK if the king from the other army isn't in checkmate, stalemate or check after the move`() {
+    fun `Play command session state is WAITING_FOR_OPPONENT and gameState is NO_CHECK if the king from the other army isn't in checkmate, stalemate or check after the move`() {
         val gameName = "test"
 
         val db = GameStateStub()
@@ -176,7 +176,7 @@ class PlayCommandTests {
         val game = gameFromMoves("c3", "d6", "a3", "e6")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.YOUR_TURN, Army.WHITE, game, Check.NO_CHECK)
+        var session = Session(gameName, SessionState.YOUR_TURN, Army.WHITE, game, GameState.NO_CHECK)
 
         val move = "e3"
         val result = PlayCommand(db, session).execute(move)
@@ -185,6 +185,6 @@ class PlayCommandTests {
         assertTrue(result.isSuccess)
         assertEquals(gameName, session.name)
         assertEquals(game.moves + Move("Pe2e3"), session.game.moves)
-        assertEquals(Check.NO_CHECK, session.currentCheck)
+        assertEquals(GameState.NO_CHECK, session.gameState)
     }
 }

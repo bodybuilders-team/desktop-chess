@@ -12,17 +12,6 @@ const val MAX_KING_ATTACKERS = DOUBLE_CHECK
 
 
 /**
- * Types of check.
- */
-enum class Check {
-    NO_CHECK,
-    CHECK,
-    CHECKMATE,
-    STALEMATE
-}
-
-
-/**
  * Checks if the king of the [army] is in check.
  * @param position position of the king
  * @param army army of the king to check

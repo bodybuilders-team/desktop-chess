@@ -37,7 +37,7 @@ data class Move(
     companion object {
 
         private val normalMoveRegex = "[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?".toRegex().toString()
-        private val castleMoveRegex = "(O-O(-O)?)".toRegex().toString()
+        private val castleMoveRegex = "O-O(-O)?".toRegex().toString()
         private val moveRegex = Regex("^($normalMoveRegex|$castleMoveRegex)\$")
         private const val CAPTURE_CHAR = 'x'
         private const val PROMOTION_CHAR = '='
