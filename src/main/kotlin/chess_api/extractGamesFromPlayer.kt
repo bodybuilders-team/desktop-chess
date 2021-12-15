@@ -122,13 +122,15 @@ fun extractGamesFromJSON(lines: List<String>, logger: PrintWriter): List<String>
  */
 fun extractGamesFromPGN(pgnList: List<PGN>, logger: PrintWriter): List<String> {
     val ignoredGamesFiltered = pgnList.filterIndexed { idx, pgn ->
-        if (pgn.moves.first().isDigit() && pgn.moves.first() != '1') {
+        val movesValid = pgn.moves.substringBefore(".") == "1"
+
+        if (pgn.moves.first().isDigit() && !movesValid) {
             logger.println("Ignored game ${idx + 1} because it doesn't start on move 1.")
         }
         if (pgn.variant != null)
             logger.println("Ignored game ${idx + 1} because of different game variant \"${pgn.variant}\".")
 
-        pgn.variant == null && pgn.moves.first() == '1'
+        pgn.variant == null && movesValid
     }
 
     logger.println("Extracted ${ignoredGamesFiltered.size} from ${pgnList.size}.")
@@ -140,7 +142,7 @@ fun extractGamesFromPGN(pgnList: List<PGN>, logger: PrintWriter): List<String> {
             .replace("#", "")
             .replace(Regex("\\d+\\. "), "")
             .replace(Regex(" (0-1|1-0|1/2-1/2)"), "")
-    }.sorted()
+    }
 }
 
 
@@ -237,7 +239,8 @@ fun main() {
     println("\n----------------Playing games----------------\n")
 
     monthExtractions.forEach { monthExtraction ->
-        //writeToFile(monthExtraction)
+        writeToFile(monthExtraction)
+        print("${monthExtraction.player}${monthExtraction.month} - ")
         playExtractedGames(monthExtraction.games)
     }
 }

@@ -1,13 +1,11 @@
 package chess_api
 
 import org.bson.json.JsonObject
-import java.io.File
 import java.net.URI
 import java.net.http.*
 
 
 const val CHESS_COM_API_URL = "https://api.chess.com"
-const val MONTH_URL = "$CHESS_COM_API_URL/pub/player/erik/games"
 
 
 /**
@@ -49,7 +47,7 @@ fun getMonthlyArchives(player: String): List<String> {
  * @param uri uri of the monthly archive
  */
 fun getMonthPGNList(uri: String): List<PGN> {
-    require(Regex("$MONTH_URL/\\d{4}/\\d{2}").containsMatchIn(uri)) {
+    require(Regex("^$CHESS_COM_API_URL/pub/player/(.+)/games/\\d{4}/\\d{2}\$").containsMatchIn(uri)) {
         "Wrong format for monthly games. Use: https://api.chess.com/pub/player/{username}/games/{YYYY}/{MM}"
     }
 

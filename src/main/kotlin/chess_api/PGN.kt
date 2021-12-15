@@ -6,13 +6,13 @@ package chess_api
  * https://en.wikipedia.org/wiki/Portable_Game_Notation
  */
 data class PGN(val pgnInList: List<String>){
-    var event: String = ""
-    var site: String = ""
-    var date: String = ""
-    var round: String = ""
-    var white: String = ""
-    var black: String = ""
-    var result: String = ""
+    lateinit var event: String
+    lateinit var site: String
+    lateinit var date: String
+    lateinit var round: String
+    lateinit var white: String
+    lateinit var black: String
+    lateinit var result: String
     
     var variant: String? = null
     var setUp: String? = null
