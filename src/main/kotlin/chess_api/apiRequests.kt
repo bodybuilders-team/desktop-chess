@@ -54,9 +54,7 @@ fun getMonthPGNList(uri: String): List<PGN> {
     val json = getJsonResponse(uri)
 
     if (json.json == "{\"code\":0,\"message\":\"Data provider not found for key \\\"${
-            uri.substringAfter(
-                CHESS_COM_API_URL
-            )
+            uri.substringAfter(CHESS_COM_API_URL)
         }\\\".\"}"
     ) {
         throw Exception("Unknown month for player.")

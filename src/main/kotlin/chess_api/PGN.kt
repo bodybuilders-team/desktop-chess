@@ -1,5 +1,7 @@
 package chess_api
 
+import org.bson.json.JsonObject
+
 /**
  * Represents a chess game in PGN format (Portable Game Notation).
  * 
@@ -82,6 +84,20 @@ data class PGN(val pgnInList: List<String>){
             }
         }
     }
+}
+
+
+/**
+ * From a json string with PGN format, gets a list of PGN objects.
+ * @param jsonString json in string
+ * @return list of PGN objects
+ */
+fun getPGNListFromJSON(jsonString: String): List<PGN> {
+    val json = JsonObject(jsonString)
+
+    val games = json.toBsonDocument()["games"]!!.asArray()
+
+    return games.filter { "pgn" in it.asDocument() }.map { PGN(it.asDocument()["pgn"]!!.asString().value.split("\n")) }
 }
 
 
