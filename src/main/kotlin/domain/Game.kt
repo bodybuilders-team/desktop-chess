@@ -197,6 +197,6 @@ fun gameFromMoves(movesInString: List<String>): Game =
  * @param moves moves to make
  * @return new game with the moves [moves] consecutively made and validated in the game
  */
-@JvmName("gameFromMoves1")
+@JvmName("gameFromMovesListOfMove")
 fun gameFromMoves(moves: List<Move>): Game =
     gameFromMoves(moves.map { it.toString() })

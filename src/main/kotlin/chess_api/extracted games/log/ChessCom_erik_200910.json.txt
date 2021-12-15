@@ -1,3 +1,0 @@
-Ignored game 14 because it doesn't start on move 1.
-Ignored game 21 because of different game variant "Chess960".
-Extracted 44 from 46.
