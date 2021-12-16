@@ -18,10 +18,7 @@ fun getPlayersFromTitle(titleAbbrev: String): List<String> {
     if (json.json == "{\"code\":0,\"message\":\"Data provider not found for key \\\"/pub/titled/$titleAbbrev\\\".\"}")
         throw Exception("Title abbreviation \"$titleAbbrev\" does not exist.")
 
-    return json.toBsonDocument()["players"]!!
-        .asArray().map {
-            it.asString().value
-        }
+    return json["players"].valueAsListOfStrings
 }
 
 
@@ -35,10 +32,7 @@ fun getMonthlyArchives(player: String): List<String> {
     if (json.json == "{\"code\":0,\"message\":\"User \\\"$player\\\" not found.\"}")
         throw Exception("Player \"$player\" does not exist.")
 
-    return json.toBsonDocument()["archives"]!!
-        .asArray().map {
-            it.asString().value
-        }
+    return json["archives"].valueAsListOfStrings
 }
 
 
@@ -60,7 +54,7 @@ fun getMonthPGNList(uri: String): List<PGN> {
         throw Exception("Unknown month for player.")
     }
 
-    return getPGNListFromJSON(json.json)
+    return getPGNListFromJSON(json)
 }
 
 

@@ -1584,4 +1584,4 @@ Extracting games from erik in 12/2021...
 Ignored game 64 because it requires a different board setup
 Ignored game 187 because it requires a different board setup
 Ignored game 233 because it requires a different board setup
-Extracted 230 from 233.
+Extracted 231 from 234.
