@@ -1,9 +1,10 @@
 package domain.move
 
-import domain.Game
+import domain.game.*
 import domain.board.*
 import domain.board.Board.*
 import domain.pieces.*
+
 
 const val INITIAL_KING_COL = 'e'
 const val INITIAL_ROOK_COL_FURTHER_FROM_KING = FIRST_COL
@@ -12,6 +13,46 @@ const val LONG_CASTLE_ROOK_COL = 'd'
 const val SHORT_CASTLE_ROOK_COL = 'f'
 const val LONG_CASTLE_KING_COL = 'c'
 const val SHORT_CASTLE_KING_COL = 'g'
+
+
+/**
+ * Gets a validated move, with information of its move type and capture, or null if the move isn't valid.
+ * @param piece piece of the move's from position
+ * @param game game where the move will happen
+ * @return validated move, with information of its move type and capture, or null if the move isn't valid.
+ */
+fun Move.getValidatedMove(piece: Piece, game: Game): Move? {
+    val validMove = when {
+        isValidEnPassant(piece, game) -> copy(type = MoveType.EN_PASSANT)
+        isValidCastle(piece, game) -> copy(type = MoveType.CASTLE)
+        piece.isValidMove(game.board, this) && isValidCapture(piece, game.board) -> copy(type = MoveType.NORMAL)
+        else -> return null
+    }
+
+    if (game.board.makeMove(validMove).isKingInCheck(piece.army)) return null
+
+    return validMove.copy(capture = game.board.isPositionOccupied(validMove.to))
+}
+
+/**
+ * Checks if the capture in the move is valid.
+ *
+ * Also checking, if the capture is a promotion, if it's a valid promotion.
+ * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.
+ * @param piece move with the capture
+ * @param board board where the move happens
+ * @return true if the capture is valid
+ */
+fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
+    val isPromotion = piece is Pawn && (piece.isWhite() && to.row == BLACK_FIRST_ROW ||
+            !piece.isWhite() && to.row == WHITE_FIRST_ROW)
+
+    val isValidPromotion = isPromotion == (promotion != null)
+
+    val capturedPiece = board.getPiece(to) ?: return !capture && isValidPromotion
+
+    return piece.army != capturedPiece.army && isValidPromotion
+}
 
 
 /**
@@ -70,6 +111,19 @@ fun Move.isCastlePossible(piece: Piece, previousMoves: List<Move>) =
     }
 
 
+/**
+ * Gets the position of the captured pawn in an en passant move.
+ * @param attackerToPos position of the attacker after the move
+ * @param attackingPiece attacker
+ * @return position of the captured pawn
+ */
+fun getEnPassantCapturedPawnPosition(attackerToPos: Position, attackingPiece: Piece) =
+    Position(
+        col = attackerToPos.col,
+        row = attackerToPos.row + if (attackingPiece.isWhite()) -1 else 1
+    )
+
+
 object Castle {
     /**
      * Gets the from position of the rook in a castle move.
@@ -93,18 +147,3 @@ object Castle {
             row = kingToPos.row
         )
 }
-
-
-/**
- * Gets the position of the captured pawn from the en passant move.
- * @param attackerToPos position of the attacker after the move
- * @param attackingPiece attacker
- * @return position of the captured pawn
- */
-fun getEnPassantCapturedPawnPosition(attackerToPos: Position, attackingPiece: Piece) =
-    Position(
-        col = attackerToPos.col,
-        row = attackerToPos.row + if (attackingPiece.isWhite()) -1 else 1
-    )
-
-

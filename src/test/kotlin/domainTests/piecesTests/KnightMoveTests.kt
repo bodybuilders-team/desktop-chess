@@ -7,16 +7,14 @@ import isValidMove
 
 class KnightMoveTests {
     private val sut = Board(
-        getMatrix2DFromString(
-            "        " +
-            "        " +
-            "        " +
-            "   p    " +
-            "        " +
-            "  N     " +
-            "        " +
-            "K       "
-        )
+        "        " +
+        "        " +
+        "        " +
+        "   p    " +
+        "        " +
+        "  N     " +
+        "        " +
+        "K       "
     )
 
     @Test

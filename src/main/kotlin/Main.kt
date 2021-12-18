@@ -1,5 +1,6 @@
 import domain.*
-import domain.GameState
+import domain.game.*
+import domain.game.GameState
 import domain.board.*
 import domain.commands.CommandException
 import domain.move.IllegalMoveException

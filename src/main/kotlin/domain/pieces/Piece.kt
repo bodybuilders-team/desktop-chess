@@ -1,6 +1,6 @@
 package domain.pieces
 
-import domain.*
+import domain.game.*
 import domain.board.Board
 import domain.move.Move
 

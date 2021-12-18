@@ -7,16 +7,14 @@ import isValidMove
 
 class QueenMoveTests {
     private val sut = Board(
-        getMatrix2DFromString(
-            "        " +
-            "        " +
-            "        " +
-            " p      " +
-            "        " +
-            "        " +
-            " Q      " +
-            "       K"
-        )
+        "        " +
+        "        " +
+        "        " +
+        " p      " +
+        "        " +
+        "        " +
+        " Q      " +
+        "       K"
     )
 
     @Test

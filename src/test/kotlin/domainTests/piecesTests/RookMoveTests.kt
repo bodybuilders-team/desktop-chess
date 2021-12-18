@@ -7,16 +7,14 @@ import isValidMove
 
 class RookMoveTests {
     private val sut = Board(
-        getMatrix2DFromString(
-            "        " +
-            "        " +
-            "        " +
-            " p      " +
-            "        " +
-            "        " +
-            " R      " +
-            "       K"
-        )
+        "        " +
+        "        " +
+        "        " +
+        " p      " +
+        "        " +
+        "        " +
+        " R      " +
+        "       K"
     )
 
     @Test

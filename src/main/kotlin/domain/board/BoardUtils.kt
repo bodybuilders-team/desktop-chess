@@ -6,7 +6,7 @@ import domain.pieces.*
 
 // Board properties constants
 const val BOARD_SIDE_LENGTH = 8
-const val BOARD_SIZE = 64
+const val BOARD_SIZE = BOARD_SIDE_LENGTH * BOARD_SIDE_LENGTH
 const val FIRST_COL = 'a'
 const val LAST_COL = 'h'
 const val FIRST_ROW = 1
@@ -18,20 +18,30 @@ val COLS_RANGE = FIRST_COL..LAST_COL
 val ROWS_RANGE = FIRST_ROW..LAST_ROW
 
 const val STRING_DEFAULT_BOARD =
-            "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR"
+    "rnbqkbnr" +
+    "pppppppp" +
+    "        " +
+    "        " +
+    "        " +
+    "        " +
+    "PPPPPPPP" +
+    "RNBQKBNR"
 
 
 /**
- * 2D Matrix made with an array of arrays.
+ * Returns list of pieces from received string board.
+ * @param stringBoard board in string
+ * @return list of pieces from received string board.
+ * @throws IllegalArgumentException if the board doesn't have the correct size [BOARD_SIZE]
  */
-typealias Matrix2D<T> = Array<Array<T>>
+fun getPiecesFromString(stringBoard: String): List<Piece?> {
+    require(stringBoard.length == BOARD_SIZE) { "Board doesn't have the correct size (BOARD_SIZE = $BOARD_SIZE)" }
+
+    return stringBoard.map { char ->
+        if (char == ' ') null
+        else getPieceFromSymbol(char.uppercaseChar(), if (char.isUpperCase()) Army.WHITE else Army.BLACK)
+    }
+}
 
 
 /**
@@ -59,22 +69,9 @@ fun Board.placePieceFromSpecialMoves(move: Move, piece: Piece) =
 
 
 /**
- * Returns matrix from received string board.
- * @param stringBoard board in string
- * @return matrix from received string board.
- * @throws IllegalArgumentException if the board doesn't have the correct size
+ * Returns a new list with element at index [at] replaced by [new].
+ * @param at index to replace at
+ * @param new element to replace previous
  */
-fun getMatrix2DFromString(stringBoard: String): Matrix2D<Piece?> {
-    require(stringBoard.length == BOARD_SIZE) { "Board doesn't have the correct size (BOARD_SIZE = $BOARD_SIZE)" }
-
-    val chessBoard = Matrix2D<Piece?>(BOARD_SIDE_LENGTH) { Array(BOARD_SIDE_LENGTH) { null } }
-
-    stringBoard.forEachIndexed { idx, char ->
-        val row = idx / BOARD_SIDE_LENGTH
-        val col = idx % BOARD_SIDE_LENGTH
-        chessBoard[row][col] =
-            if (char == ' ') null
-            else getPieceFromSymbol(char.uppercaseChar(), if (char.isUpperCase()) Army.WHITE else Army.BLACK)
-    }
-    return chessBoard
-}
+fun <T> List<T>.replace(at: Int, new: T) =
+    mapIndexed { idx, elem -> if (idx == at) new else elem }

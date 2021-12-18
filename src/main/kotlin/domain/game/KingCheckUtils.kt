@@ -1,8 +1,10 @@
-package domain.board
+package domain.game
 
-import domain.Game
+import domain.board.Board
 import domain.pieces.*
 import domain.board.Board.*
+import domain.board.COLS_RANGE
+import domain.board.ROWS_RANGE
 import domain.move.*
 
 
@@ -12,56 +14,12 @@ const val MAX_KING_ATTACKERS = DOUBLE_CHECK
 
 
 /**
- * Checks if the king of the [army] is in check.
+ * Checks if the king of the [army] is in check, knowing the king's [position].
  * @param position position of the king
  * @param army army of the king to check
  * @return true if the king is in check
  */
-private fun Board.isKingInCheck(position: Position, army: Army) = kingAttackers(position, army).isNotEmpty()
-
-/**
- * Checks if the king of the [army] is in check.
- * @param army army of the king to check
- * @return true if the king is in check
- */
-fun Board.isKingInCheck(army: Army) = isKingInCheck(getKingPosition(army), army)
-
-
-/**
- * Checks if the king of the [army] is in check mate.
- *
- * The king is in checkmate if all these conditions apply:
- * - The king is in check;
- * - The king is not protectable, meaning no ally piece can remove the check, protecting the king (by being placed in front or killing the attacker);
- * - The king has nowhere to go. All adjacent positions are either occupied or attacked by an enemy piece.
- * @param army army of the king to check mate
- * @return true if the king is in check mate
- */
-fun Board.isKingInCheckMate(army: Army): Boolean {
-    val kingPos = getKingPosition(army)
-    return isKingInCheck(kingPos, army) && !isKingProtectable(kingPos, army) && !canKingMove(kingPos, army)
-}
-
-
-/**
- * Checks if the king of the [army] is in stalemate.
- *
- * The king is in stalemate if the king isn't in check, but it's the army's turn and the army has no valid moves.
- * @param army army of the king to stalemate
- * @return true if the king is in stalemate
- */
-fun Game.isKingInStaleMate(army: Army) =
-    !board.isKingInCheck(board.getKingPosition(army), army) &&
-            currentTurnArmy(moves) == army && !hasAvailableMoves(army)
-
-
-/**
- * Checks if any king in the board is in mate (checkmate or stalemate).
- * @return true if any king in the board is in mate
- */
-fun Game.isInMate() =
-    board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK) ||
-            isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK)
+fun Board.isKingInCheck(position: Position, army: Army) = kingAttackers(position, army).isNotEmpty()
 
 
 /**

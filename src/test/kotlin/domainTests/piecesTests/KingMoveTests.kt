@@ -1,6 +1,6 @@
 package domainTests.piecesTests
 
-import domain.Game
+import domain.game.*
 import domain.board.*
 import domain.move.Move
 import domain.move.MoveType
@@ -10,16 +10,14 @@ import isValidMove
 
 class KingMoveTests {
     private val sut = Board(
-        getMatrix2DFromString(
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "   p    " +
-            "    K   " +
-            "        "
-        )
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "   p    " +
+        "    K   " +
+        "        "
     )
 
     @Test
@@ -75,16 +73,14 @@ class KingMoveTests {
     // Castle
 
     private val sutCastle = Board(
-        getMatrix2DFromString(
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "R   K  R"
-        )
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "R   K  R"
     )
 
     @Test

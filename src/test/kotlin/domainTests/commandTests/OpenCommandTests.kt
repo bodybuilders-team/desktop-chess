@@ -2,7 +2,7 @@ package domainTests.commandTests
 
 import GameStateStub
 import domain.*
-import domain.board.*
+import domain.game.*
 import domain.commands.*
 import domain.move.*
 import kotlin.test.*

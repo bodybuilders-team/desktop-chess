@@ -1,9 +1,10 @@
 package ui.console
 
 import domain.*
+import domain.game.*
 import domain.board.*
 import domain.move.Move
-import domain.move.currentTurnArmy
+import domain.game.currentTurnArmy
 
 
 /**
@@ -60,7 +61,7 @@ private fun openingGameView(session: Session, whiteArmy: Boolean) {
         println(
             when (session.gameState) {
                 GameState.CHECK     -> "${if (session.state == SessionState.YOUR_TURN) "Your" else "Enemy"} King is in check."
-                GameState.CHECKMATE -> "Game ended in checkmate, ${currentTurnArmy(session.game.moves).toString().lowercase()} won!"
+                GameState.CHECKMATE -> "Game ended in checkmate, ${session.game.currentTurnArmy.toString().lowercase()} won!"
                 GameState.STALEMATE -> "Game ended in stalemate, it's a draw!"
                 GameState.TIE       -> "Game is tied, ..." //TODO("Type of tie")
                 GameState.NO_CHECK  -> ""

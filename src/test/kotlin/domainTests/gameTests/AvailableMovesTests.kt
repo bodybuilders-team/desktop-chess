@@ -1,8 +1,7 @@
-package domainTests.moveTests
+package domainTests.gameTests
 
-import domain.Game
+import domain.game.*
 import domain.board.*
-import domain.gameFromMoves
 import domain.move.*
 import domain.pieces.Army
 import kotlin.test.*
@@ -25,16 +24,14 @@ class AvailableMovesTests {
     @Test
     fun `getAvailableMoves returns available moves for queen`() {
         val sut = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                "pppppppp" +
-                "        " +
-                "        " +
-                "        " +
-                " P P    " +
-                "PP  PPPP" +
-                "RN QKBNR"
-            )
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            " P P    " +
+            "PP  PPPP" +
+            "RN QKBNR"
         )
         val position = Board.Position('d', 1)
         val piece = sut.getPiece(position)
@@ -49,16 +46,14 @@ class AvailableMovesTests {
     @Test
     fun `getAvailableMoves returns available moves, including castle move, for king`() {
         val sut = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                "pppppppp" +
-                "        " +
-                "        " +
-                "        " +
-                "        " +
-                "PPPPPPPP" +
-                "R   KBNR"
-            )
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "R   KBNR"
         )
         val position = Board.Position('e', 1)
         val piece = sut.getPiece(position)
@@ -73,16 +68,14 @@ class AvailableMovesTests {
     @Test
     fun `getAvailableMoves returns available moves, including en passant move, for pawn`() {
         val sut = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                " pp pppp" +
-                "        " +
-                "p  pP   " +
-                "        " +
-                "        " +
-                "PPPP PPP" +
-                "RNBQKBNR"
-            )
+            "rnbqkbnr" +
+            " pp pppp" +
+            "        " +
+            "p  pP   " +
+            "        " +
+            "        " +
+            "PPPP PPP" +
+            "RNBQKBNR"
         )
         val position = Board.Position('e', 5)
         val previousMoves = listOf("Pe2e4", "Pa7a5", "Pe4e5", "Pd7d5").map { Move(it) }
@@ -116,32 +109,8 @@ class AvailableMovesTests {
 
     @Test
     fun `hasAvailableMoves returns false with empty board`() {
-        val game = Game(Board(getMatrix2DFromString("        ".repeat(BOARD_SIDE_LENGTH))), emptyList())
+        val game = Game(Board("        ".repeat(BOARD_SIDE_LENGTH)), emptyList())
         assertFalse(game.hasAvailableMoves(Army.WHITE))
         assertFalse(game.hasAvailableMoves(Army.BLACK))
-    }
-
-    // currentTurnArmy
-
-    @Test
-    fun `currentTurnArmy returns White when number of moves is even`() {
-        assertEquals(Army.WHITE, currentTurnArmy(emptyList()))
-    }
-
-    @Test
-    fun `currentTurnArmy returns Black when number of moves is odd`() {
-        assertEquals(Army.BLACK, currentTurnArmy(listOf(Move("Pe2e4"))))
-    }
-
-    // isWhiteTurn
-
-    @Test
-    fun `isWhiteTurn returns true when number of moves is even`() {
-        assertTrue(isWhiteTurn(emptyList()))
-    }
-
-    @Test
-    fun `isWhiteTurn returns false when number of moves is odd`() {
-        assertFalse(isWhiteTurn(listOf(Move("Pe2e4"))))
     }
 }

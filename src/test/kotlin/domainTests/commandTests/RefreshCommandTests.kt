@@ -2,6 +2,7 @@ package domainTests.commandTests
 
 import GameStateStub
 import domain.*
+import domain.game.*
 import domain.board.*
 import domain.commands.*
 import domain.move.*

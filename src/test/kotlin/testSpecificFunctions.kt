@@ -1,4 +1,4 @@
-import domain.Game
+import domain.game.*
 import domain.board.Board
 import domain.move.*
 

@@ -1,5 +1,6 @@
 package domain
 
+import domain.game.*
 import domain.move.*
 import domain.pieces.Army
 
@@ -43,16 +44,16 @@ fun Session.isLogging() = state == SessionState.LOGGING
 
 
 /**
- * Returns the state of a session.
+ * Returns the state of a session, given its game and army.
  * @param game session game
  * @param army session army
  * @return session state
  */
 fun getSessionState(game: Game, army: Army) =
     when {
-        game.ended()                        -> SessionState.ENDED
-        currentTurnArmy(game.moves) == army -> SessionState.YOUR_TURN
-        else                                -> SessionState.WAITING_FOR_OPPONENT
+        game.ended()                    -> SessionState.ENDED
+        game.currentTurnArmy == army    -> SessionState.YOUR_TURN
+        else                            -> SessionState.WAITING_FOR_OPPONENT
     }
 
 

@@ -87,7 +87,7 @@ class BoardMethodsTests {
             "pppppppp" +
             "pppppppp"
 
-        val board = Board(getMatrix2DFromString(sut))
+        val board = Board(sut)
         val boardCopy = board.copy()
 
         assertEquals(board.toString(), boardCopy.toString())
@@ -109,8 +109,8 @@ class BoardMethodsTests {
             "pppppppp" +
             "pppppppp"
         
-        val board = Board(getMatrix2DFromString(boardInString))
-        val board2 = Board(getMatrix2DFromString(boardInString))
+        val board = Board(boardInString)
+        val board2 = Board(boardInString)
 
         assertEquals(board, board2)
         assertEquals(board.hashCode(), board2.hashCode())
@@ -120,28 +120,24 @@ class BoardMethodsTests {
     @Test
     fun `Boards with same pieces in the different positions aren't equal`() {
         val board = Board(
-            getMatrix2DFromString(
-                "pppppppp" +
-                "ppp   pp" +
-                "pppppppp" +
-                "pp    pp" +
-                "pppppppp" +
-                "pppppppp" +
-                "pppppppp" +
-                "pppppppp"
-            )
+            "pppppppp" +
+            "ppp   pp" +
+            "pppppppp" +
+            "pp    pp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp"
         )
         val board2 = Board(
-            getMatrix2DFromString(
-                "pppppppp" +
-                "pppppppp" +
-                "pppppppp" +
-                "pppppppp" +
-                "pp   ppp" +
-                "pppppppp" +
-                "pppppppp" +
-                "p p   pp"
-            )
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "pp   ppp" +
+            "pppppppp" +
+            "pppppppp" +
+            "p p   pp"
         )
 
         assertNotEquals(board, board2)
@@ -155,16 +151,14 @@ class BoardMethodsTests {
     @Test
     fun `placePieceFromSpecialMoves places rook from long castle with king correctly`() {
         var sut = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                "pppppppp" +
-                "        " +
-                "        " +
-                "     P  " +
-                "        " +
-                "PPPPP PP" +
-                "R   KBNR"
-            )
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "     P  " +
+            "        " +
+            "PPPPP PP" +
+            "R   KBNR"
         )
 
         val move = Move("Ke1c1").copy(type = MoveType.CASTLE)
@@ -189,16 +183,14 @@ class BoardMethodsTests {
     @Test
     fun `placePieceFromSpecialMoves places rook from short castle with king correctly`() {
         var sut = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                "pppppppp" +
-                "        " +
-                "        " +
-                "     P  " +
-                "        " +
-                "PPPPP PP" +
-                "RNBQK  R"
-            )
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "     P  " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQK  R"
         )
 
         val move = Move("Ke1g1").copy(type = MoveType.CASTLE)
@@ -223,16 +215,14 @@ class BoardMethodsTests {
     @Test
     fun `placePieceFromSpecialMoves removes captured piece from en passant correctly`() {
         var sut = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                "pppp ppp" +
-                "        " +
-                "    pP  " +
-                "        " +
-                "        " +
-                "PPPPP PP" +
-                "RNBQK  R"
-            )
+            "rnbqkbnr" +
+            "pppp ppp" +
+            "        " +
+            "    pP  " +
+            "        " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQK  R"
         )
 
         val move = Move("Pf5e6").copy(type = MoveType.EN_PASSANT)
@@ -254,10 +244,10 @@ class BoardMethodsTests {
         )
     }
 
-    // getMatrix2DFromString
+    // getPiecesFromString
 
     @Test
-    fun `getMatrix2DFromString returns a Matrix containing the respective pieces`() {
+    fun `getPiecesFromString returns a List containing the respective pieces`() {
         val sut =
             "rnbqkbnr" +
             "pppppppp" +
@@ -271,7 +261,7 @@ class BoardMethodsTests {
         val expected = (0 until BOARD_SIDE_LENGTH).map { row ->
             when (row) {
                 0, 7 -> {
-                    arrayOf<Piece?>(
+                    listOf<Piece?>(
                         Rook(if (row == 0) Army.BLACK else Army.WHITE),
                         Knight(if (row == 0) Army.BLACK else Army.WHITE),
                         Bishop(if (row == 0) Army.BLACK else Army.WHITE),
@@ -282,15 +272,13 @@ class BoardMethodsTests {
                         Rook(if (row == 0) Army.BLACK else Army.WHITE),
                     )
                 }
-                1, 6 -> Array<Piece?>(BOARD_SIDE_LENGTH) { Pawn(if (row == 1) Army.BLACK else Army.WHITE) }
-                else -> arrayOfNulls(BOARD_SIDE_LENGTH)
+                1, 6 -> List<Piece?>(BOARD_SIDE_LENGTH) { Pawn(if (row == 1) Army.BLACK else Army.WHITE) }
+                else -> List(BOARD_SIDE_LENGTH) { null }
             }
-        }.toTypedArray()
+        }.flatten()
 
-        val matrix = getMatrix2DFromString(sut)
+        val matrix = getPiecesFromString(sut)
 
-        expected.forEachIndexed { rowIdx, arrayOfPieces ->
-            assertEquals(arrayOfPieces.map { it?.toChar() }, matrix[rowIdx].map { it?.toChar() })
-        }
+        assertEquals(expected, matrix)
     }
 }

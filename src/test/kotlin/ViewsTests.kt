@@ -1,10 +1,8 @@
-import domain.GameState
+import domain.game.*
 import domain.Session
 import domain.SessionState
-import domain.gameFromMoves
 import domain.pieces.Army
 import ui.console.*
-import java.io.ByteArrayOutputStream
 
 
 object ViewsTests {

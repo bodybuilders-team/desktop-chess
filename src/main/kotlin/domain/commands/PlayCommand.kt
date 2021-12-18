@@ -1,10 +1,11 @@
 package domain.commands
 
 import domain.*
+import domain.game.*
 import domain.move.*
 import storage.GameState
 
-
+//TODO - Para todos os files do projeto - Ver se os "require" devem ser "check"
 /**
  * Executes a move command if it corresponds to the rules
  * @param db database where the moves are stored
@@ -24,7 +25,7 @@ class PlayCommand(private val db: GameState, private val session: Session) : Com
         cmdRequire(session.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
         cmdRequireNotNull(parameter) { "Missing move." }
-        require(currentTurnArmy(session.game.moves) == session.army) { "It's not this army's turn! Session army is different from the current turn army." }
+        require(session.game.currentTurnArmy == session.army) { "It's not this army's turn! Session army is different from the current turn army." }
 
         val move = Move.validated(parameter, session.game)
 

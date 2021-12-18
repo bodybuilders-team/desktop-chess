@@ -6,56 +6,58 @@ import domain.pieces.*
 
 /**
  * Represents the game board with the pieces.
- * @property matrix 2DMatrix with the pieces
+ * @property matrix list of pieces representing the board matrix with the pieces
  */
-data class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(STRING_DEFAULT_BOARD)) {
+data class Board(private val matrix: List<Piece?>) {
+    
+    constructor(stringBoard: String = STRING_DEFAULT_BOARD) : this(getPiecesFromString(stringBoard))
 
     /**
-     * Position of each board slot
-     * @property col char in range ['a', 'h']
-     * @property row int in range [1..8]
+     * Position of each board slot.
+     * @property col char in range [COLS_RANGE]
+     * @property row int in range [ROWS_RANGE]
      */
     data class Position(val col: Char, val row: Int) {
         init {
-            require(col in COLS_RANGE) { "Invalid Position: Column $col out of range ('a' .. 'h')." }
-            require(row in ROWS_RANGE) { "Invalid Position: Row $row out of range (1 .. 8)." }
+            require(col in COLS_RANGE) { "Invalid Position: Column $col out of range (${COLS_RANGE.first} .. ${COLS_RANGE.last})." }
+            require(row in ROWS_RANGE) { "Invalid Position: Row $row out of range (${ROWS_RANGE.first} .. ${ROWS_RANGE.last})." }
         }
 
         override fun toString() = "$col$row"
     }
 
-
     /**
-     * Returns the piece in [pos]
-     * @param pos position to get piece
-     * @return piece in [pos]
+     * Returns the matrix index obtained from the position.
+     * @return the matrix index obtained from the position
      */
-    fun getPiece(pos: Position) = matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL]
+    private fun Position.toIndex() = (BOARD_SIDE_LENGTH - row) * BOARD_SIDE_LENGTH + (col - FIRST_COL)
 
 
     /**
-     * Place [piece] in [pos], returning new board
-     * @param pos position to place piece in
-     * @param piece piece to place in [pos]
-     * @return new board with the piece place in the position
+     * Returns the piece in [position].
+     * @param position position to get piece of
+     * @return piece in [position]
      */
-    fun placePiece(pos: Position, piece: Piece): Board {
-        val newBoard = this.copy()
-        newBoard.matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = piece
-        return newBoard
-    }
+    fun getPiece(position: Position) = matrix[position.toIndex()]
 
 
     /**
-     * Removes piece from [pos], returning new board
-     * @param pos position to remove the piece
+     * Place [piece] in [position], returning new board.
+     * @param position position to place piece in
+     * @param piece piece to place in [position]
+     * @return new board with the [piece] placed in the [position]
+     */
+    fun placePiece(position: Position, piece: Piece) =
+        Board(matrix.replace(position.toIndex(), piece))
+
+
+    /**
+     * Removes piece from [position], returning new board.
+     * @param position position to remove the piece of
      * @return new board with the removed piece
      */
-    fun removePiece(pos: Position): Board {
-        val newBoard = this.copy()
-        newBoard.matrix[BOARD_SIDE_LENGTH - pos.row][pos.col - FIRST_COL] = null
-        return newBoard
-    }
+    fun removePiece(position: Position) =
+        Board(matrix.replace(position.toIndex(), null))
 
 
     /**
@@ -86,36 +88,7 @@ data class Board(private val matrix: Matrix2D<Piece?> = getMatrix2DFromString(ST
      * @return string representation of the chess board
      */
     override fun toString() =
-        matrix.joinToString("") { row ->
-            row.map { piece ->
-                piece?.toChar() ?: ' '
-            }.joinToString("")
-        }
-
-
-    /**
-     * Returns a copy board, using the array function copyOf() for each array in the matrix.
-     * @return copied board
-     */
-    fun copy(): Board {
-        val newBoard = Board(this.matrix.copyOf())
-        repeat(BOARD_SIDE_LENGTH) {
-            newBoard.matrix[it] = this.matrix[it].copyOf()
-        }
-
-        return newBoard
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is Board) return false
-
-        if (!matrix.contentDeepEquals(other.matrix)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return matrix.contentDeepHashCode()
-    }
+        matrix.map { piece ->
+            piece?.toChar() ?: ' '
+        }.joinToString("")
 }

@@ -6,7 +6,7 @@ import domain.move.Move
 /**
  * The GameState contract
  */
-interface GameState {
+interface GameState { //TODO("Change name (and implementation names)")
 
     /**
      * Returns all the moves from game [gameName]

@@ -1,6 +1,7 @@
 package domainTests.commandTests
 
 import domain.*
+import domain.game.*
 import GameStateStub
 import domain.board.*
 import domain.commands.*

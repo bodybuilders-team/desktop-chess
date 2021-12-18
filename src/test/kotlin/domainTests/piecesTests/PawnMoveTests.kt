@@ -1,6 +1,6 @@
 package domainTests.piecesTests
 
-import domain.Game
+import domain.game.*
 import domain.board.*
 import domain.move.Move
 import domain.move.MoveType
@@ -10,16 +10,14 @@ import isValidMove
 
 class PawnMoveTests {
     private val sut = Board(
-        getMatrix2DFromString(
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "   n    " +
-            "    P   " +
-            "K       "
-        )
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "   n    " +
+        "    P   " +
+        "K       "
     )
 
     @Test
@@ -65,16 +63,14 @@ class PawnMoveTests {
     // Pawn double move with piece in the way is invalid
 
     private val sut2 = Board(
-        getMatrix2DFromString(
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "    N   " +
-            "    P   " +
-            "K       "
-        )
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "    N   " +
+        "    P   " +
+        "K       "
     )
 
     @Test
@@ -87,16 +83,14 @@ class PawnMoveTests {
     @Test
     fun `Pawn capture en passant to the left move is valid`() {
         val sutEnPassant = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                " ppp ppp" +
-                "        " +
-                "p   pP  " +
-                "        " +
-                "        " +
-                "PPPPP PP" +
-                "RNBQKBNR"
-            )
+            "rnbqkbnr" +
+            " ppp ppp" +
+            "        " +
+            "p   pP  " +
+            "        " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQKBNR"
         )
 
         val moves = listOf("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5").map { Move(it) }
@@ -107,16 +101,14 @@ class PawnMoveTests {
     @Test
     fun `Pawn capture en passant to the right move is valid`() {
         val sutEnPassant = Board(
-            getMatrix2DFromString(
-                "rnbqkbnr" +
-                " ppppp p" +
-                "        " +
-                "p    Pp " +
-                "        " +
-                "        " +
-                "PPPPP PP" +
-                "RNBQKBNR"
-            )
+            "rnbqkbnr" +
+            " ppppp p" +
+            "        " +
+            "p    Pp " +
+            "        " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQKBNR"
         )
         val moves = listOf("Pf2f4", "Pa7a5", "Pf4f5", "Pg7g5").map { Move(it) }
 

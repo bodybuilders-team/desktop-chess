@@ -1,6 +1,7 @@
 package ui.consoleTests
 
 import domain.*
+import domain.game.*
 import domain.board.*
 import domain.pieces.Army
 import ui.console.getPrompt

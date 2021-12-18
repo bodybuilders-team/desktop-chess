@@ -3,7 +3,6 @@ package domainTests.moveTests
 import domain.board.Board
 import domain.move.*
 import domain.board.Board.*
-import domain.board.getMatrix2DFromString
 import kotlin.test.*
 
 
@@ -146,16 +145,14 @@ class PathUtilsTests {
     @Test
     fun `isStraightPathOccupied returns true if the straight path is occupied`() {
         val sut = Board(
-            getMatrix2DFromString(
-                "        " +
-                "        " +
-                "        " +
-                "    b   " +
-                "    N   " +
-                "        " +
-                "    R   " +
-                "        "
-            )
+            "        " +
+            "        " +
+            "        " +
+            "    b   " +
+            "    N   " +
+            "        " +
+            "    R   " +
+            "        "
         )
 
         val move = Move("Re2e5")
@@ -166,16 +163,14 @@ class PathUtilsTests {
     @Test
     fun `isStraightPathOccupied returns false if the straight path isn't occupied`() {
         val sut = Board(
-            getMatrix2DFromString(
-                "        " +
-                "        " +
-                "        " +
-                "    b   " +
-                "        " +
-                "        " +
-                "    R   " +
-                "        "
-            )
+            "        " +
+            "        " +
+            "        " +
+            "    b   " +
+            "        " +
+            "        " +
+            "    R   " +
+            "        "
         )
 
         val move = Move("Re2e5")
@@ -188,7 +183,6 @@ class PathUtilsTests {
     @Test
     fun `isDiagonalPathOccupied returns true if the diagonal path is occupied`() {
         val sut = Board(
-            getMatrix2DFromString(
                 "        " +
                 "     r  " +
                 "        " +
@@ -197,7 +191,6 @@ class PathUtilsTests {
                 " B      " +
                 "        " +
                 "        "
-            )
         )
 
         val move = Move("Bb3f7")
@@ -208,7 +201,6 @@ class PathUtilsTests {
     @Test
     fun `isDiagonalPathOccupied returns false if the diagonal path isn't occupied`() {
         val sut = Board(
-            getMatrix2DFromString(
                 "        " +
                 "     r  " +
                 "        " +
@@ -217,7 +209,6 @@ class PathUtilsTests {
                 " B      " +
                 "        " +
                 "        "
-            )
         )
 
         val move = Move("Bb3f7")
@@ -230,7 +221,6 @@ class PathUtilsTests {
     @Test
     fun `isValidStraightMove returns true if the move is a valid straight move`() {
         val sut = Board(
-            getMatrix2DFromString(
                 "        " +
                 "        " +
                 "        " +
@@ -239,7 +229,6 @@ class PathUtilsTests {
                 "        " +
                 "    R   " +
                 "        "
-            )
         )
 
         val move = Move("Re2e5")
@@ -249,7 +238,6 @@ class PathUtilsTests {
     @Test
     fun `isValidStraightMove returns false if the move is not a valid straight move`() {
         val sut = Board(
-            getMatrix2DFromString(
                 "        " +
                 "        " +
                 "        " +
@@ -258,7 +246,6 @@ class PathUtilsTests {
                 "        " +
                 "    R   " +
                 "        "
-            )
         )
 
         val move = Move("Re2e5")
@@ -270,7 +257,6 @@ class PathUtilsTests {
     @Test
     fun `isValidDiagonalMove returns true if the move is a valid diagonal move`() {
         val sut = Board(
-            getMatrix2DFromString(
                 "        " +
                 "     r  " +
                 "        " +
@@ -279,7 +265,6 @@ class PathUtilsTests {
                 " B      " +
                 "        " +
                 "        "
-            )
         )
 
         val move = Move("Bb3f7")
@@ -289,7 +274,6 @@ class PathUtilsTests {
     @Test
     fun `isValidDiagonalMove returns false if the move is not a valid diagonal move`() {
         val sut = Board(
-            getMatrix2DFromString(
                 "        " +
                 "     r  " +
                 "        " +
@@ -298,7 +282,6 @@ class PathUtilsTests {
                 " B      " +
                 "        " +
                 "        "
-            )
         )
 
         val move = Move("Bb3f7")

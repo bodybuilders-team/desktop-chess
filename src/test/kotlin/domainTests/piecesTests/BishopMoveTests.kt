@@ -7,16 +7,14 @@ import isValidMove
 
 class BishopMoveTests {
     private val sut = Board(
-        getMatrix2DFromString(
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "     p  " +
-            "    B   " +
-            "K       "
-        )
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "     p  " +
+        "    B   " +
+        "K       "
     )
 
     @Test
