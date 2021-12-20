@@ -14,13 +14,13 @@ class SessionTests {
 
     @Test
     fun `isLogging returns true if the current state is LOGGING`() {
-        val sut = Session("test", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
+        val sut = Session("test", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()))
         assertTrue(sut.isLogging())
     }
 
     @Test
     fun `isLogging returns false if the current state isn't LOGGING`() {
-        val sut = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()), GameState.NO_CHECK)
+        val sut = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()))
         assertFalse(sut.isLogging())
     }
 
@@ -32,7 +32,7 @@ class SessionTests {
         val session = getOpeningBoardSession("test", game.moves, Army.WHITE)
         
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(GameState.CHECKMATE, session.gameState)
+        assertEquals(GameState.CHECKMATE, session.game.state)
     }
 
     @Test
@@ -42,7 +42,7 @@ class SessionTests {
         val session = getOpeningBoardSession("test", game.moves, Army.WHITE)
         
         assertEquals(SessionState.ENDED, session.state)
-        assertEquals(GameState.STALEMATE, session.gameState)
+        assertEquals(GameState.STALEMATE, session.game.state)
     }
 
     @Test
@@ -51,7 +51,7 @@ class SessionTests {
         
         assertEquals(SessionState.YOUR_TURN, session.state)
 
-        val session2 = getOpeningBoardSession("test", listOf(Move("Pe2e4")), Army.BLACK)
+        val session2 = getOpeningBoardSession("test", listOfMoves("Pe2e4"), Army.BLACK)
         
         assertEquals(SessionState.YOUR_TURN, session2.state)
     }
@@ -62,7 +62,7 @@ class SessionTests {
 
         assertEquals(SessionState.WAITING_FOR_OPPONENT, session.state)
 
-        val session2 = getOpeningBoardSession("test", listOf(Move("Pe2e4")), Army.WHITE)
+        val session2 = getOpeningBoardSession("test", listOfMoves("Pe2e4"), Army.WHITE)
 
         assertEquals(SessionState.WAITING_FOR_OPPONENT, session2.state)
     }

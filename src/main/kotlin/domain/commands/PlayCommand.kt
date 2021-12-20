@@ -3,7 +3,7 @@ package domain.commands
 import domain.*
 import domain.game.*
 import domain.move.*
-import storage.GameState
+import storage.GameStorage
 
 //TODO - Para todos os files do projeto - Ver se os "require" devem ser "check"
 /**
@@ -18,14 +18,14 @@ import storage.GameState
  * @throws IllegalArgumentException if there's no piece in the specified from position in move
  * @throws IllegalMoveException if the player tried to play with an opponent's piece
  */
-class PlayCommand(private val db: GameState, private val session: Session) : Command {
+class PlayCommand(private val db: GameStorage, private val session: Session) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
         cmdRequire(!session.isLogging()) { "Can't play without a game: try open or join commands." }
         cmdRequire(session.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
         cmdRequireNotNull(parameter) { "Missing move." }
-        require(session.game.currentTurnArmy == session.army) { "It's not this army's turn! Session army is different from the current turn army." }
+        require(session.game.armyToPlay == session.army) { "It's not this army's turn! Session army is different from the current turn army." }
 
         val move = Move.validated(parameter, session.game)
 
@@ -39,8 +39,7 @@ class PlayCommand(private val db: GameState, private val session: Session) : Com
         return Result.success(
             session.copy(
                 state = if (game.ended()) SessionState.ENDED else SessionState.WAITING_FOR_OPPONENT,
-                game = game,
-                gameState = game.getState()
+                game = game
             )
         )
     }

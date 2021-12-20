@@ -1,6 +1,5 @@
 import domain.*
 import domain.game.*
-import domain.game.GameState
 import domain.board.*
 import domain.commands.CommandException
 import domain.move.IllegalMoveException
@@ -37,10 +36,9 @@ fun main() {
                 name = NO_NAME,
                 state = SessionState.LOGGING,
                 army = Army.WHITE,
-                game = Game(board = Board(), moves = emptyList()),
-                gameState = GameState.NO_CHECK
+                game = Game(board = Board(), moves = emptyList())
             )
-            val dataBase = MongoDBGameState(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
+            val dataBase = MongoDBGameStorage(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
 
             while (true) {
                 try {
@@ -68,7 +66,7 @@ fun main() {
                 }
             }
 
-        } catch (err: GameStateAccessException) {
+        } catch (err: GameStorageAccessException) {
             println(
                 "An unknown error occurred while trying to reach the database. " +
                         if (dbInfo.mode == DbMode.REMOTE) "Check your network connection."

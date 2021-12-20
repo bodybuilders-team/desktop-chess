@@ -20,7 +20,7 @@ const val NUMBER_OF_MOVES_TO_DRAW = 100
  *
  * @return true if the game ended
  */
-fun Game.ended() = getState() in listOf(GameState.CHECKMATE, GameState.STALEMATE, GameState.TIE)
+fun Game.ended() = state in listOf(GameState.CHECKMATE, GameState.STALEMATE, GameState.TIE)
 
 
 /**
@@ -56,7 +56,7 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
  */
 fun Game.isKingInStaleMate(army: Army) =
     !board.isKingInCheck(board.getKingPosition(army), army) &&
-            currentTurnArmy == army && !hasAvailableMoves(army)
+            armyToPlay == army && !hasAvailableMoves(army)
 
 
 /**

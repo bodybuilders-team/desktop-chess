@@ -60,7 +60,7 @@ class AvailableMovesTests {
 
         assertNotNull(piece)
         assertEquals(
-            setOf("Ke1c1", "Ke1d1"),
+            setOf("O-O-O", "Ke1d1"),
             piece.getAvailableMoves(Game(sut, emptyList()), position).map { it.toString() }.toSet()
         )
     }
@@ -78,7 +78,7 @@ class AvailableMovesTests {
             "RNBQKBNR"
         )
         val position = Board.Position('e', 5)
-        val previousMoves = listOf("Pe2e4", "Pa7a5", "Pe4e5", "Pd7d5").map { Move(it) }
+        val previousMoves = listOfMoves("Pe2e4", "Pa7a5", "Pe4e5", "Pd7d5")
 
         val piece = sut.getPiece(position)
 

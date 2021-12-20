@@ -8,10 +8,10 @@ import kotlin.test.*
 
 class MoveMethodsTests {
 
-    // Move.invoke(string)
+    // Move.invoke(string) []
 
     @Test
-    fun `Move constructor with string returns unvalidated move correctly`() {
+    fun `Move invoke with string returns unvalidated move correctly`() {
         assertEquals(
             Move('P', Board.Position('e', 2), false, Board.Position('e', 4), null, MoveType.NORMAL),
             Move("Pe2e4")
@@ -19,7 +19,7 @@ class MoveMethodsTests {
     }
 
     @Test
-    fun `Move constructor with string with optional from position returns unvalidated move correctly`() {
+    fun `Move invoke with string with optional from position returns unvalidated move correctly`() {
         assertEquals(
             Move('P', Board.Position('a', 1), false, Board.Position('e', 4), null, MoveType.NORMAL),
             Move("Pe4")
@@ -35,14 +35,14 @@ class MoveMethodsTests {
     }
 
     @Test
-    fun `Move constructor with string with supposedly invalid move returns unvalidated move correctly`() {
+    fun `Move invoke with string with supposedly invalid move returns unvalidated move correctly`() {
         assertEquals(
             Move('K', Board.Position('e', 1), false, Board.Position('g', 8), null, MoveType.NORMAL),
             Move("Ke1g8")
         )
     }
 
-    // Move.validated()
+    // Move.validated() []
 
     @Test
     fun `validated returns validated move correctly if move is valid`() {
@@ -80,8 +80,8 @@ class MoveMethodsTests {
             Move.validated("Pf5", Game(sut, emptyList()))
         }
     }
-
-    // Directions
+    
+    // Move to same place [✔]
 
     @Test
     fun `Move to same place isn't vertical, horizontal, straight nor diagonal`() {
@@ -90,8 +90,8 @@ class MoveMethodsTests {
         assertFalse(Move("e2e2").isStraight())
         assertFalse(Move("e2e2").isDiagonal())
     }
-
-    // Vertical
+    
+    // isVertical []
 
     @Test
     fun `isVertical with vertical move works`() {
@@ -103,7 +103,7 @@ class MoveMethodsTests {
         assertFalse(Move("e2f2").isVertical())
     }
 
-    // Horizontal
+    // isHorizontal []
 
     @Test
     fun `isHorizontal with horizontal move works`() {
@@ -115,7 +115,7 @@ class MoveMethodsTests {
         assertFalse(Move("e2e4").isHorizontal())
     }
 
-    // Straight
+    // isStraight []
 
     @Test
     fun `isStraight with horizontal move works`() {
@@ -132,7 +132,7 @@ class MoveMethodsTests {
         assertFalse(Move("e2g4").isStraight())
     }
 
-    // Diagonal
+    // isDiagonal []
 
     @Test
     fun `isDiagonal with diagonal move works`() {
@@ -144,7 +144,7 @@ class MoveMethodsTests {
         assertFalse(Move("e2f4").isDiagonal())
     }
 
-    // Distances
+    // Distances []
 
     @Test
     fun `rowsDistance works`() {
@@ -186,7 +186,7 @@ class MoveMethodsTests {
         assertEquals(0, Move("h2h7").colsAbsoluteDistance())
     }
 
-    // toString
+    // toString []
 
     @Test
     fun `toString works`() {
@@ -194,9 +194,56 @@ class MoveMethodsTests {
     }
 
     @Test
-    fun `toString with optional from position works`() {
+    fun `toString works for long castle`() {
+        assertEquals("O-O-O", Move("O-O-O").toString())
+    }
+
+    @Test
+    fun `toString works for short castle`() {
+        assertEquals("O-O", Move("O-O").toString())
+    }
+    
+    // toString with optional [✔]
+    @Test
+    fun `toString with optional from position works for move with optional from position`() {
         assertEquals("Pe4", Move("Pe4").toString(optionalFromCol = true, optionalFromRow = true))
-        assertEquals("Pee4", Move("Pee4").toString(optionalFromCol = false, optionalFromRow = true))
+        
+        assertEquals("P1e4", Move("Pe4").toString(optionalFromCol = true, optionalFromRow = false))
+        assertEquals("Pae4", Move("Pe4").toString(optionalFromCol = false, optionalFromRow = true))
+        assertEquals("Pa1e4", Move("Pe4").toString(optionalFromCol = false, optionalFromRow = false))
+    }
+
+    @Test
+    fun `toString with optional from position works for move with optional from col`() {
         assertEquals("P2e4", Move("P2e4").toString(optionalFromCol = true, optionalFromRow = false))
+        
+        assertEquals("Pae4", Move("P2e4").toString(optionalFromCol = false, optionalFromRow = true))
+        assertEquals("Pe4", Move("P2e4").toString(optionalFromCol = true, optionalFromRow = true))
+        assertEquals("Pa2e4", Move("P2e4").toString(optionalFromCol = false, optionalFromRow = false))
+    }
+
+    @Test
+    fun `toString with optional from position works for move with optional from row`() {
+        assertEquals("Pee4", Move("Pee4").toString(optionalFromCol = false, optionalFromRow = true))
+        
+        assertEquals("P1e4", Move("Pee4").toString(optionalFromCol = true, optionalFromRow = false))
+        assertEquals("Pe4", Move("Pee4").toString(optionalFromCol = true, optionalFromRow = true))
+        assertEquals("Pe1e4", Move("Pee4").toString(optionalFromCol = false, optionalFromRow = false))
+    }
+
+    @Test
+    fun `toString with optional from position works for long castle`() {
+        assertEquals("O-O-O", Move("O-O-O").toString(optionalFromCol = false, optionalFromRow = false))
+        assertEquals("O-O-O", Move("O-O-O").toString(optionalFromCol = true, optionalFromRow = false))
+        assertEquals("O-O-O", Move("O-O-O").toString(optionalFromCol = false, optionalFromRow = true))
+        assertEquals("O-O-O", Move("O-O-O").toString(optionalFromCol = true, optionalFromRow = true))
+    }
+
+    @Test
+    fun `toString with optional from position works for short castle`() {
+        assertEquals("O-O", Move("O-O").toString(optionalFromCol = false, optionalFromRow = false))
+        assertEquals("O-O", Move("O-O").toString(optionalFromCol = true, optionalFromRow = false))
+        assertEquals("O-O", Move("O-O").toString(optionalFromCol = false, optionalFromRow = true))
+        assertEquals("O-O", Move("O-O").toString(optionalFromCol = true, optionalFromRow = true))
     }
 }

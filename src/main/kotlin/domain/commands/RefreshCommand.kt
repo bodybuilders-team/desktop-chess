@@ -2,7 +2,7 @@ package domain.commands
 
 import domain.*
 import domain.game.*
-import storage.GameState
+import storage.GameStorage
 
 
 /**
@@ -13,7 +13,7 @@ import storage.GameState
  * @throws CommandException if it is not the user's turn
  * @throws CommandException if the game ended
  */
-class RefreshCommand(private val db: GameState, private val session: Session) : Command {
+class RefreshCommand(private val db: GameStorage, private val session: Session) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
         cmdRequire(!session.isLogging()) { "Can't refresh without a game: try open or join commands." }
@@ -26,8 +26,7 @@ class RefreshCommand(private val db: GameState, private val session: Session) : 
         return Result.success(
             session.copy(
                 state = getSessionState(game, session.army),
-                game = game,
-                gameState = game.getState()
+                game = game
             )
         )
     }

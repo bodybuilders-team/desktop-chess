@@ -1,6 +1,6 @@
 package domainTests.commandTests
 
-import GameStateStub
+import GameStorageStub
 import domain.*
 import domain.game.*
 import domain.commands.*
@@ -10,7 +10,7 @@ import kotlin.test.*
 class OpenCommandTests {
     @Test
     fun `Open command throws CommandException if the game name is missing`() {
-        val db = GameStateStub()
+        val db = GameStorageStub()
 
         assertEquals(
             "Missing game name.",
@@ -24,7 +24,7 @@ class OpenCommandTests {
     fun `Open command creates game if it doesn't exist`() {
         val gameName = "test"
         
-        val db = GameStateStub()
+        val db = GameStorageStub()
         val result = OpenCommand(db).execute(gameName)
         val session = result.getOrThrow()
 
@@ -37,7 +37,7 @@ class OpenCommandTests {
     fun `Open command opens an existing game if it exists`() {
         val gameName = "test"
 
-        val db = GameStateStub()
+        val db = GameStorageStub()
         db.createGame(gameName)
 
         val move = Move("Pe2e4")
@@ -55,7 +55,7 @@ class OpenCommandTests {
     fun `Open command session state is ENDED if there's a checkmate in board of already existing game`() {
         val gameName = "test"
 
-        val db = GameStateStub()
+        val db = GameStorageStub()
         db.createGame(gameName)
 
         // Fool's mate! 🤡 - https://www.chess.com/article/view/fastest-chess-checkmates
@@ -76,7 +76,7 @@ class OpenCommandTests {
     fun `Open command session state is ENDED if there's a stalemate in board of already existing game`() {
         val gameName = "test"
 
-        val db = GameStateStub()
+        val db = GameStorageStub()
         db.createGame(gameName)
 
         // Fastest stalemate known - https://www.chess.com/forum/view/game-showcase/fastest-stalemate-known-in-chess
@@ -101,7 +101,7 @@ class OpenCommandTests {
     fun `Open command session state is YOUR_TURN if it's white turn`() {
         val gameName = "test"
 
-        val db = GameStateStub()
+        val db = GameStorageStub()
         db.createGame(gameName)
 
         val moves = gameFromMoves("e3", "e6").moves
@@ -115,14 +115,14 @@ class OpenCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(moves, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(GameState.NO_CHECK, session.gameState)
+        assertEquals(GameState.NO_CHECK, session.game.state)
     }
 
     @Test
     fun `Open command session state is WAITING_FOR_OPPONENT if it's black turn`() {
         val gameName = "test"
 
-        val db = GameStateStub()
+        val db = GameStorageStub()
         db.createGame(gameName)
 
         val moves = gameFromMoves("e3").moves
@@ -136,14 +136,14 @@ class OpenCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(moves, session.game.moves)
         assertEquals(SessionState.WAITING_FOR_OPPONENT, session.state)
-        assertEquals(GameState.NO_CHECK, session.gameState)
+        assertEquals(GameState.NO_CHECK, session.game.state)
     }
 
     @Test
     fun `Open command gameState is CHECK if the white King is in Check and it's white turn`() {
         val gameName = "test"
 
-        val db = GameStateStub()
+        val db = GameStorageStub()
         db.createGame(gameName)
 
         val movesForCheck = gameFromMoves("f3", "e5", "g4", "b6", "e3", "Qh4").moves
@@ -157,14 +157,14 @@ class OpenCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(movesForCheck, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(GameState.CHECK, session.gameState)
+        assertEquals(GameState.CHECK, session.game.state)
     }
 
     @Test
     fun `Open command gameState is NO_CHECK if the white King isn't in Check and it's white turn`() {
         val gameName = "test"
 
-        val db = GameStateStub()
+        val db = GameStorageStub()
         db.createGame(gameName)
 
         val movesForCheck = gameFromMoves("c3", "d6").moves
@@ -178,6 +178,6 @@ class OpenCommandTests {
         assertEquals(gameName, session.name)
         assertEquals(movesForCheck, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
-        assertEquals(GameState.NO_CHECK, session.gameState)
+        assertEquals(GameState.NO_CHECK, session.game.state)
     }
 }

@@ -1,11 +1,11 @@
 import domain.move.Move
-import storage.GameState
+import storage.GameStorage
 
 
 /**
- * [GameState] implementation for testing.
+ * [GameStorage] implementation for testing.
  */
-class GameStateStub : GameState {
+class GameStorageStub : GameStorage {
     private val database: MutableMap<String, MutableList<Move>> = mutableMapOf()
 
     override fun getAllMoves(gameName: String): List<Move> {

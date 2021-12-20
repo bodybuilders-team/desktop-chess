@@ -4,7 +4,7 @@ import domain.*
 import domain.game.*
 import domain.board.*
 import domain.move.Move
-import domain.game.currentTurnArmy
+import domain.game.armyToPlay
 
 
 /**
@@ -57,11 +57,11 @@ fun refreshView(session: Session) {
 private fun openingGameView(session: Session, whiteArmy: Boolean) {
     printBoard(session.game.board)
     println("${if (whiteArmy) "Opened" else "Joined"} game ${session.name}. Play with ${if (whiteArmy) "white" else "black"} pieces.")
-    if (session.gameState != GameState.NO_CHECK) {
+    if (session.game.state != GameState.NO_CHECK) {
         println(
-            when (session.gameState) {
+            when (session.game.state) {
                 GameState.CHECK     -> "${if (session.state == SessionState.YOUR_TURN) "Your" else "Enemy"} King is in check."
-                GameState.CHECKMATE -> "Game ended in checkmate, ${session.game.currentTurnArmy.toString().lowercase()} won!"
+                GameState.CHECKMATE -> "Game ended in checkmate, ${session.game.armyToPlay.other().toString().lowercase()} won!"
                 GameState.STALEMATE -> "Game ended in stalemate, it's a draw!"
                 GameState.TIE       -> "Game is tied, ..." //TODO("Type of tie")
                 GameState.NO_CHECK  -> ""
@@ -78,9 +78,9 @@ private fun openingGameView(session: Session, whiteArmy: Boolean) {
  */
 private fun afterMoveView(session: Session, playerTurn: Boolean) {
     printBoard(session.game.board)
-    if (session.gameState != GameState.NO_CHECK) {
+    if (session.game.state != GameState.NO_CHECK) {
         println(
-                when (session.gameState) {
+                when (session.game.state) {
                     GameState.CHECK     -> "${if (playerTurn) "Your" else "Enemy"} King is in check."
                     GameState.CHECKMATE -> "${if (playerTurn) "Your" else "Enemy"} King is in checkmate. Game ended, you ${if (playerTurn) "lose" else "win"}!"
                     GameState.STALEMATE -> "${if (playerTurn) "Your" else "Enemy"} King is in stalemate. Game ended, it's a draw!"

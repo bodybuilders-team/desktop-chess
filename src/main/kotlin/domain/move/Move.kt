@@ -131,7 +131,12 @@ data class Move(
 
 
     override fun toString() =
-        "$symbol$from${if (capture) "x" else ""}$to${if (promotion != null) "=$promotion" else ""}" // ( ͡° ͜ʖ ͡°)
+        if (type != MoveType.CASTLE)
+            "$symbol$from" +
+                    (if (capture) CAPTURE_CHAR else "") +
+                    "$to" +
+                    (if (promotion != null) "$PROMOTION_CHAR$promotion" else "") // ( ͡° ͜ʖ ͡°)
+        else if (to.col == SHORT_CASTLE_KING_COL) SHORT_CASTLE_STRING else LONG_CASTLE_STRING
 
     /**
      * Returns a string representation of the move, with the possibility to omit fromCol and fromRow.
@@ -140,9 +145,18 @@ data class Move(
      * @return string representation of the move
      */
     fun toString(optionalFromCol: Boolean, optionalFromRow: Boolean) =
-        "$symbol" +
-                "${if (!optionalFromCol) from.col else ""}${if (!optionalFromRow) from.row else ""}" +
-                (if (capture) "x" else "") +
-                "$to" +
-                if (promotion != null) "=$promotion" else ""
+        if (type != MoveType.CASTLE)
+            toString().replaceRange(
+                1..2,
+                "${if (!optionalFromCol) from.col else ""}${if (!optionalFromRow) from.row else ""}"
+            )
+        else toString()
+
 }
+
+
+/**
+ * Returns a list of moves from moves [movesInString].
+ * @return list of moves from moves [movesInString]
+ */
+fun listOfMoves(vararg movesInString: String) = movesInString.map { Move(it) }

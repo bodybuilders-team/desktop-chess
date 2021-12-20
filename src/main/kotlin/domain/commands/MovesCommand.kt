@@ -1,7 +1,7 @@
 package domain.commands
 
 import domain.*
-import storage.GameState
+import storage.GameStorage
 
 
 /**
@@ -10,7 +10,7 @@ import storage.GameState
  * @param db database where the moves are stored
  * @throws CommandException if game has not been opened yet
  */
-class MovesCommand(private val db: GameState, private val session: Session) : Command {
+class MovesCommand(private val db: GameStorage, private val session: Session) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
         cmdRequire(!session.isLogging()) { "No game, no moves: try open or join commands." }

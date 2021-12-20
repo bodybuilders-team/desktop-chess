@@ -5,6 +5,21 @@ import java.net.URI
 import java.net.http.*
 
 
+// https://www.chess.com/news/view/published-data-api#pubapi-general
+
+// List of titled-player usernames.
+// URL pattern: https://api.chess.com/pub/titled/{title-abbrev}
+// Example: https://api.chess.com/pub/titled/GM
+
+// Array of monthly archives available for this player.
+// URL pattern: https://api.chess.com/pub/player/{username}/games/archives
+// Example: https://api.chess.com/pub/player/erik/games/archives
+
+// Gets JSON file containing all games of a player in a given month.
+// URL pattern: https://api.chess.com/pub/player/{username}/games/{YYYY}/{MM}
+// Example: https://api.chess.com/pub/player/erik/games/2009/10
+
+
 const val CHESS_COM_API_URL = "https://api.chess.com"
 
 
@@ -18,7 +33,7 @@ fun getPlayersFromTitle(titleAbbrev: String): List<String> {
     if (json.json == "{\"code\":0,\"message\":\"Data provider not found for key \\\"/pub/titled/$titleAbbrev\\\".\"}")
         throw Exception("Title abbreviation \"$titleAbbrev\" does not exist.")
 
-    return json["players"].valueAsListOfStrings
+    return json.toBsonDocument()["players"]!!.asArray().map { it.asString().value }
 }
 
 
@@ -32,7 +47,7 @@ fun getMonthlyArchives(player: String): List<String> {
     if (json.json == "{\"code\":0,\"message\":\"User \\\"$player\\\" not found.\"}")
         throw Exception("Player \"$player\" does not exist.")
 
-    return json["archives"].valueAsListOfStrings
+    return json.toBsonDocument()["archives"]!!.asArray().map { it.asString().value }
 }
 
 

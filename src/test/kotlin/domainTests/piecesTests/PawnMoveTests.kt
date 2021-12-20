@@ -2,8 +2,7 @@ package domainTests.piecesTests
 
 import domain.game.*
 import domain.board.*
-import domain.move.Move
-import domain.move.MoveType
+import domain.move.*
 import kotlin.test.*
 import isValidMove
 
@@ -93,7 +92,7 @@ class PawnMoveTests {
             "RNBQKBNR"
         )
 
-        val moves = listOf("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5").map { Move(it) }
+        val moves = listOfMoves("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5")
 
         assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5e6", Game(sutEnPassant, moves)).type)
     }
@@ -110,7 +109,7 @@ class PawnMoveTests {
             "PPPPP PP" +
             "RNBQKBNR"
         )
-        val moves = listOf("Pf2f4", "Pa7a5", "Pf4f5", "Pg7g5").map { Move(it) }
+        val moves = listOfMoves("Pf2f4", "Pa7a5", "Pf4f5", "Pg7g5")
 
         assertEquals(MoveType.EN_PASSANT, Move.validated("Pf5g6", Game(sutEnPassant, moves)).type)
     }

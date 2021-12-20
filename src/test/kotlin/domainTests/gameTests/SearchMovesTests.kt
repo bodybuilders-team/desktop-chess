@@ -2,10 +2,8 @@ package domainTests.gameTests
 
 import domain.board.Board
 import domain.board.COLS_RANGE
-import domain.game.Game
-import domain.game.searchMoves
-import domain.move.Move
-import domain.move.MoveType
+import domain.game.*
+import domain.move.*
 import kotlin.test.*
 
 
@@ -18,7 +16,7 @@ class SearchMovesTests {
         val game = Game(Board(), emptyList())
 
         assertEquals(
-            setOf(Move("Pe2e4")),
+            listOfMoves("Pe2e4").toSet(),
             game.searchMoves(
                 Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
             ).toSet()
@@ -30,7 +28,7 @@ class SearchMovesTests {
         val game = Game(Board(), emptyList())
 
         assertEquals(
-            setOf(Move("Pe2e4")),
+            listOfMoves("Pe2e4").toSet(),
             game.searchMoves(
                 Move("Pee4"), optionalFromCol = false, optionalFromRow = true, optionalToPos = false
             ).toSet()
@@ -42,7 +40,7 @@ class SearchMovesTests {
         val game = Game(Board(), emptyList())
 
         assertEquals(
-            setOf(Move("Pe2e4")),
+            listOfMoves("Pe2e4").toSet(),
             game.searchMoves(
                 Move("P2e4"), optionalFromCol = true, optionalFromRow = false, optionalToPos = false
             ).toSet()
@@ -54,7 +52,7 @@ class SearchMovesTests {
         val game = Game(Board(), emptyList())
 
         assertEquals(
-            setOf(Move("Pe2e4")),
+            listOfMoves("Pe2e4").toSet(),
             game.searchMoves(
                 Move("Pe4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = false
             ).toSet()
@@ -66,7 +64,7 @@ class SearchMovesTests {
         val game = Game(Board(), emptyList())
 
         assertEquals(
-            setOf(Move("Pe2e3"), Move("Pe2e4")),
+            listOfMoves("Pe2e3", "Pe2e4").toSet(),
             game.searchMoves(
                 Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = true
             ).toSet()
@@ -90,7 +88,7 @@ class SearchMovesTests {
         )
 
         assertEquals(
-            setOf(Move("Ke1c1").copy(type = MoveType.CASTLE)),
+            listOfMoves("O-O-O").toSet(),
             game.searchMoves(
                 Move("O-O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
             ).toSet()
@@ -114,7 +112,7 @@ class SearchMovesTests {
         )
 
         assertEquals(
-            setOf(Move("Ke1g1").copy(type = MoveType.CASTLE)),
+            listOfMoves("O-O").toSet(),
             game.searchMoves(
                 Move("O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
             ).toSet()
@@ -138,10 +136,10 @@ class SearchMovesTests {
         )
 
         assertEquals(
-            setOf(),
+            emptyList(),
             game.searchMoves(
                 Move("O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            ).toSet()
+            )
         )
     }
 
@@ -162,10 +160,10 @@ class SearchMovesTests {
         )
 
         assertEquals(
-            setOf(),
+            listOf(),
             game.searchMoves(
                 Move("O-O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            ).toSet()
+            )
         )
     }
 
@@ -186,7 +184,7 @@ class SearchMovesTests {
         )
 
         assertEquals(
-            setOf(Move("Ke1c1").copy(type = MoveType.CASTLE)),
+            listOfMoves("O-O-O").toSet(),
             game.searchMoves(
                 Move("O-O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
             ).toSet()
@@ -210,7 +208,7 @@ class SearchMovesTests {
         )
 
         assertEquals(
-            setOf(Move("Ke1g1").copy(type = MoveType.CASTLE)),
+            listOfMoves("O-O").toSet(),
             game.searchMoves(
                 Move("O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
             ).toSet()

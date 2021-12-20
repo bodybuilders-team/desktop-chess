@@ -2,8 +2,7 @@ package domainTests.gameTests
 
 import domain.board.*
 import domain.game.*
-import domain.move.IllegalMoveException
-import domain.move.Move
+import domain.move.*
 import domain.pieces.Army
 import kotlin.test.*
 
@@ -122,33 +121,21 @@ class GameTests {
         }
     }
 
-    // currentTurnArmy
+    // armyToPlay
 
     @Test
-    fun `currentTurnArmy returns White when number of moves is even`() {
-        assertEquals(Army.WHITE, gameFromMoves().currentTurnArmy)
+    fun `armyToPlay returns White when number of moves is even`() {
+        assertEquals(Army.WHITE, gameFromMoves().armyToPlay)
     }
 
     @Test
-    fun `currentTurnArmy returns Black when number of moves is odd`() {
-        assertEquals(Army.BLACK, gameFromMoves("Pe2e4").currentTurnArmy)
-    }
-
-    // isWhiteTurn
-
-    @Test
-    fun `isWhiteTurn returns true when number of moves is even`() {
-        assertTrue(gameFromMoves().isWhiteTurn())
-    }
-
-    @Test
-    fun `isWhiteTurn returns false when number of moves is odd`() {
-        assertFalse(gameFromMoves("Pe2e4").isWhiteTurn())
+    fun `armyToPlay returns Black when number of moves is odd`() {
+        assertEquals(Army.BLACK, gameFromMoves("Pe2e4").armyToPlay)
     }
     
-    //getState
+    //state
     
-    //TODO("getState tests")
+    //TODO("state tests")
 
     // gameFromMoves
 
@@ -175,7 +162,7 @@ class GameTests {
 
     @Test
     fun `gameFromMoves returns new game with moves validated`() {
-        assertEquals(listOf("Pe2e4", "Pb7b5", "Nb1c3").map { Move(it) }, gameFromMoves("Pe4", "Pb5", "Nc3").moves)
+        assertEquals(listOfMoves("Pe2e4", "Pb7b5", "Nb1c3"), gameFromMoves("Pe4", "Pb5", "Nc3").moves)
     }
 
     @Test
@@ -197,7 +184,7 @@ class GameTests {
     @Test
     fun `gameFromMoves(List-Move-) returns same game as gameFromMoves with list of movesInString`() {
         val gameFromMovesInString = gameFromMoves("Pe2e4", "Pe7e5", "Pa2a4", "Pg7g5")
-        val gameFromMoves = gameFromMoves(listOf("Pe2e4", "Pe7e5", "Pa2a4", "Pg7g5").map { Move(it) })
+        val gameFromMoves = gameFromMoves(listOfMoves("Pe2e4", "Pe7e5", "Pa2a4", "Pg7g5"))
 
         assertEquals(gameFromMovesInString.board, gameFromMoves.board)
         assertEquals(gameFromMovesInString.moves, gameFromMoves.moves)
@@ -214,7 +201,7 @@ class GameTests {
     @Test
     fun `Game is not tied by 50 move rule if a pawn moved and no capture happens in the last 100 moves (50 by each side)`() {
         val moves = List(25) { listOf("Nb1c3", "Nb8c6", "Nc3b1", "Nc6b8") }.flatten()
-        assertFalse(gameFromMoves(moves + "Pe4").isTiedByFiftyMoveRule())
+        assertFalse(gameFromMoves(moves + "Pe2e4").isTiedByFiftyMoveRule())
     }
 
     @Test
@@ -227,7 +214,7 @@ class GameTests {
 
     @Test
     fun `Game is not tied by 50 move rule if a pawn moved and a capture happens in the last 100 moves (50 by each side)`() {
-        val startingMoves = listOf("e4", "d5", "d5", "h6")
+        val startingMoves = listOf("Pe2e4", "Pd7d5", "Pe4xd5", "Ph7h6")
 
         val moves = List(24) { listOf("Nb1c3", "Nb8c6", "Nc3b1", "Nc6b8") }.flatten()
         assertFalse(gameFromMoves(startingMoves + moves).isTiedByFiftyMoveRule())

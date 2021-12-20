@@ -109,7 +109,7 @@ class EndGameTests {
             "        " +
             "        "
         )
-        assertFalse(Game(sut, listOf(Move("Pe2e4"))).isKingInStaleMate(Army.WHITE))
+        assertFalse(Game(sut, listOfMoves("Pe2e4")).isKingInStaleMate(Army.WHITE))
     }
 
     @Test
@@ -124,7 +124,7 @@ class EndGameTests {
             " R      " +
             "k       "
         )
-        assertTrue(Game(sut, listOf(Move("Pe2e4"))).isKingInStaleMate(Army.BLACK))
+        assertTrue(Game(sut, listOfMoves("Pe2e4")).isKingInStaleMate(Army.BLACK))
     }
 
     @Test
@@ -171,7 +171,7 @@ class EndGameTests {
             "        "
         )
 
-        assertFalse(Game(sut, listOf(Move("Pe2e4"))).isKingInStaleMate(Army.BLACK))
+        assertFalse(Game(sut, listOfMoves("Pe2e4")).isKingInStaleMate(Army.BLACK))
     }
 
     // kingAttackers

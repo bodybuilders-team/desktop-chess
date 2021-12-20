@@ -12,7 +12,7 @@ class MoveValidationTests {
     // getValidatedMove
 
     @Test
-    fun `getValidatedMove returns validated move with the correct move type information`() {
+    fun `getValidatedMove returns validated move with the correct move type information if it should be normal`() {
         val sut = Board(
             "rnbqkbnr" +
                     "pppppppp" +
@@ -29,6 +29,27 @@ class MoveValidationTests {
 
         assertNotNull(piece)
         assertEquals(move.copy(type = MoveType.NORMAL), move.getValidatedMove(piece, Game(sut, emptyList())))
+    }
+
+    @Test
+    fun `getValidatedMove returns validated move with the correct move type information if it should be castle`() {
+        val sut = Board(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQK  R"
+        )
+
+        val move = Move("Ke1g1")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertEquals(MoveType.NORMAL, move.type)
+        assertEquals(move.copy(type = MoveType.CASTLE), move.getValidatedMove(piece, Game(sut, emptyList())))
     }
 
     @Test
@@ -137,16 +158,16 @@ class MoveValidationTests {
     fun `isValidCapture returns false with valid capture to empty square with wrong capture information`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "ppppp pp" +
-                    "        " +
-                    "     p  " +
-                    "        " +
-                    "        " +
-                    "PPPPPPPP" +
-                    "RNBQKBNR"
+            "ppppp pp" +
+            "        " +
+            "     p  " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR"
         )
 
-        val move = Move("Pe2e4").copy(capture = true)
+        val move = Move("Pe2xe4")
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -157,13 +178,13 @@ class MoveValidationTests {
     fun `isValidCapture returns true with valid promotion`() {
         val sut = Board(
             "rnbqkb r" +
-                    "ppppppPp" +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "PPPPPPPP" +
-                    "RNBQKBNR"
+            "ppppppPp" +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR"
         )
 
         val move = Move("Pg7g8=Q")
@@ -177,13 +198,13 @@ class MoveValidationTests {
     fun `isValidCapture returns false with invalid promotion (invalid pawn position)`() {
         val sut = Board(
             "rnbqkb r" +
-                    "pppppp p" +
-                    "        " +
-                    "      P " +
-                    "        " +
-                    "        " +
-                    "PPPPPPPP" +
-                    "RNBQKBNR"
+            "pppppp p" +
+            "        " +
+            "      P " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR"
         )
 
         val move = Move("Pg5g6=Q")
@@ -232,7 +253,7 @@ class MoveValidationTests {
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
-        assertTrue(move.isValidEnPassant(piece, Game(sut, listOf("Pf2f4", "Pf4f5", "Pe7e5").map { Move(it) })))
+        assertTrue(move.isValidEnPassant(piece, Game(sut, listOfMoves("Pf2f4", "Pf4f5", "Pe7e5"))))
     }
 
     @Test
@@ -252,7 +273,7 @@ class MoveValidationTests {
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
-        assertFalse(move.isValidEnPassant(piece, Game(sut, listOf("Pf2f4", "Pd7d6").map { Move(it) })))
+        assertFalse(move.isValidEnPassant(piece, Game(sut, listOfMoves("Pf2f4", "Pd7d6"))))
     }
 
     // isValidCastle
@@ -274,7 +295,7 @@ class MoveValidationTests {
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
-        assertTrue(move.isValidCastle(piece, Game(sut, listOf("Pf2f4").map { Move(it) })))
+        assertTrue(move.isValidCastle(piece, Game(sut, listOfMoves("Pf2f4"))))
     }
 
     @Test
@@ -294,7 +315,7 @@ class MoveValidationTests {
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
-        assertFalse(move.isValidCastle(piece, Game(sut, listOf("Ra1b1", "Rb1a1").map { Move(it) })))
+        assertFalse(move.isValidCastle(piece, Game(sut, listOfMoves("Ra1b1", "Rb1a1"))))
     }
 
     @Test
@@ -314,7 +335,7 @@ class MoveValidationTests {
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
-        assertTrue(move.isValidCastle(piece, Game(sut, listOf("Pf2f4").map { Move(it) })))
+        assertTrue(move.isValidCastle(piece, Game(sut, listOfMoves("Pf2f4"))))
     }
 
     @Test
@@ -334,7 +355,7 @@ class MoveValidationTests {
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
-        assertFalse(move.isValidCastle(piece, Game(sut, listOf("Rh1g1", "Rg1h1").map { Move(it) })))
+        assertFalse(move.isValidCastle(piece, Game(sut, listOfMoves("Rh1g1", "Rg1h1"))))
     }
 
     @Test
@@ -350,7 +371,7 @@ class MoveValidationTests {
             "R   KBNR"
         )
         
-        val game = Game(sut, listOf("Pf2f4").map { Move(it) })
+        val game = Game(sut, listOfMoves("Pf2f4"))
 
         val move = Move("Ke1c1")
         val piece = sut.getPiece(move.from)
@@ -374,7 +395,7 @@ class MoveValidationTests {
             "RNBQK  R"
         )
 
-        val game = Game(sut, listOf("Pf2f4").map { Move(it) })
+        val game = Game(sut, listOfMoves("Pf2f4"))
 
         val move = Move("Ke1g1")
         val piece = sut.getPiece(move.from)
@@ -402,10 +423,7 @@ class MoveValidationTests {
 
         val move = Move("Pf5e6")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(
-            Move("Pf2f4"), Move("Pf4f5"),
-            Move("Pe7e5")
-        )
+        val previousMoves = listOfMoves("Pf2f4", "Pf4f5", "Pe7e5")
 
         assertNotNull(piece)
         assertTrue(move.isEnPassantPossible(piece, previousMoves))
@@ -426,7 +444,7 @@ class MoveValidationTests {
 
         val move = Move("Pf4f5")
         val piece = sut.getPiece(move.from)
-        val previousMoves = listOf(Move("Pf2f4"), Move("Pd7d6"))
+        val previousMoves = listOfMoves("Pf2f4", "Pd7d6")
 
         assertNotNull(piece)
         assertFalse(move.isEnPassantPossible(piece, previousMoves))
@@ -447,7 +465,7 @@ class MoveValidationTests {
             "R   KBNR"
         )
 
-        val previousMoves = listOf("Pf2f4").map { Move(it) }
+        val previousMoves = listOfMoves("Pf2f4")
 
         val game = Game(sut, previousMoves)
         val move = Move("Ke1c1")
@@ -471,7 +489,7 @@ class MoveValidationTests {
             "R   KBNR"
         )
 
-        val previousMoves = listOf("Ra1b1", "Rb1a1").map { Move(it) }
+        val previousMoves = listOfMoves("Ra1b1", "Rb1a1")
         
         val game = Game(sut, previousMoves)
         val move = Move("Ke1c1")
@@ -495,7 +513,7 @@ class MoveValidationTests {
             "R   KBNR"
         )
 
-        val previousMoves = listOf("Rh1g1", "Rg1h1").map { Move(it) }
+        val previousMoves = listOfMoves("Rh1g1", "Rg1h1")
 
         val game = Game(sut, previousMoves)
         val move = Move("Ke1c1")
@@ -519,7 +537,7 @@ class MoveValidationTests {
             "RNBQK  R"
         )
 
-        val previousMoves = listOf("Pf2f4").map { Move(it) }
+        val previousMoves = listOfMoves("Pf2f4")
 
         val game = Game(sut, previousMoves)
         val move = Move("Ke1g1")
@@ -543,7 +561,7 @@ class MoveValidationTests {
             "RNBQK  R"
         )
 
-        val previousMoves = listOf("Rh1g1", "Rg1h1").map { Move(it) }
+        val previousMoves = listOfMoves("Rh1g1", "Rg1h1")
 
         val game = Game(sut, previousMoves)
         val move = Move("Ke1g1")
@@ -567,7 +585,7 @@ class MoveValidationTests {
             "RNBQK  R"
         )
 
-        val previousMoves = listOf("Ra1b1", "Rb1a1").map { Move(it) }
+        val previousMoves = listOfMoves("Ra1b1", "Rb1a1")
 
         val game = Game(sut, previousMoves)
         val move = Move("Ke1g1")

@@ -16,8 +16,7 @@ data class Session(
     val name: String,
     val state: SessionState,
     val army: Army,
-    val game: Game,
-    val gameState: GameState
+    val game: Game
 )
 
 
@@ -52,7 +51,7 @@ fun Session.isLogging() = state == SessionState.LOGGING
 fun getSessionState(game: Game, army: Army) =
     when {
         game.ended()                    -> SessionState.ENDED
-        game.currentTurnArmy == army    -> SessionState.YOUR_TURN
+        game.armyToPlay == army    -> SessionState.YOUR_TURN
         else                            -> SessionState.WAITING_FOR_OPPONENT
     }
 
@@ -71,7 +70,6 @@ fun getOpeningBoardSession(gameName: String, moves: List<Move>, army: Army): Ses
         name = gameName,
         state = getSessionState(game, army),
         army = army,
-        game = game,
-        gameState = game.getState()
+        game = game
     )
 }

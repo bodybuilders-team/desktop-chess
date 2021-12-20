@@ -3,10 +3,14 @@ package domain.move
 import domain.board.Board
 import domain.board.FIRST_COL
 import domain.board.FIRST_ROW
+import domain.pieces.PieceType
 
 
-private const val CAPTURE_CHAR = 'x'
-private const val PROMOTION_CHAR = '='
+const val CAPTURE_CHAR = 'x'
+const val PROMOTION_CHAR = '='
+const val SHORT_CASTLE_STRING = "O-O"
+const val LONG_CASTLE_STRING = "O-O-O"
+const val DEFAULT_CASTLE_TO_ROW = FIRST_ROW
 private const val MIN_STRING_LEN = 1
 private const val TWO_STRING_LEN = 2
 private const val THREE_STRING_LEN = 3
@@ -35,16 +39,19 @@ fun Move.Companion.extractMoveInfo(moveInString: String): MoveExtraction {
     if (!isCorrectlyFormatted(moveInString))
         throw IllegalMoveException(
             moveInString,
-            "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>], [O-O] or [O-O-O]"
+            "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>], [$SHORT_CASTLE_STRING] or [$LONG_CASTLE_STRING]"
         )
 
-    if (moveInString in listOf("O-O", "O-O-O")) {
+    if (moveInString in listOf(SHORT_CASTLE_STRING, LONG_CASTLE_STRING)) {
         return MoveExtraction(
             Move(
-                'K',
-                Board.Position(INITIAL_KING_COL, 1),
+                PieceType.KING.symbol,
+                Board.Position(INITIAL_KING_COL, DEFAULT_CASTLE_TO_ROW),
                 capture = false,
-                Board.Position(if (moveInString == "O-O") SHORT_CASTLE_KING_COL else LONG_CASTLE_KING_COL, 1),
+                Board.Position(
+                    if (moveInString == SHORT_CASTLE_STRING) SHORT_CASTLE_KING_COL else LONG_CASTLE_KING_COL,
+                    DEFAULT_CASTLE_TO_ROW
+                ),
                 promotion = null,
                 MoveType.CASTLE
             ),
@@ -63,7 +70,7 @@ fun Move.Companion.extractMoveInfo(moveInString: String): MoveExtraction {
     val toPos = Board.Position(str[str.lastIndex - 1], str.last().digitToInt())
     str = str.dropLast(if (capture) 3 else 2)
 
-    var pieceSymbol = 'P'
+    var pieceSymbol = PieceType.PAWN.symbol
     var fromRow: Int? = null
     var fromCol: Char? = null
 

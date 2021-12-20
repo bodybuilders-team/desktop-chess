@@ -2,7 +2,7 @@ package domain.commands
 
 import domain.*
 import domain.pieces.Army
-import storage.GameState
+import storage.GameStorage
 
 
 /**
@@ -10,7 +10,7 @@ import storage.GameState
  * @param db database where the moves are stored
  * @throws CommandException if game name not specified
  */
-class OpenCommand(private val db: GameState) : Command {
+class OpenCommand(private val db: GameStorage) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
         cmdRequireNotNull(parameter) { "Missing game name." }

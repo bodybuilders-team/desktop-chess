@@ -3,6 +3,7 @@ package domain.game
 import domain.board.*
 import domain.board.Board.Position
 import domain.move.*
+import domain.pieces.Army
 
 
 /**
@@ -38,7 +39,7 @@ fun Game.searchMoves(
                     val move = move.copy(from = Position(fromCol, fromRow), to = Position(toCol, toRow))
                     val piece = board.getPiece(move.from) ?: continue
                     if (piece.type.symbol != move.symbol) continue
-                    if (piece.army != currentTurnArmy) continue
+                    if (piece.army != armyToPlay) continue
 
                     val validatedMove = move.getValidatedMove(piece, this)
                     if (validatedMove != null) foundMoves.add(validatedMove)
@@ -75,7 +76,7 @@ private fun Game.getSearchRanges(
 ): SearchRanges {
     fun getColSearchRange(optional: Boolean, col: Char) = if (optional) COLS_RANGE else listOf(col)
     fun getRowSearchRange(optional: Boolean, row: Int) = when {
-        move.type == MoveType.CASTLE -> listOf(if (isWhiteTurn()) WHITE_FIRST_ROW else BLACK_FIRST_ROW)
+        move.type == MoveType.CASTLE -> listOf(if (armyToPlay == Army.WHITE) WHITE_FIRST_ROW else BLACK_FIRST_ROW)
         optional -> ROWS_RANGE
         else -> listOf(row)
     }

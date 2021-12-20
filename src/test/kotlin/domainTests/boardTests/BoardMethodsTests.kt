@@ -161,7 +161,7 @@ class BoardMethodsTests {
             "R   KBNR"
         )
 
-        val move = Move("Ke1c1").copy(type = MoveType.CASTLE)
+        val move = Move("O-O-O") // Default (unvalidated) castle row is first row
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)
@@ -193,7 +193,7 @@ class BoardMethodsTests {
             "RNBQK  R"
         )
 
-        val move = Move("Ke1g1").copy(type = MoveType.CASTLE)
+        val move = Move("O-O") // Default (unvalidated) castle row is first row
         val piece = sut.getPiece(move.from)
 
         assertNotNull(piece)

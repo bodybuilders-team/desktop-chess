@@ -2,7 +2,7 @@ package domain.commands
 
 import domain.*
 import domain.pieces.Army
-import storage.GameState
+import storage.GameStorage
 
 
 /**
@@ -11,7 +11,7 @@ import storage.GameState
  * @throws IllegalArgumentException if game name not specified
  * @throws IllegalArgumentException if game name not recognized
  */
-class JoinCommand(private val db: GameState) : Command {
+class JoinCommand(private val db: GameStorage) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
         cmdRequireNotNull(parameter) { "Missing game name." }

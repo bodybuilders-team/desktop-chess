@@ -21,29 +21,6 @@ data class Game(
 
 
 /**
- * Makes a move in the game.
- * @param move move to make
- * @return new game with the move made
- */
-fun Game.makeMove(move: Move) =
-    Game(board = board.makeMove(move), moves = moves + move)
-
-
-/**
- * Returns the army playing in the current turn.
- * @return the army playing in the current turn
- */
-val Game.currentTurnArmy
-    get() = if (moves.size % 2 == 0) Army.WHITE else Army.BLACK
-
-/**
- * Returns true if it's the white army turn.
- * @return true if it's the white army turn
- */
-fun Game.isWhiteTurn() = currentTurnArmy == Army.WHITE
-
-
-/**
  * Different states the game can be in.
  */
 enum class GameState {
@@ -56,17 +33,35 @@ enum class GameState {
 
 
 /**
+ * Makes a move in the game.
+ * @param move move to make
+ * @return new game with the move made
+ */
+fun Game.makeMove(move: Move) =
+    Game(board = board.makeMove(move), moves = moves + move)
+
+
+/**
+ * Returns the army playing in the current turn.
+ * @return the army playing in the current turn
+ */
+val Game.armyToPlay
+    get() = if (moves.size % 2 == 0) Army.WHITE else Army.BLACK
+
+
+/**
  * Gets the current state of the game.
  * @return state of the game
  */
-fun Game.getState(): GameState =
-    when {
-        board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK)  -> GameState.CHECKMATE
-        isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK)              -> GameState.STALEMATE
-        isTiedByFiftyMoveRule()                                                     -> GameState.TIE
-        board.isKingInCheck(Army.WHITE) || board.isKingInCheck(Army.BLACK)          -> GameState.CHECK
-        else -> GameState.NO_CHECK
-    }
+val Game.state
+    get() =
+        when {
+            board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK)  -> GameState.CHECKMATE
+            isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK)              -> GameState.STALEMATE
+            isTiedByFiftyMoveRule()                                                     -> GameState.TIE
+            board.isKingInCheck(Army.WHITE) || board.isKingInCheck(Army.BLACK)          -> GameState.CHECK
+            else -> GameState.NO_CHECK
+        }
 
 
 /**
@@ -74,19 +69,10 @@ fun Game.getState(): GameState =
  * @param movesInString moves to make
  * @return new game with the moves [movesInString] made in the game.
  */
-fun Game.makeMoves(vararg movesInString: String): Game =
+fun Game.makeMoves(movesInString: List<String>): Game =
     movesInString.fold(this.copy()) { newGame, moveInString ->
         newGame.makeMove(Move.validated(moveInString, newGame))
     }
-
-
-/**
- * Returns a new game with the moves [movesInString] consecutively made and validated in the game.
- * @param movesInString moves to make in string
- * @return new game with the moves [movesInString] consecutively made and validated in the game
- */
-fun gameFromMoves(vararg movesInString: String): Game =
-    Game(Board(), emptyList()).makeMoves(*movesInString)
 
 
 /**
@@ -95,7 +81,7 @@ fun gameFromMoves(vararg movesInString: String): Game =
  * @return new game with the moves [movesInString] consecutively made and validated in the game
  */
 fun gameFromMoves(movesInString: List<String>): Game =
-    gameFromMoves(*movesInString.toTypedArray())
+    Game(Board(), emptyList()).makeMoves(movesInString)
 
 
 /**
@@ -106,3 +92,12 @@ fun gameFromMoves(movesInString: List<String>): Game =
 @JvmName("gameFromMovesListOfMove")
 fun gameFromMoves(moves: List<Move>): Game =
     gameFromMoves(moves.map { it.toString() })
+
+
+/**
+ * Returns a new game with the moves [movesInString] consecutively made and validated in the game.
+ * @param movesInString moves to make in string
+ * @return new game with the moves [movesInString] consecutively made and validated in the game
+ */
+fun gameFromMoves(vararg movesInString: String): Game =
+    gameFromMoves(movesInString.toList())

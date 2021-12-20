@@ -1,6 +1,6 @@
 import domain.commands.*
 import domain.Session
-import storage.GameState
+import storage.GameStorage
 import ui.console.*
 
 
@@ -21,7 +21,7 @@ data class CommandHandler(
  * @param db database where the game is stored
  * @return the container with the command handler mappings
  */
-fun buildCommandsHandler(session: Session, db: GameState): Map<String, CommandHandler> {
+fun buildCommandsHandler(session: Session, db: GameStorage): Map<String, CommandHandler> {
     return mapOf(
         "open"    to CommandHandler(action = OpenCommand(db),             display = ::openView),
         "join"    to CommandHandler(action = JoinCommand(db),             display = ::joinView),
