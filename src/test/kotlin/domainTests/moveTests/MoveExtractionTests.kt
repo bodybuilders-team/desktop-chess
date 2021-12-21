@@ -1,26 +1,74 @@
 package domainTests.moveTests
 
-import domain.board.Board
-import domain.board.FIRST_COL
-import domain.board.FIRST_ROW
+import domain.board.*
+import domain.board.Board.*
 import domain.move.*
 import domain.pieces.PieceType
 import kotlin.test.*
 
 
-class MoveExtractionTests {
+class MoveExtractionTests { // [✔]
 
-    // extractMoveInfo
+    // toString [✔]
 
     @Test
-    fun `extractMoveInfo extracts information from move correctly`() {
+    fun `toString works for normal move`() {
+        assertEquals("Pe2e4", Move.extractMoveInfo("Pe2e4").toString())
+    }
+
+    @Test
+    fun `toString works for move with optional from col`() {
+        assertEquals("P2e4", Move.extractMoveInfo("P2e4").toString())
+    }
+
+    @Test
+    fun `toString works for move with optional from row`() {
+        assertEquals("Pee4", Move.extractMoveInfo("Pee4").toString())
+    }
+    
+    @Test
+    fun `toString works for move with optional from position`() {
+        assertEquals("Pe4", Move.extractMoveInfo("Pe4").toString())
+    }
+
+    @Test
+    fun `toString works for capture move`() {
+        assertEquals("Pe2xe4", Move.extractMoveInfo("Pe2xe4").toString())
+    }
+
+    @Test
+    fun `toString works for promotion move`() {
+        assertEquals("Pe7e8=Q", Move.extractMoveInfo("Pe7e8=Q").toString())
+    }
+
+    @Test
+    fun `toString works for short castle`() {
+        assertEquals("O-O", Move.extractMoveInfo("O-O").toString())
+    }
+
+    @Test
+    fun `toString works for long castle`() {
+        assertEquals("O-O-O", Move.extractMoveInfo("O-O-O").toString())
+    }
+
+    // extractMoveInfo [✔]
+
+    @Test
+    fun `extractMoveInfo throws IllegalMoveException with wrongly formatted move`() {
+        assertFailsWith<IllegalMoveException> { 
+            Move.extractMoveInfo("P29222eee")
+        }
+    }
+
+    @Test
+    fun `extractMoveInfo extracts information from normal move correctly`() {
         assertEquals(
             MoveExtraction(
                 Move(
                     symbol = PieceType.PAWN.symbol,
-                    from = Board.Position('e', 2),
+                    from = Position('e', 2),
                     capture = false,
-                    to = Board.Position('e', 4),
+                    to = Position('e', 4),
                     promotion = null,
                     type = MoveType.NORMAL
                 ),
@@ -37,9 +85,9 @@ class MoveExtractionTests {
             MoveExtraction(
                 Move(
                     symbol = PieceType.PAWN.symbol,
-                    from = Board.Position(FIRST_COL, 2),
+                    from = Position(FIRST_COL, 2),
                     capture = false,
-                    to = Board.Position('e', 4),
+                    to = Position('e', 4),
                     promotion = null,
                     type = MoveType.NORMAL
                 ),
@@ -56,9 +104,9 @@ class MoveExtractionTests {
             MoveExtraction(
                 Move(
                     symbol = PieceType.PAWN.symbol,
-                    from = Board.Position('e', FIRST_ROW),
+                    from = Position('e', FIRST_ROW),
                     capture = false,
-                    to = Board.Position('e', 4),
+                    to = Position('e', 4),
                     promotion = null,
                     type = MoveType.NORMAL
                 ),
@@ -75,9 +123,9 @@ class MoveExtractionTests {
             MoveExtraction(
                 Move(
                     symbol = PieceType.PAWN.symbol,
-                    from = Board.Position(FIRST_COL, FIRST_ROW),
+                    from = Position(FIRST_COL, FIRST_ROW),
                     capture = false,
-                    to = Board.Position('e', 4),
+                    to = Position('e', 4),
                     promotion = null,
                     type = MoveType.NORMAL
                 ),
@@ -94,9 +142,9 @@ class MoveExtractionTests {
             MoveExtraction(
                 Move(
                     symbol = PieceType.PAWN.symbol,
-                    from = Board.Position(FIRST_COL, 2),
+                    from = Position(FIRST_COL, 2),
                     capture = false,
-                    to = Board.Position('e', 4),
+                    to = Position('e', 4),
                     promotion = null,
                     type = MoveType.NORMAL
                 ),
@@ -113,9 +161,9 @@ class MoveExtractionTests {
             MoveExtraction(
                 Move(
                     symbol = PieceType.PAWN.symbol,
-                    from = Board.Position('e', FIRST_ROW),
+                    from = Position('e', FIRST_ROW),
                     capture = false,
-                    to = Board.Position('e', 4),
+                    to = Position('e', 4),
                     promotion = null,
                     type = MoveType.NORMAL
                 ),
@@ -132,9 +180,9 @@ class MoveExtractionTests {
             MoveExtraction(
                 Move(
                     symbol = PieceType.PAWN.symbol,
-                    from = Board.Position(FIRST_COL, FIRST_ROW),
+                    from = Position(FIRST_COL, FIRST_ROW),
                     capture = false,
-                    to = Board.Position('e', 4),
+                    to = Position('e', 4),
                     promotion = null,
                     type = MoveType.NORMAL
                 ),
@@ -146,14 +194,33 @@ class MoveExtractionTests {
     }
 
     @Test
+    fun `extractMoveInfo extracts information from move with capture correctly (regardless of move validity)`() {
+        assertEquals(
+            MoveExtraction(
+                Move(
+                    symbol = PieceType.PAWN.symbol,
+                    from = Position('e', 2),
+                    capture = true,
+                    to = Position('e', 4),
+                    promotion = null,
+                    type = MoveType.NORMAL
+                ),
+                optionalFromCol = false,
+                optionalFromRow = false
+            ),
+            Move.extractMoveInfo("Pe2xe4")
+        )
+    }
+
+    @Test
     fun `extractMoveInfo extracts information from move with promotion correctly (regardless of move validity)`() {
         assertEquals(
             MoveExtraction(
                 Move(
                     symbol = PieceType.PAWN.symbol,
-                    from = Board.Position('e', 2),
+                    from = Position('e', 2),
                     capture = false,
-                    to = Board.Position('e', 4),
+                    to = Position('e', 4),
                     promotion = 'Q',
                     type = MoveType.NORMAL
                 ),
@@ -170,9 +237,9 @@ class MoveExtractionTests {
             MoveExtraction(
                 Move(
                     symbol = PieceType.KING.symbol,
-                    from = Board.Position(INITIAL_KING_COL, DEFAULT_CASTLE_TO_ROW),
+                    from = Position(INITIAL_KING_COL, DEFAULT_CASTLE_TO_ROW),
                     capture = false,
-                    to = Board.Position(SHORT_CASTLE_KING_COL, DEFAULT_CASTLE_TO_ROW),
+                    to = Position(SHORT_CASTLE_KING_COL, DEFAULT_CASTLE_TO_ROW),
                     promotion = null,
                     type = MoveType.CASTLE
                 ),
@@ -189,9 +256,9 @@ class MoveExtractionTests {
             MoveExtraction(
                 Move(
                     symbol = PieceType.KING.symbol,
-                    from = Board.Position(INITIAL_KING_COL, DEFAULT_CASTLE_TO_ROW),
+                    from = Position(INITIAL_KING_COL, DEFAULT_CASTLE_TO_ROW),
                     capture = false,
-                    to = Board.Position(LONG_CASTLE_KING_COL, DEFAULT_CASTLE_TO_ROW),
+                    to = Position(LONG_CASTLE_KING_COL, DEFAULT_CASTLE_TO_ROW),
                     promotion = null,
                     type = MoveType.CASTLE
                 ),

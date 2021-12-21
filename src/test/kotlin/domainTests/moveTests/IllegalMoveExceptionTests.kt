@@ -4,12 +4,7 @@ import domain.move.IllegalMoveException
 import kotlin.test.*
 
 
-class IllegalMoveExceptionTests {
-
-    @Test
-    fun `IllegalMoveException is Exception`() {
-        assertTrue(IllegalMoveException("Pe2f5", "Illegal Move.") is Exception)
-    }
+class IllegalMoveExceptionTests { // [✔]
 
     @Test
     fun `Thrown IllegalMoveException is caught as Exception`() {

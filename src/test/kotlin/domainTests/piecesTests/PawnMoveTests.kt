@@ -3,11 +3,13 @@ package domainTests.piecesTests
 import domain.game.*
 import domain.board.*
 import domain.move.*
+import domain.pieces.Army
+import domain.pieces.Pawn
 import kotlin.test.*
 import isValidMove
 
 
-class PawnMoveTests {
+class PawnMoveTests { // [✔]
     private val sut = Board(
         "        " +
         "        " +
@@ -59,25 +61,84 @@ class PawnMoveTests {
         assertFalse(sut.isValidMove("Pe2e2"))
     }
 
-    // Pawn double move with piece in the way is invalid
-
-    private val sut2 = Board(
-        "        " +
-        "        " +
-        "        " +
-        "        " +
-        "        " +
-        "    N   " +
-        "    P   " +
-        "K       "
-    )
+    @Test
+    fun `Pawn single vertical move with piece in toPos is invalid`() {
+        val sut2 = Board(
+            "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "    N   " +
+                    "    P   " +
+                    "K       "
+        )
+        assertFalse(sut2.isValidMove("Pe2e3"))
+    }
 
     @Test
-    fun `Pawn double move with piece in the way is invalid`() {
+    fun `Pawn double move with piece in toPos is invalid`() {
+        val sut2 = Board(
+            "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "    N   " +
+                    "        " +
+                    "    P   " +
+                    "K       "
+        )
         assertFalse(sut2.isValidMove("Pe2e4"))
     }
 
-    // En passant
+    @Test
+    fun `Pawn double move with piece in the way is invalid`() {
+        val sut2 = Board(
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "    N   " +
+            "    P   " +
+            "K       "
+        )
+        assertFalse(sut2.isValidMove("Pe2e4"))
+    }
+
+    // isValidEnPassant [✔]
+
+    @Test
+    fun `isValidEnPassant returns true with valid en passant`() {
+        val sutEnPassant = Board(
+            "rnbqkbnr" +
+                    " ppp ppp" +
+                    "        " +
+                    "p   pP  " +
+                    "        " +
+                    "        " +
+                    "PPPPP PP" +
+                    "RNBQKBNR"
+        )
+
+        assertTrue(Pawn(Army.WHITE).isValidEnPassant(sutEnPassant, Move("Pf5e6")))
+    }
+
+    @Test
+    fun `isValidEnPassant returns false with invalid en passant`() {
+        val sutEnPassant = Board(
+            "rnbqkbnr" +
+            " ppp ppp" +
+            "        " +
+            "p   pP  " +
+            "        " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQKBNR"
+        )
+
+        assertFalse(Pawn(Army.WHITE).isValidEnPassant(sutEnPassant, Move("Pe2e3")))
+    }
 
     @Test
     fun `Pawn capture en passant to the left move is valid`() {

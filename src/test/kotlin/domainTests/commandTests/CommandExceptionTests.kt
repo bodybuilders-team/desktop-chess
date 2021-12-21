@@ -4,14 +4,9 @@ import domain.commands.*
 import kotlin.test.*
 
 
-class CommandExceptionTests {
+class CommandExceptionTests { // [✔]
 
-    // CommandException
-
-    @Test
-    fun `CommandException is Exception`() {
-        assertTrue(CommandException("Can't play without a game.") is Exception)
-    }
+    // CommandException [✔]
 
     @Test
     fun `Thrown CommandException is caught as Exception`() {
@@ -37,23 +32,23 @@ class CommandExceptionTests {
         }
     }
 
-    // cmdRequire
+    // cmdRequire [✔]
 
     @Test
     fun `cmdRequire doesn't throw CommandException if value is true`() {
-        val num = 420
+        val num = listOf(420, 89).random()
         cmdRequire(num > 69) { }
     }
 
     @Test
     fun `cmdRequire throws CommandException if value is false`() {
         assertFailsWith<CommandException> {
-            val num = 420
+            val num = listOf(420, 89).random()
             cmdRequire(num < 69) { }
         }
     }
 
-    // cmdRequireNotNull
+    // cmdRequireNotNull [✔]
 
     @Test
     fun `cmdRequireNotNull doesn't throw CommandException if value is not null`() {
@@ -71,7 +66,9 @@ class CommandExceptionTests {
 
     @Test
     fun `cmdRequireNotNull successfully smart casts value to non-nullable type`() {
-        val value: Int? = 42
+        var value: Int? = 42; assertTrue(value in listOf(null, 42))
+        
+        value = 42
         cmdRequireNotNull(value) { "Value is null!" }
         value > 2
     }

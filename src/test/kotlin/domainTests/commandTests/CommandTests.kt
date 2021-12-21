@@ -9,16 +9,16 @@ import domain.pieces.Army
 import kotlin.test.*
 
 
-class CommandTests {
+class CommandTests { // [✔]
 
-    // ExitCommand
+    // ExitCommand [✔]
 
     @Test
     fun `Exit command returns failure`() {
         assertTrue(ExitCommand().invoke().isFailure)
     }
 
-    // HelpCommand
+    // HelpCommand [✔]
 
     @Test
     fun `Help command returns successful result with the same session`() {
@@ -29,7 +29,7 @@ class CommandTests {
         assertEquals(session, result.getOrThrow())
     }
 
-    // MovesCommand
+    // MovesCommand [✔]
 
     @Test
     fun `Moves command throws CommandException if the session state is LOGGING`() {

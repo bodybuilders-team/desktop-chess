@@ -9,7 +9,7 @@ import domain.move.*
 import domain.pieces.*
 import kotlin.test.*
 
-class PlayCommandTests {
+class PlayCommandTests { // [✔]
     @Test
     fun `Play command throws CommandException if the session state is LOGGING`() {
         val gameName = "test"
@@ -98,7 +98,7 @@ class PlayCommandTests {
     }
 
     @Test
-    fun `Play command session state is ENDED and gameState is CHECK_MATE if the king from the other army is in checkmate after the move`() {
+    fun `Play command session state is ENDED and game state is CHECK_MATE if the king from the other army is in checkmate after the move`() {
         val gameName = "test"
 
         val db = GameStorageStub()
@@ -121,7 +121,7 @@ class PlayCommandTests {
     }
 
     @Test
-    fun `Play command session state is ENDED and gameState is STALE_MATE if the king from the other army is in stalemate after the move`() {
+    fun `Play command session state is ENDED and game state is STALE_MATE if the king from the other army is in stalemate after the move`() {
         val gameName = "test"
 
         val db = GameStorageStub()
@@ -145,7 +145,7 @@ class PlayCommandTests {
     }
 
     @Test
-    fun `Play command session state is WAITING_FOR_OPPONENT and gameState is CHECK if the king from the other army is in check after the move`() {
+    fun `Play command session state is WAITING_FOR_OPPONENT and game state is CHECK if the king from the other army is in check after the move`() {
         val gameName = "test"
 
         val db = GameStorageStub()
@@ -168,7 +168,7 @@ class PlayCommandTests {
     }
 
     @Test
-    fun `Play command session state is WAITING_FOR_OPPONENT and gameState is NO_CHECK if the king from the other army isn't in checkmate, stalemate or check after the move`() {
+    fun `Play command session state is WAITING_FOR_OPPONENT and game state is NO_CHECK if the king from the other army isn't in checkmate, stalemate or check after the move`() {
         val gameName = "test"
 
         val db = GameStorageStub()

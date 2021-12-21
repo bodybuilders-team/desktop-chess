@@ -5,7 +5,7 @@ import kotlin.test.*
 import isValidMove
 
 
-class BishopMoveTests {
+class BishopMoveTests { // [✔]
     private val sut = Board(
         "        " +
         "        " +

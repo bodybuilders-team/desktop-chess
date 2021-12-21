@@ -7,9 +7,9 @@ import domain.move.*
 import kotlin.test.*
 
 
-class SearchMovesTests {
+class SearchMovesTests { // [✔]
 
-    // searchMoves
+    // searchMoves [✔]
 
     @Test
     fun `searchMoves returns a list containing the only valid move`() {
@@ -17,9 +17,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOfMoves("Pe2e4").toSet(),
-            game.searchMoves(
-                Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            ).toSet()
+            game.searchMoves(Move.extractMoveInfo("Pe2e4"), optionalToPos = false).toSet()
         )
     }
 
@@ -29,9 +27,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOfMoves("Pe2e4").toSet(),
-            game.searchMoves(
-                Move("Pee4"), optionalFromCol = false, optionalFromRow = true, optionalToPos = false
-            ).toSet()
+            game.searchMoves(Move.extractMoveInfo("Pee4"), optionalToPos = false).toSet()
         )
     }
 
@@ -41,9 +37,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOfMoves("Pe2e4").toSet(),
-            game.searchMoves(
-                Move("P2e4"), optionalFromCol = true, optionalFromRow = false, optionalToPos = false
-            ).toSet()
+            game.searchMoves(Move.extractMoveInfo("P2e4"), optionalToPos = false).toSet()
         )
     }
 
@@ -53,9 +47,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOfMoves("Pe2e4").toSet(),
-            game.searchMoves(
-                Move("Pe4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = false
-            ).toSet()
+            game.searchMoves(Move.extractMoveInfo("Pe4"), optionalToPos = false).toSet()
         )
     }
 
@@ -65,9 +57,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOfMoves("Pe2e3", "Pe2e4").toSet(),
-            game.searchMoves(
-                Move("Pe2e4"), optionalFromCol = false, optionalFromRow = false, optionalToPos = true
-            ).toSet()
+            game.searchMoves(Move.extractMoveInfo("Pe2e4"), optionalToPos = true).toSet()
         )
     }
 
@@ -89,9 +79,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOfMoves("O-O-O").toSet(),
-            game.searchMoves(
-                Move("O-O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            ).toSet()
+            game.searchMoves(Move.extractMoveInfo("O-O-O"), optionalToPos = false).toSet()
         )
     }
 
@@ -113,9 +101,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOfMoves("O-O").toSet(),
-            game.searchMoves(
-                Move("O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            ).toSet()
+            game.searchMoves(Move.extractMoveInfo("O-O"), optionalToPos = false).toSet()
         )
     }
 
@@ -137,9 +123,7 @@ class SearchMovesTests {
 
         assertEquals(
             emptyList(),
-            game.searchMoves(
-                Move("O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            )
+            game.searchMoves(Move.extractMoveInfo("O-O"), optionalToPos = false)
         )
     }
 
@@ -161,9 +145,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOf(),
-            game.searchMoves(
-                Move("O-O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            )
+            game.searchMoves(Move.extractMoveInfo("O-O-O"), optionalToPos = false)
         )
     }
 
@@ -185,9 +167,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOfMoves("O-O-O").toSet(),
-            game.searchMoves(
-                Move("O-O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            ).toSet()
+            game.searchMoves(Move.extractMoveInfo("O-O-O"), optionalToPos = false).toSet()
         )
     }
 
@@ -209,9 +189,7 @@ class SearchMovesTests {
 
         assertEquals(
             listOfMoves("O-O").toSet(),
-            game.searchMoves(
-                Move("O-O"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            ).toSet()
+            game.searchMoves(Move.extractMoveInfo("O-O"), optionalToPos = false).toSet()
         )
     }
 
@@ -221,9 +199,7 @@ class SearchMovesTests {
 
         assertEquals(
             emptyList(),
-            game.searchMoves(
-                Move("Pe2e5"), optionalFromCol = false, optionalFromRow = false, optionalToPos = false
-            )
+            game.searchMoves(Move.extractMoveInfo("Pe2e5"), optionalToPos = false)
         )
     }
 
@@ -233,8 +209,6 @@ class SearchMovesTests {
 
         assertEquals(
             (COLS_RANGE.map { Move("P${it}2${it}3") } + COLS_RANGE.map { Move("P${it}2${it}4") }).toSet(),
-            game.searchMoves(
-                Move("Pe2e4"), optionalFromCol = true, optionalFromRow = true, optionalToPos = true
-            ).toSet())
+            game.searchMoves(Move.extractMoveInfo("Pe4"), optionalToPos = true).toSet())
     }
 }

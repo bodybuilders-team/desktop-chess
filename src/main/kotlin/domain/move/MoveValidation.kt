@@ -23,19 +23,30 @@ const val SHORT_CASTLE_KING_COL = 'g'
  */
 fun Move.getValidatedMove(piece: Piece, game: Game): Move? {
     val validMove = when {
-        isValidEnPassant(piece, game) -> copy(type = MoveType.EN_PASSANT)
+        isValidEnPassant(piece, game) -> copy(type = MoveType.EN_PASSANT, capture = true)
         isValidCastle(piece, game) -> copy(type = MoveType.CASTLE)
-        piece.isValidMove(game.board, this) && isValidCapture(piece, game.board) -> copy(type = MoveType.NORMAL)
+        isValidNormal(piece, game.board) -> copy(type = MoveType.NORMAL, capture = game.board.isPositionOccupied(to))
         else -> return null
     }
 
     if (game.board.makeMove(validMove).isKingInCheck(piece.army)) return null
 
-    return validMove.copy(capture = game.board.isPositionOccupied(validMove.to))
+    return validMove
 }
 
+
 /**
- * Checks if the capture in the move is valid.
+ * Checks if the move is a valid normal move.
+ * @param piece to check if the move is a valid normal
+ * @param board board where the move happens
+ * @return true if the move is a valid normal move
+ */
+fun Move.isValidNormal(piece: Piece, board: Board): Boolean =
+    piece.isValidMove(board, this) && isValidCapture(piece, board)
+
+
+/**
+ * Checks if the capture in the normal move is valid.
  *
  * Also checking, if the capture is a promotion, if it's a valid promotion.
  * To promote, a piece needs to be a pawn and its next move has to be to the opposite player's first row.

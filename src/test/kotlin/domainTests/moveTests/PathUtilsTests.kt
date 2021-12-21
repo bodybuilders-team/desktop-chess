@@ -6,9 +6,9 @@ import domain.board.Board.*
 import kotlin.test.*
 
 
-class PathUtilsTests {
+class PathUtilsTests { // [✔]
 
-    // anyPositionInStraightPath
+    // anyPositionInStraightPath [✔]
 
     @Test
     fun `anyPositionInStraightPath returns true if any position in the straight path matches predicate`() {
@@ -74,7 +74,7 @@ class PathUtilsTests {
         }
     }
 
-    // anyPositionInDiagonalPath
+    // anyPositionInDiagonalPath [✔]
 
     @Test
     fun `anyPositionInDiagonalPath returns true if any position in the diagonal path matches predicate`() {
@@ -140,7 +140,7 @@ class PathUtilsTests {
         }
     }
 
-    // isStraightPathOccupied
+    // isStraightPathOccupied [✔]
 
     @Test
     fun `isStraightPathOccupied returns true if the straight path is occupied`() {
@@ -178,7 +178,7 @@ class PathUtilsTests {
         assertFalse(isStraightPathOccupied(sut, move))
     }
 
-    // isDiagonalPathOccupied
+    // isDiagonalPathOccupied [✔]
 
     @Test
     fun `isDiagonalPathOccupied returns true if the diagonal path is occupied`() {
@@ -216,7 +216,7 @@ class PathUtilsTests {
         assertFalse(isDiagonalPathOccupied(sut, move))
     }
 
-    // isValidStraightMove
+    // isValidStraightMove [✔]
 
     @Test
     fun `isValidStraightMove returns true if the move is a valid straight move`() {
@@ -252,7 +252,7 @@ class PathUtilsTests {
         assertFalse(isValidStraightMove(sut, move))
     }
 
-    // isValidDiagonalMove
+    // isValidDiagonalMove [✔]
 
     @Test
     fun `isValidDiagonalMove returns true if the move is a valid diagonal move`() {

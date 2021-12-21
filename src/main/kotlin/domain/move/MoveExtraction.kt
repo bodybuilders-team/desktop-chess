@@ -22,7 +22,20 @@ private const val THREE_STRING_LEN = 3
  * @param optionalFromCol if from column is optional
  * @param optionalFromRow if from row is optional
  */
-data class MoveExtraction(val move: Move, val optionalFromCol: Boolean, val optionalFromRow: Boolean)
+data class MoveExtraction(val move: Move, val optionalFromCol: Boolean, val optionalFromRow: Boolean) {
+    /**
+     * Returns a string representation of the move extraction, which is the same as string representation of move but
+     * with the possibility to omit fromCol and fromRow.
+     * @return string representation of the move extraction
+     */
+    override fun toString() =
+        if (move.type != MoveType.CASTLE)
+            move.toString().replaceRange(
+                1..2,
+                "${if (!optionalFromCol) move.from.col else ""}${if (!optionalFromRow) move.from.row else ""}"
+            )
+        else move.toString()
+}
 
 
 /**

@@ -7,7 +7,7 @@ import kotlin.test.*
 
 class GameStorageTests {
 
-    // getAllMoves
+    // getAllMoves [✔]
 
     @Test
     fun `getAllMoves returns list of moves of the game`() {
@@ -37,7 +37,7 @@ class GameStorageTests {
         )
     }
     
-    // postMove
+    // postMove [✔]
 
     @Test
     fun `postMove adds a move to the list of moves`() {
@@ -67,7 +67,7 @@ class GameStorageTests {
         )
     }
     
-    // createGame
+    // createGame [✔]
 
     @Test
     fun `createGame creates a game with empty list of moves`() {
@@ -93,7 +93,7 @@ class GameStorageTests {
         )
     }
     
-    // gameExists
+    // gameExists [✔]
 
     @Test
     fun `gameExists returns true if the game exists`() {

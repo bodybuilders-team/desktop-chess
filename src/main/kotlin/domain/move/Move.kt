@@ -37,15 +37,28 @@ data class Move(
         private val normalMoveRegex = "[PKQNBR]?[a-h]?[1-8]?x?([a-h][1-8])(=[QNBR])?".toRegex().toString()
         private val castleMoveRegex = "O-O(-O)?".toRegex().toString()
         private val moveRegex = Regex("^($normalMoveRegex|$castleMoveRegex)\$")
+        private val normalMoveRegexRequiredFromPosition =
+            "[PKQNBR]?([a-h][1-8])x?([a-h][1-8])(=[QNBR])?".toRegex().toString()
 
 
         /**
-         * Constructs a move from a String.
+         * Constructs a move, extracting it from a String.
+         * 
+         * This is the recommended way to create a move object since it saves the hassle of inserting the properties individually.
+         *
+         * This move is unvalidated in the context of a game. For that reason, it doesn't accept optional from position.
          * @param moveInString move in string format
-         * @return the move extracted from the string, unvalidated in the context of a game
+         * @return the move extracted from the string
          */
-        operator fun invoke(moveInString: String): Move =
-            extractMoveInfo(moveInString).move
+        operator fun invoke(moveInString: String): Move {
+            require(
+                Regex("^($normalMoveRegexRequiredFromPosition|$castleMoveRegex)\$")
+                    .containsMatchIn(moveInString)
+            ) {
+                "Move.invoke only accepts a moveInString that includes from position."
+            }
+            return extractMoveInfo(moveInString).move
+        }
 
 
         /**
@@ -58,14 +71,16 @@ data class Move(
          * @throws IllegalMoveException if move is not possible in [game] or multiple possible moves were found
          */
         fun validated(moveInString: String, game: Game): Move {
-            val (move, optionalFromCol, optionalFromRow) = extractMoveInfo(moveInString)
-            val validMoves = game.searchMoves(move, optionalFromCol, optionalFromRow, optionalToPos = false)
+            val extractedMove = extractMoveInfo(moveInString)
+            val validMoves = game.searchMoves(extractedMove, optionalToPos = false)
 
-            if (validMoves.size != 1) throw IllegalMoveException(
-                move.toString(optionalFromCol, optionalFromRow),
-                if (optionalFromCol || optionalFromRow)
-                    "Try with origin column and row." else "Illegal move."
-            )
+            extractedMove.apply {
+                if (validMoves.size != 1) throw IllegalMoveException(
+                    toString(),
+                    if (optionalFromCol || optionalFromRow)
+                        "Try with origin column and row." else "Illegal move."
+                )
+            }
 
             return validMoves.first()
         }
@@ -96,7 +111,7 @@ data class Move(
      * Return true if the movement is straight (horizontal or vertical)
      * @return true if the movement is straight (horizontal or vertical)
      */
-    fun isStraight() = isHorizontal() xor isVertical()
+    fun isStraight() = isHorizontal() || isVertical()
 
     /**
      * Return true if the movement is diagonal
@@ -137,21 +152,6 @@ data class Move(
                     "$to" +
                     (if (promotion != null) "$PROMOTION_CHAR$promotion" else "") // ( ͡° ͜ʖ ͡°)
         else if (to.col == SHORT_CASTLE_KING_COL) SHORT_CASTLE_STRING else LONG_CASTLE_STRING
-
-    /**
-     * Returns a string representation of the move, with the possibility to omit fromCol and fromRow.
-     * @param optionalFromCol if fromCol is to be omitted
-     * @param optionalFromRow if romRow is to be omitted
-     * @return string representation of the move
-     */
-    fun toString(optionalFromCol: Boolean, optionalFromRow: Boolean) =
-        if (type != MoveType.CASTLE)
-            toString().replaceRange(
-                1..2,
-                "${if (!optionalFromCol) from.col else ""}${if (!optionalFromRow) from.row else ""}"
-            )
-        else toString()
-
 }
 
 

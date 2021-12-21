@@ -60,7 +60,7 @@ val Game.state
             isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK)              -> GameState.STALEMATE
             isTiedByFiftyMoveRule()                                                     -> GameState.TIE
             board.isKingInCheck(Army.WHITE) || board.isKingInCheck(Army.BLACK)          -> GameState.CHECK
-            else -> GameState.NO_CHECK
+            else                                                                        -> GameState.NO_CHECK
         }
 
 

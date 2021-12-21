@@ -11,7 +11,7 @@ data class PGN(val pgnInList: List<String>) {
     private val hashmap = HashMap<String, String>()
 
     operator fun get(string: String): String? {
-        return hashmap[string];
+        return hashmap[string]
     }
 
     val moves: String

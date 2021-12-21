@@ -7,9 +7,9 @@ import domain.pieces.Army
 import kotlin.test.*
 
 
-class AvailableMovesTests {
+class AvailableMovesTests { // [✔]
 
-    // getAvailableMoves
+    // getAvailableMoves [✔]
 
     @Test
     fun `getAvailableMoves returns emptyList when there are no available moves for queen`() {
@@ -84,12 +84,12 @@ class AvailableMovesTests {
 
         assertNotNull(piece)
         assertEquals(
-            setOf("Pe5e6", "Pe5d6"),
+            setOf("Pe5e6", "Pe5xd6"),
             piece.getAvailableMoves(Game(sut, previousMoves), position).map { it.toString() }.toSet()
         )
     }
 
-    // hasAvailableMoves
+    // hasAvailableMoves [✔]
 
     @Test
     fun `hasAvailableMoves with the army returns true if it's the army's turn and there are available moves`() {

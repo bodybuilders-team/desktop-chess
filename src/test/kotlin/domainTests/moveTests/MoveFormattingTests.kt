@@ -4,7 +4,7 @@ import domain.move.Move
 import kotlin.test.*
 
 
-class MoveFormattingTests {
+class MoveFormattingTests { // [✔]
 
     @Test
     fun `Empty is incorrectly formatted`() {
@@ -62,11 +62,6 @@ class MoveFormattingTests {
     }
 
     @Test
-    fun `Move with optional piece symbol is correctly formatted`() {
-        assertTrue(Move.isCorrectlyFormatted("e2e4"))
-    }
-
-    @Test
     fun `Move with optional fromCol is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("P2e4"))
     }
@@ -79,6 +74,11 @@ class MoveFormattingTests {
     @Test
     fun `Move with optional fromPos is correctly formatted`() {
         assertTrue(Move.isCorrectlyFormatted("Pe4"))
+    }
+
+    @Test
+    fun `Move with optional piece symbol is correctly formatted`() {
+        assertTrue(Move.isCorrectlyFormatted("e2e4"))
     }
 
     @Test

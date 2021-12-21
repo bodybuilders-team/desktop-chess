@@ -105,7 +105,7 @@ fun Board.positionAttackers(position: Position, armyThatAttacks: Army): List<Mov
             if (piece.army != armyThatAttacks) continue
 
             val move = Move("${piece.type.symbol}$fromPos$position")
-            if (piece.isValidMove(this, move) && move.isValidCapture(piece, this))
+            if (move.isValidNormal(piece, this))
                 attackingMoves += move
         }
     }

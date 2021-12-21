@@ -7,7 +7,7 @@ import domain.commands.*
 import domain.move.*
 import kotlin.test.*
 
-class JoinCommandTests {
+class JoinCommandTests { // [✔]
     @Test
     fun `Join command throws CommandException if the game name is missing`() {
         val db = GameStorageStub()
@@ -140,7 +140,7 @@ class JoinCommandTests {
     }
 
     @Test
-    fun `Join command gameState is CHECK if the black King is in Check and it's black turn`() {
+    fun `Join command game state is CHECK if the black King is in Check`() {
         val gameName = "test"
 
         val db = GameStorageStub()
@@ -156,12 +156,11 @@ class JoinCommandTests {
         assertTrue(result.isSuccess)
         assertEquals(gameName, session.name)
         assertEquals(movesForCheck, session.game.moves)
-        assertEquals(SessionState.YOUR_TURN, session.state)
         assertEquals(GameState.CHECK, session.game.state)
     }
 
     @Test
-    fun `Join command gameState is NO_CHECK if the black King isn't in Check and it's black turn`() {
+    fun `Join command game state is NO_CHECK if the black King isn't in Check `() {
         val gameName = "test"
 
         val db = GameStorageStub()
@@ -177,7 +176,6 @@ class JoinCommandTests {
         assertTrue(result.isSuccess)
         assertEquals(gameName, session.name)
         assertEquals(moves, session.game.moves)
-        assertEquals(SessionState.YOUR_TURN, session.state)
         assertEquals(GameState.NO_CHECK, session.game.state)
     }
 }

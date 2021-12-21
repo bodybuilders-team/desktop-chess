@@ -7,9 +7,9 @@ import domain.pieces.*
 import kotlin.test.*
 
 
-class MoveValidationTests {
+class MoveValidationTests { // [✔]
     
-    // getValidatedMove
+    // getValidatedMove [✔]
 
     @Test
     fun `getValidatedMove returns validated move with the correct move type information if it should be normal`() {
@@ -53,9 +53,31 @@ class MoveValidationTests {
     }
 
     @Test
-    fun `getValidatedMove returns validated move with the correct capture information`() {
+    fun `getValidatedMove returns validated move with the correct move type information if it should be en passant`() {
         val sut = Board(
-            "rnbqkbNr" +
+            "rnbqkbnr" +
+            "pppp ppp" +
+            "        " +
+            "    pP  " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR"
+        )
+
+        val move = Move("Pf5e6")
+        val piece = sut.getPiece(move.from)
+        val game = Game(sut, listOfMoves("Pe7e5"))
+
+        assertNotNull(piece)
+        assertEquals(MoveType.NORMAL, move.type)
+        assertEquals(move.copy(type = MoveType.EN_PASSANT, capture = true), move.getValidatedMove(piece, game))
+    }
+
+    @Test
+    fun `getValidatedMove returns validated move with the correct capture information if it should be a capture`() {
+        val sut = Board(
+            "rnbqkbnr" +
                     "pppp ppp" +
                     "        " +
                     "        " +
@@ -75,7 +97,7 @@ class MoveValidationTests {
     @Test
     fun `getValidatedMove returns null with invalid move`() {
         val sut = Board(
-            "rnbqkbNr" +
+            "rnbqkbnr" +
                     "pppp ppp" +
                     "        " +
                     "        " +
@@ -92,7 +114,51 @@ class MoveValidationTests {
         assertNull(move.getValidatedMove(piece, Game(sut, emptyList())))
     }
 
-    // isValidCapture
+    @Test
+    fun `getValidatedMove returns null with move that leaves king in check`() {
+        val sut = Board(
+            "rnb kbnr" +
+            "pppp ppp" +
+            "        " +
+            "        " +
+            "    q   " +
+            "        " +
+            "PPPPBPPP" +
+            "RNBQK NR"
+        )
+
+        val move = Move("Be2f3")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertNull(move.getValidatedMove(piece, Game(sut, emptyList())))
+    }
+    
+    // isValidNormal [✔]
+    // Calls isValidCapture and the individual isValidMove of the moving piece.
+    // Guarantee testing of both.
+
+    @Test
+    fun `isValidNormal returns true if the move is a valid normal move`() {
+        val sut = Board(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR"
+        )
+
+        val move = Move("Pe2e4")
+        val piece = sut.getPiece(move.from)
+
+        assertNotNull(piece)
+        assertTrue(move.isValidCapture(piece, sut))
+    }
+
+    // isValidCapture [✔]
 
     @Test
     fun `isValidCapture returns true with valid capture to empty square`() {
@@ -135,7 +201,7 @@ class MoveValidationTests {
     }
 
     @Test
-    fun `isValidCapture returns false with invalid capture`() {
+    fun `isValidCapture returns false with invalid capture (capture a piece of the same army)`() {
         val sut = Board(
             "rnbqkbnr" +
                     "ppppp pp" +
@@ -234,7 +300,9 @@ class MoveValidationTests {
         assertFalse(move.isValidCapture(piece, sut))
     }
 
-    // isValidEnPassant
+    // isValidEnPassant [✔]
+    // Calls isValidEnPassant of the pawn and isEnPassantPossible.
+    // Guarantee testing of both.
 
     @Test
     fun `isValidEnPassant returns true if the move is a valid en passant`() {
@@ -276,7 +344,9 @@ class MoveValidationTests {
         assertFalse(move.isValidEnPassant(piece, Game(sut, listOfMoves("Pf2f4", "Pd7d6"))))
     }
 
-    // isValidCastle
+    // isValidCastle [✔]
+    // Calls isValidCastle of the king and isValidCastle.
+    // Guarantee testing of both.
 
     @Test
     fun `isValidCastle returns true if the move is a valid long castle with king`() {
@@ -299,7 +369,7 @@ class MoveValidationTests {
     }
 
     @Test
-    fun `isValidCastle returns false if the move isn't a valid long castle with king`() {
+    fun `isValidCastle returns false if the move isn't a valid long castle with king (rook moved already)`() {
         val sut = Board(
             "rnbqkbnr" +
             "pppppppp" +
@@ -339,7 +409,7 @@ class MoveValidationTests {
     }
 
     @Test
-    fun `isValidCastle returns false if the move isn't a valid short castle with king`() {
+    fun `isValidCastle returns false if the move isn't a valid short castle with king (rook moved already)`() {
         val sut = Board(
             "rnbqkbnr" +
             "pppppppp" +
@@ -406,7 +476,7 @@ class MoveValidationTests {
         assertFalse(move.isValidCastle(piece, game))
     }
 
-    // isEnPassantPossible
+    // isEnPassantPossible [✔]
 
     @Test
     fun `isEnPassantPossible returns true if an en passant move is possible to be made`() {
@@ -450,7 +520,7 @@ class MoveValidationTests {
         assertFalse(move.isEnPassantPossible(piece, previousMoves))
     }
 
-    // isCastlePossible
+    // isCastlePossible [✔]
 
     @Test
     fun `isCastlePossible returns true if a long castle move is possible to be made`() {
@@ -477,7 +547,7 @@ class MoveValidationTests {
     }
 
     @Test
-    fun `isCastlePossible returns false if a long castle move isn't possible to be made`() {
+    fun `isCastlePossible returns false if a long castle move isn't possible to be made (rook moved already)`() {
         val sut = Board(
             "rnbqkbnr" +
             "pppppppp" +
@@ -549,7 +619,7 @@ class MoveValidationTests {
     }
 
     @Test
-    fun `isCastlePossible returns false if a short castle move isn't possible to be made`() {
+    fun `isCastlePossible returns false if a short castle move isn't possible to be made (rook moved already)`() {
         val sut = Board(
             "rnbqkbnr" +
             "pppppppp" +
@@ -596,7 +666,7 @@ class MoveValidationTests {
         assertTrue(move.isCastlePossible(piece, previousMoves))
     }
 
-    // getEnPassantCapturedPawnPosition
+    // getEnPassantCapturedPawnPosition [✔]
 
     @Test
     fun `getEnPassantCapturedPawnPosition with valid attackerPos returns correct captured pawn position`() {
@@ -606,7 +676,7 @@ class MoveValidationTests {
         )
     }
     
-    // Castle.getRookPosition
+    // Castle.getRookPosition [✔]
 
     @Test
     fun `getRookPosition with valid short castle king toPos returns correct rook fromPos`() {
@@ -624,7 +694,7 @@ class MoveValidationTests {
         )
     }
 
-    // Castle.getRookToPosition
+    // Castle.getRookToPosition [✔]
 
     @Test
     fun `getRookToPosition with valid short castle king toPos returns correct rook toPos`() {

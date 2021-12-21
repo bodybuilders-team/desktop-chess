@@ -3,6 +3,7 @@ package domain.pieces
 import domain.game.*
 import domain.board.Board
 import domain.move.Move
+import domain.move.extractMoveInfo
 
 
 // Constants.
@@ -11,6 +12,8 @@ const val BLACK_PAWN_INITIAL_ROW = 7
 const val DOUBLE_MOVE = 2
 const val ONE_MOVE = 1
 const val NO_MOVE = 0
+
+val DEFAULT_TO_POSITION = Board.Position('a', 1)
 
 
 /**
@@ -45,12 +48,7 @@ interface Piece {
      * @return list of available moves
      */
     fun getAvailableMoves(game: Game, position: Board.Position): List<Move> =
-        game.searchMoves(
-            Move("${type.symbol}${position}a1"),
-            optionalFromCol = false,
-            optionalFromRow = false,
-            optionalToPos = true
-        )
+        game.searchMoves(Move.extractMoveInfo("${type.symbol}${position}$DEFAULT_TO_POSITION"), optionalToPos = true)
 }
 
 

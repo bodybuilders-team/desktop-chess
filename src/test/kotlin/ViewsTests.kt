@@ -5,15 +5,7 @@ import domain.pieces.Army
 import ui.console.*
 
 
-object ViewsTests {
-    private val defaultGameResultingInBlackCheck = gameFromMoves("c3", "d6", "a3", "e6", "Qa4")
-    private val defaultGameResultingInWhiteCheck = gameFromMoves("d3", "c6", "a3", "Qa5")
-    private val defaultGameResultingInCheckMate = gameFromMoves("f3", "e5", "g4", "Qh4")
-    private val defaultGameResultingInStaleMate = gameFromMoves(
-            "e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
-            "Qd3", "Qb8", "Qh7", "Qc8", "Kg6", "Qe6"
-    )
-
+object ViewsTests { // []
     data class ViewTest(val view: View, val name: String, val session: Session)
 
     private val defaultSession = Session(name = "test", SessionState.YOUR_TURN, Army.WHITE, gameFromMoves())

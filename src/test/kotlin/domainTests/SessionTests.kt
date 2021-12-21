@@ -8,9 +8,9 @@ import domain.pieces.*
 import kotlin.test.*
 
 
-class SessionTests {
+class SessionTests { // [✔]
 
-    // isLogging
+    // isLogging [✔]
 
     @Test
     fun `isLogging returns true if the current state is LOGGING`() {
@@ -24,7 +24,7 @@ class SessionTests {
         assertFalse(sut.isLogging())
     }
 
-    // getOpeningBoardSession
+    // getOpeningBoardSession [✔]
 
     @Test
     fun `getOpeningBoardSession returns ENDED if the game ended (checkmate in the board)`() {

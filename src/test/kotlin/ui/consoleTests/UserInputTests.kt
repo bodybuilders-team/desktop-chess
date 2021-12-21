@@ -8,9 +8,9 @@ import ui.console.getPrompt
 import kotlin.test.*
 
 
-class UserInputTests {
+class UserInputTests { // [✔]
     
-    // getPrompt
+    // getPrompt [✔]
     
     @Test
     fun `getPrompt with logging session name returns empty string`() {

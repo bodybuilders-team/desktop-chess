@@ -4,17 +4,7 @@ import com.mongodb.MongoException
 import storage.GameStorageAccessException
 import kotlin.test.*
 
-class GameStorageAccessExceptionTests {
-    @Test
-    fun `GameStateAccessException is Exception`() {
-        assertTrue(GameStorageAccessException("Error accessing.") is Exception)
-    }
-
-    @Test
-    fun `GameStateAccessException is MongoException`() {
-        assertTrue(GameStorageAccessException("Error accessing.") is MongoException)
-    }
-
+class GameStorageAccessExceptionTests { // [✔]
     @Test
     fun `Thrown GameStateAccessException is caught as Exception`() {
         assertFailsWith<Exception> {

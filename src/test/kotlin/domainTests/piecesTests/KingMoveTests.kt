@@ -4,11 +4,13 @@ import domain.game.*
 import domain.board.*
 import domain.move.Move
 import domain.move.MoveType
+import domain.pieces.Army
+import domain.pieces.King
 import kotlin.test.*
 import isValidMove
 
 
-class KingMoveTests {
+class KingMoveTests { // [✔]
     private val sut = Board(
         "        " +
         "        " +
@@ -69,8 +71,8 @@ class KingMoveTests {
     fun `King move to same place is not valid`() {
         assertFalse(sut.isValidMove("Ke2e2"))
     }
-
-    // Castle
+    
+    // isValidCastle [✔]
 
     private val sutCastle = Board(
         "        " +
@@ -82,6 +84,51 @@ class KingMoveTests {
         "        " +
         "R   K  R"
     )
+
+    @Test
+    fun `isValidCastle returns true if long castle move is valid`() {
+        assertTrue(King(Army.WHITE).isValidCastle(sutCastle, Move("Ke1c1")))
+    }
+
+    @Test
+    fun `isValidCastle returns true if short castle move is valid`() {
+        assertTrue(King(Army.WHITE).isValidCastle(sutCastle, Move("Ke1g1")))
+    }
+
+    @Test
+    fun `isValidCastle returns false if long castle move is invalid (not a rook piece)`() {
+        val sutCastle2 = Board(
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "N   K  R"
+        )
+        assertFalse(King(Army.WHITE).isValidCastle(sutCastle2, Move("Ke1c1")))
+    }
+
+    @Test
+    fun `isValidCastle returns false if short castle move is invalid (not a rook piece)`() {
+        val sutCastle2 = Board(
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "R   K  P"
+        )
+        assertFalse(King(Army.WHITE).isValidCastle(sutCastle2, Move("Ke1g1")))
+    }
+
+    @Test
+    fun `isValidCastle returns false if castle move is invalid`() {
+        assertFalse(King(Army.WHITE).isValidCastle(sutCastle, Move("Ke1b1")))
+    }
 
     @Test
     fun `King long castle move is valid`() {

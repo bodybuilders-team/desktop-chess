@@ -4,7 +4,7 @@ import domain.board.Board
 import kotlin.test.*
 
 
-class BoardPositionTests {
+class BoardPositionTests { // [✔]
 
     @Test
     fun `Position with column outside bounds throws`() {
@@ -28,8 +28,6 @@ class BoardPositionTests {
 
     @Test
     fun `Position toString works`() {
-        Board.Position(col = 'a', row = 5)
         assertEquals("a5", Board.Position(col = 'a', row = 5).toString())
     }
-
 }

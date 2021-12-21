@@ -9,7 +9,7 @@ import domain.move.*
 import domain.pieces.*
 import kotlin.test.*
 
-class RefreshCommandTests {
+class RefreshCommandTests { // [✔]
     @Test
     fun `Refresh command throws CommandException if the session state is LOGGING`() {
         val gameName = "test"
@@ -147,7 +147,7 @@ class RefreshCommandTests {
     }
 
     @Test
-    fun `Refresh command session state is YOUR_TURN and gameState is CHECK if it's your turn to play and your king is in check`() {
+    fun `Refresh command session state is YOUR_TURN and game state is CHECK if it's your turn to play and your king is in check`() {
         val gameName = "test"
 
         val db = GameStorageStub()
@@ -169,7 +169,7 @@ class RefreshCommandTests {
     }
     
     @Test
-    fun `Refresh command session state is YOUR_TURN and gameState is NO_CHECK if it's your turn to play and your king isn't in check`() {
+    fun `Refresh command session state is YOUR_TURN and game state is NO_CHECK if it's your turn to play and your king isn't in check`() {
         val gameName = "test"
 
         val db = GameStorageStub()

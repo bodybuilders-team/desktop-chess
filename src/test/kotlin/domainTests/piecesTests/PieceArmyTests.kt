@@ -4,7 +4,7 @@ import domain.pieces.*
 import kotlin.test.*
 
 
-class PieceArmyTests {
+class PieceArmyTests { // [✔]
     @Test
     fun `Army other() function with WHITE returns BLACK`() {
         assertEquals(Army.BLACK, Army.WHITE.other())

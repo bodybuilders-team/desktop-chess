@@ -36,7 +36,7 @@ data class King(override val army: Army) : Piece {
 
         return move.isHorizontal() && move.from == validKingPositionForCastle &&
                 move.to.col in validKingToColsForCastle &&
-                board.getPiece(Castle.getRookPosition(move.to)) == Rook(army) && //TODO("Test - Rook with non-rook piece / empty position is invalid")
+                board.getPiece(Castle.getRookPosition(move.to)) == Rook(army) &&
                 !isStraightPathOccupied(board, move.copy(to = Castle.getRookPosition(move.to)))
     }
 }

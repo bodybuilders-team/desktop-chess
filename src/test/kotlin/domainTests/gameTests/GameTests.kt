@@ -1,5 +1,10 @@
 package domainTests.gameTests
 
+import defaultGameResultingInBlackCheck
+import defaultGameResultingInCheckMate
+import defaultGameResultingInStaleMate
+import defaultGameResultingInTie
+import defaultGameResultingInWhiteCheck
 import domain.board.*
 import domain.game.*
 import domain.move.*
@@ -7,9 +12,37 @@ import domain.pieces.Army
 import kotlin.test.*
 
 
-class GameTests {
+class GameTests { // [✔]
+    
+    // toString [✔]
+    
+    @Test
+    fun `toString returns game in string correctly`(){
+        val board = Board(
+            "rnbqkbnr" +
+            "pppppppp" +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "PPPPPPPP" +
+            "RNBQKBNR"
+        )
+        
+        assertEquals(
+            "rnbqkbnr\n" +
+            "pppppppp\n" +
+            "        \n" +
+            "        \n" +
+            "        \n" +
+            "        \n" +
+            "PPPPPPPP\n" +
+            "RNBQKBNR",
+            Game(board, emptyList()).toString()
+        )
+    }
 
-    // makeMove
+    // makeMove [✔]
 
     @Test
     fun `MakeMove in Game`() {
@@ -31,6 +64,120 @@ class GameTests {
                     "PPPP PPP" +
                     "R BQKBNR", game.board.toString()
         )
+        assertEquals(listOfMoves("Pe2e4", "Pe7e5", "Nb1c3"), game.moves)
+    }
+
+    @Test
+    fun `makeMove in the game with a capture move works correctly`() {
+        var game = Game(Board(
+            "rnbqkbnr" +
+            "pppp ppp" +
+            "        " +
+            "        " +
+            "    p   " +
+            "     P  " +
+            "PPPPP PP" +
+            "RNBQKBNR"
+        ), emptyList())
+
+        game = game.makeMove(Move.validated("Pf3e4", game))
+
+        assertEquals(
+            "rnbqkbnr" +
+            "pppp ppp" +
+            "        " +
+            "        " +
+            "    P   " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQKBNR", game.board.toString()
+        )
+        assertEquals(listOf(Move("Pf3xe4")), game.moves)
+    }
+
+    @Test
+    fun `makeMove in the game with a long castle move works correctly`() {
+        var game = Game(Board(
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "R   K  R"
+        ), emptyList())
+
+        game = game.makeMove(Move.validated("O-O-O", game))
+
+        assertEquals(
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "  KR   R", game.board.toString()
+        )
+        assertEquals(listOf(Move("O-O-O")), game.moves)
+    }
+
+    @Test
+    fun `makeMove in the game with a short castle move works correctly`() {
+        var game = Game(Board(
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "R   K  R"
+        ), emptyList())
+
+        game = game.makeMove(Move.validated("O-O", game))
+
+        assertEquals(
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "R    RK ", game.board.toString()
+        )
+        assertEquals(listOf(Move("O-O")), game.moves)
+    }
+
+    @Test
+    fun `makeMove in the game with an en passant move works correctly`() {
+        var game = Game(Board(
+            "rnbqkbnr" +
+            " ppp ppp" +
+            "        " +
+            "p   pP  " +
+            "        " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQKBNR"
+        ), listOfMoves("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5"))
+        
+        game = game.makeMove(Move.validated("Pf5e6", game))
+
+        assertEquals(
+            "rnbqkbnr" +
+            " ppp ppp" +
+            "    P   " +
+            "p       " +
+            "        " +
+            "        " +
+            "PPPPP PP" +
+            "RNBQKBNR", game.board.toString()
+        )
+        assertEquals(listOfMoves("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5") + Move("Pf5xe6").copy(type = MoveType.EN_PASSANT),
+            game.moves)
     }
 
     @Test
@@ -121,7 +268,7 @@ class GameTests {
         }
     }
 
-    // armyToPlay
+    // armyToPlay [✔]
 
     @Test
     fun `armyToPlay returns White when number of moves is even`() {
@@ -133,11 +280,59 @@ class GameTests {
         assertEquals(Army.BLACK, gameFromMoves("Pe2e4").armyToPlay)
     }
     
-    //state
-    
-    //TODO("state tests")
+    //state [✔]
 
-    // gameFromMoves
+    @Test
+    fun `Game state is NO_CHECK when there's no check, checkmate, stalemate or tie in game`(){
+        assertEquals(GameState.NO_CHECK, gameFromMoves("Pe2e4").state)
+    }
+
+    @Test
+    fun `Game state is CHECK when there's a check in game`(){
+        assertEquals(GameState.CHECK, defaultGameResultingInBlackCheck.state)
+        assertEquals(GameState.CHECK, defaultGameResultingInWhiteCheck.state)
+    }
+
+    @Test
+    fun `Game state is CHECKMATE when there's a checkmate in game`(){
+        assertEquals(GameState.CHECKMATE, defaultGameResultingInCheckMate.state)
+    }
+
+    @Test
+    fun `Game state is STALEMATE when there's a stalemate in game`(){
+        assertEquals(GameState.STALEMATE, defaultGameResultingInStaleMate.state)
+    }
+
+    @Test
+    fun `Game state is TIE when there's a tie in game`(){
+        assertEquals(GameState.TIE, defaultGameResultingInTie.state)
+    }
+
+    // makeMoves [✔]
+    // Uses makeMove. Guarantee its testing.
+
+    @Test
+    fun `makeMoves makes moves correctly`() {
+        var game = Game(Board(), emptyList())
+
+        val movesInString = listOf("Pe2e4", "Pe7e5", "Nb1c3")
+
+        game = game.makeMoves(movesInString)
+
+        assertEquals(
+            "rnbqkbnr" +
+                    "pppp ppp" +
+                    "        " +
+                    "    p   " +
+                    "    P   " +
+                    "  N     " +
+                    "PPPP PPP" +
+                    "R BQKBNR", game.board.toString()
+        )
+        assertEquals(listOfMoves("Pe2e4", "Pe7e5", "Nb1c3"), game.moves)
+    }
+
+    // gameFromMoves(vararg String) [✔]
 
     @Test
     fun `gameFromMoves return game with no moves made if no moves are passed`() {
@@ -179,7 +374,7 @@ class GameTests {
         }
     }
 
-    // gameFromMoves(List<Move>)
+    // gameFromMoves(List<Move>) [✔]
 
     @Test
     fun `gameFromMoves(List-Move-) returns same game as gameFromMoves with list of movesInString`() {
@@ -188,35 +383,5 @@ class GameTests {
 
         assertEquals(gameFromMovesInString.board, gameFromMoves.board)
         assertEquals(gameFromMovesInString.moves, gameFromMoves.moves)
-    }
-
-    // isTiedByFiftyMoveRule
-
-    @Test
-    fun `Game is tied by 50 move rule if no pawn move and no capture happens in the last 100 moves (50 by each side)`() {
-        val moves = List(25) { listOf("Nb1c3", "Nb8c6", "Nc3b1", "Nc6b8") }.flatten()
-        assertTrue(gameFromMoves(moves).isTiedByFiftyMoveRule())
-    }
-
-    @Test
-    fun `Game is not tied by 50 move rule if a pawn moved and no capture happens in the last 100 moves (50 by each side)`() {
-        val moves = List(25) { listOf("Nb1c3", "Nb8c6", "Nc3b1", "Nc6b8") }.flatten()
-        assertFalse(gameFromMoves(moves + "Pe2e4").isTiedByFiftyMoveRule())
-    }
-
-    @Test
-    fun `Game is not tied by 50 move rule if no pawn moved and a capture happens in the last 100 moves (50 by each side)`() {
-        val startingMoves = listOf("Nb1c3", "Nb8c6", "Nc3b5", "Nc6d4", "Nb5xd4")
-
-        val moves = List(24) { listOf("Ng8h6", "Nd4b5", "Nh6g8", "Nb5d4") }.flatten()
-        assertFalse(gameFromMoves(startingMoves + moves).isTiedByFiftyMoveRule())
-    }
-
-    @Test
-    fun `Game is not tied by 50 move rule if a pawn moved and a capture happens in the last 100 moves (50 by each side)`() {
-        val startingMoves = listOf("Pe2e4", "Pd7d5", "Pe4xd5", "Ph7h6")
-
-        val moves = List(24) { listOf("Nb1c3", "Nb8c6", "Nc3b1", "Nc6b8") }.flatten()
-        assertFalse(gameFromMoves(startingMoves + moves).isTiedByFiftyMoveRule())
     }
 }
