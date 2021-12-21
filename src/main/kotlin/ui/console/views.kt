@@ -63,7 +63,7 @@ private fun openingGameView(session: Session, whiteArmy: Boolean) {
                 GameState.CHECK     -> "${if (session.state == SessionState.YOUR_TURN) "Your" else "Enemy"} King is in check."
                 GameState.CHECKMATE -> "Game ended in checkmate, ${session.game.armyToPlay.other().toString().lowercase()} won!"
                 GameState.STALEMATE -> "Game ended in stalemate, it's a draw!"
-                GameState.TIE       -> "Game is tied, ..." //TODO("Type of tie")
+                GameState.TIE       -> "Game is tied!"
                 GameState.NO_CHECK  -> ""
             }
         )
@@ -84,7 +84,7 @@ private fun afterMoveView(session: Session, playerTurn: Boolean) {
                     GameState.CHECK     -> "${if (playerTurn) "Your" else "Enemy"} King is in check."
                     GameState.CHECKMATE -> "${if (playerTurn) "Your" else "Enemy"} King is in checkmate. Game ended, you ${if (playerTurn) "lose" else "win"}!"
                     GameState.STALEMATE -> "${if (playerTurn) "Your" else "Enemy"} King is in stalemate. Game ended, it's a draw!"
-                    GameState.TIE       -> "Game is tied, ..." //TODO("Type of tie")
+                    GameState.TIE       -> "Game is tied!"
                     GameState.NO_CHECK  -> ""
                 }
         )

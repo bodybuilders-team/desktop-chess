@@ -58,7 +58,7 @@ val Game.state
         when {
             board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK)  -> GameState.CHECKMATE
             isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK)              -> GameState.STALEMATE
-            isTiedByFiftyMoveRule()                                                     -> GameState.TIE
+            isTiedByFiftyMoveRule() || isTiedByThreefold() || isTiedByDeadPosition()    -> GameState.TIE
             board.isKingInCheck(Army.WHITE) || board.isKingInCheck(Army.BLACK)          -> GameState.CHECK
             else                                                                        -> GameState.NO_CHECK
         }

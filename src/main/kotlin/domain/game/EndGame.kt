@@ -3,6 +3,7 @@ package domain.game
 import domain.board.Board
 import domain.pieces.Army
 import domain.pieces.PieceType
+import java.util.*
 
 
 const val NUMBER_OF_MOVES_TO_DRAW = 100
@@ -48,6 +49,12 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
 
 
 /**
+ * <-------------------------------------- Draws -------------------------------------->
+ * You can check more about draw conditions here: https://www.chess.com/terms/draw-chess
+ */
+
+
+/**
  * Checks if the king of the [army] is in stalemate.
  *
  * The king is in stalemate if the king isn't in check, but it's the army's turn and the army has no valid moves.
@@ -73,3 +80,41 @@ fun Game.isTiedByFiftyMoveRule() =
     moves.size >= NUMBER_OF_MOVES_TO_DRAW && moves.takeLast(NUMBER_OF_MOVES_TO_DRAW).none { move ->
         move.capture || move.symbol == PieceType.PAWN.symbol
     }
+
+
+/**
+ * Checks if a game is tied by threefold rule:
+ *
+ * The threefold repetition rule states that if a game reaches the same position three times, a draw can be claimed.
+ * A position is repeated if all pieces of the same kind and color are on identical squares,
+ * and all possible moves are the same.
+ *
+ * @return true if the game is tied by threefold rule
+ */
+fun Game.isTiedByThreefold(): Boolean {
+    val boards = mutableListOf(Board())
+
+    moves.forEach { move ->
+        val newBoard = boards.last().makeMove(move)
+        boards.add(newBoard)
+
+        if (Collections.frequency(boards, newBoard) == 3) return true
+    }
+
+    return false
+}
+
+
+/**
+ * Checks if a game is tied by dead position:
+ *
+ * A dead position happens when neither player can legally checkmate the opponent's king.
+ * If the game reaches this situation and the move that generated the position is legal, the game ends in a tie.
+ *
+ * @return true if the game is tied by dead position
+ */
+fun Game.isTiedByDeadPosition(): Boolean {
+    // TODO: 21/12/2021 To be implemented
+    return false
+}
+

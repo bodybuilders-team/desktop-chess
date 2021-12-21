@@ -1,8 +1,10 @@
 package domainTests.gameTests
 
+import defaultGameResultingInBlackCheck
 import defaultGameResultingInCheckMate
 import defaultGameResultingInStaleMate
 import defaultGameResultingInTie
+import defaultGameResultingInWhiteCheck
 import domain.game.*
 import domain.board.*
 import domain.move.*
@@ -219,5 +221,31 @@ class EndGameTests { // [✔]
 
         val moves = List(24) { listOf("Nb1c3", "Nb8c6", "Nc3b1", "Nc6b8") }.flatten()
         assertFalse(gameFromMoves(startingMoves + moves).isTiedByFiftyMoveRule())
+    }
+
+    // isTiedByThreefold [✔]
+    @Test
+    fun `Game is tied by threefold rule if knights move into the same position 3 times`() {
+        assertTrue(defaultGameResultingInTie.isTiedByThreefold())
+    }
+
+    @Test
+    fun `Game is not tied by threefold with game resulting in check mate`() {
+        assertFalse(defaultGameResultingInCheckMate.isTiedByThreefold())
+    }
+
+    @Test
+    fun `Game is not tied by threefold with game resulting in stale mate`() {
+        assertFalse(defaultGameResultingInStaleMate.isTiedByThreefold())
+    }
+
+    @Test
+    fun `Game is not tied by threefold with game resulting in white check`() {
+        assertFalse(defaultGameResultingInWhiteCheck.isTiedByThreefold())
+    }
+
+    @Test
+    fun `Game is not tied by threefold with game resulting in black check`() {
+        assertFalse(defaultGameResultingInBlackCheck.isTiedByThreefold())
     }
 }
