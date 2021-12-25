@@ -9,38 +9,11 @@ import domain.board.*
 import domain.game.*
 import domain.move.*
 import domain.pieces.Army
+import listOfMoves
 import kotlin.test.*
 
 
 class GameTests { // [✔]
-    
-    // toString [✔]
-    
-    @Test
-    fun `toString returns game in string correctly`(){
-        val board = Board(
-            "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR"
-        )
-        
-        assertEquals(
-            "rnbqkbnr\n" +
-            "pppppppp\n" +
-            "        \n" +
-            "        \n" +
-            "        \n" +
-            "        \n" +
-            "PPPPPPPP\n" +
-            "RNBQKBNR",
-            Game(board, emptyList()).toString()
-        )
-    }
 
     // makeMove [✔]
 

@@ -47,6 +47,7 @@ data class Move(
          * This is the recommended way to create a move object since it saves the hassle of inserting the properties individually.
          *
          * This move is unvalidated in the context of a game. For that reason, it doesn't accept optional from position.
+         * Only use when certain that it is a valid move.
          * @param moveInString move in string format
          * @return the move extracted from the string
          */
@@ -153,10 +154,3 @@ data class Move(
                     (if (promotion != null) "$PROMOTION_CHAR$promotion" else "") // ( ͡° ͜ʖ ͡°)
         else if (to.col == SHORT_CASTLE_KING_COL) SHORT_CASTLE_STRING else LONG_CASTLE_STRING
 }
-
-
-/**
- * Returns a list of moves from moves [movesInString].
- * @return list of moves from moves [movesInString]
- */
-fun listOfMoves(vararg movesInString: String) = movesInString.map { Move(it) }

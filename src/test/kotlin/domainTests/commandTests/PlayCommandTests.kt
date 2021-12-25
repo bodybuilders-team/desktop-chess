@@ -90,7 +90,7 @@ class PlayCommandTests { // [✔]
             Session(gameName, SessionState.YOUR_TURN, Army.BLACK, Game(Board(), emptyList()))
 
         assertEquals(
-            "It's not this army's turn! Session army is different from the current turn army.",
+            "It's not this army's turn! Session army is different from the army to play.",
             assertFailsWith<IllegalArgumentException> {
                 PlayCommand(db, session).execute("Pe2e4")
             }.message

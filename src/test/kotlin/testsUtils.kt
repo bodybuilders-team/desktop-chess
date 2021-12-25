@@ -5,7 +5,11 @@ import domain.move.*
 
 val defaultGameResultingInBlackCheck = gameFromMoves("c3", "d6", "a3", "e6", "Qa4")
 val defaultGameResultingInWhiteCheck = gameFromMoves("d3", "c6", "a3", "Qa5")
+
+// Fool's mate! 🤡 - https://www.chess.com/article/view/fastest-chess-checkmates
 val defaultGameResultingInCheckMate = gameFromMoves("f3", "e5", "g4", "Qh4")
+
+// Fastest stalemate known - https://www.chess.com/forum/view/game-showcase/fastest-stalemate-known-in-chess
 val defaultGameResultingInStaleMate = gameFromMoves(
     "e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
     "Qd3", "Qb8", "Qh7", "Qc8", "Kg6", "Qe6"
@@ -29,3 +33,10 @@ fun Board.isValidMove(moveInString: String): Boolean {
     }
     return true
 }
+
+
+/**
+ * Returns a list of moves from moves [movesInString].
+ * @return list of moves from moves [movesInString]
+ */
+fun listOfMoves(vararg movesInString: String) = movesInString.map { Move(it) }

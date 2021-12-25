@@ -51,7 +51,7 @@ fun Session.isLogging() = state == SessionState.LOGGING
 fun getSessionState(game: Game, army: Army) =
     when {
         game.ended()                    -> SessionState.ENDED
-        game.armyToPlay == army    -> SessionState.YOUR_TURN
+        game.armyToPlay == army         -> SessionState.YOUR_TURN
         else                            -> SessionState.WAITING_FOR_OPPONENT
     }
 

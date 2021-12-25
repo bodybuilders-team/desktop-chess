@@ -8,7 +8,7 @@ import java.util.*
 
 const val NUMBER_OF_MOVES_TO_DRAW = 100
 
-//TODO - Dead position and Three-fold repetition
+//TODO - Dead position
 
 
 /**

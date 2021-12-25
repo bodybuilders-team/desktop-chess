@@ -4,6 +4,7 @@ import domain.board.Board
 import domain.board.COLS_RANGE
 import domain.game.*
 import domain.move.*
+import listOfMoves
 import kotlin.test.*
 
 

@@ -23,9 +23,9 @@ const val SHORT_CASTLE_KING_COL = 'g'
  */
 fun Move.getValidatedMove(piece: Piece, game: Game): Move? {
     val validMove = when {
-        isValidEnPassant(piece, game) -> copy(type = MoveType.EN_PASSANT, capture = true)
-        isValidCastle(piece, game) -> copy(type = MoveType.CASTLE)
-        isValidNormal(piece, game.board) -> copy(type = MoveType.NORMAL, capture = game.board.isPositionOccupied(to))
+        isValidEnPassant(piece, game)     -> copy(type = MoveType.EN_PASSANT, capture = true)
+        isValidCastle(piece, game)        -> copy(type = MoveType.CASTLE)
+        isValidNormal(piece, game.board)  -> copy(type = MoveType.NORMAL, capture = game.board.isPositionOccupied(to))
         else -> return null
     }
 
@@ -55,8 +55,7 @@ fun Move.isValidNormal(piece: Piece, board: Board): Boolean =
  * @return true if the capture is valid
  */
 fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
-    val isPromotion = piece is Pawn && (piece.isWhite() && to.row == BLACK_FIRST_ROW ||
-            !piece.isWhite() && to.row == WHITE_FIRST_ROW)
+    val isPromotion = piece is Pawn && (to.row == if(piece.isWhite()) BLACK_FIRST_ROW else WHITE_FIRST_ROW)
 
     val isValidPromotion = isPromotion == (promotion != null)
 

@@ -1,6 +1,8 @@
 package domainTests.commandTests
 
 import GameStorageStub
+import defaultGameResultingInBlackCheck
+import defaultGameResultingInCheckMate
 import domain.*
 import domain.game.*
 import domain.commands.*
@@ -57,8 +59,7 @@ class JoinCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        // Fool's mate! 🤡 - https://www.chess.com/article/view/fastest-chess-checkmates
-        val movesForFoolsMate = gameFromMoves("f3", "e5", "g4", "Qh4").moves
+        val movesForFoolsMate = defaultGameResultingInCheckMate.moves
 
         movesForFoolsMate.forEach { db.postMove(gameName, it) }
 
@@ -146,7 +147,7 @@ class JoinCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val movesForCheck = gameFromMoves("c3", "d6", "a3", "e6", "Qa4").moves
+        val movesForCheck = defaultGameResultingInBlackCheck.moves
 
         movesForCheck.forEach { db.postMove(gameName, it) }
 
@@ -160,7 +161,7 @@ class JoinCommandTests { // [✔]
     }
 
     @Test
-    fun `Join command game state is NO_CHECK if the black King isn't in Check `() {
+    fun `Join command game state is NO_CHECK if none of the Kings is in Check`() {
         val gameName = "test"
 
         val db = GameStorageStub()

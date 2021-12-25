@@ -7,57 +7,6 @@ import kotlin.test.*
 
 
 class KingCheckUtilsTests { // [✔]
-    // kingAttackers [✔]
-
-    @Test
-    fun `kingAttackers size is 2 if two enemy pieces attacks the king`() {
-        val sut = Board(
-            "rnb kb r" +
-                    "pppppppp" +
-                    "     n  " +
-                    "   q    " +
-                    "    K   " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNBQ BNR"
-        )
-
-        assertTrue(sut.kingAttackers(sut.getKingPosition(Army.WHITE), Army.WHITE).size == 2)
-    }
-
-    @Test
-    fun `kingAttackers is empty if no piece attacks the king`() {
-        val sut = Board(
-            "rnbqkbnr" +
-                    "pppppppp" +
-                    "        " +
-                    "        " +
-                    "    K   " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNBQ BNR"
-        )
-
-        assertTrue(sut.kingAttackers(sut.getKingPosition(Army.WHITE), Army.WHITE).isEmpty())
-    }
-
-    @Test
-    fun `kingAttackers throws if more than 2 pieces attack the king`() {
-        val sut = Board(
-            "rnb kb r" +
-                    "ppppp pp" +
-                    "     n  " +
-                    "   q p  " +
-                    "    K   " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNBQ BNR"
-        )
-
-        assertFailsWith<IllegalArgumentException> {
-            sut.kingAttackers(sut.getKingPosition(Army.WHITE), Army.WHITE)
-        }
-    }
 
     // isKingProtectable [✔]
 
@@ -275,13 +224,13 @@ class KingCheckUtilsTests { // [✔]
     fun `canKingMove returns false if an adjacent piece is of the other army but the position is attacked`() {
         val sut = Board(
             "        " +
-                    "        " +
-                    "   br   " +
-                    "  q     " +
-                    "   K    " +
-                    "       r" +
-                    "   N    " +
-                    "        "
+            "        " +
+            "   br   " +
+            "  q     " +
+            "   K    " +
+            "       r" +
+            "   N    " +
+            "        "
         )
 
         assertFalse(sut.canKingMove(sut.getKingPosition(Army.WHITE), Army.WHITE))

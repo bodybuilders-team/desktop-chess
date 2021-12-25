@@ -5,7 +5,7 @@ import domain.game.*
 import domain.move.*
 import storage.GameStorage
 
-//TODO - Para todos os files do projeto - Ver se os "require" devem ser "check"
+
 /**
  * Executes a move command if it corresponds to the rules
  * @param db database where the moves are stored
@@ -15,8 +15,6 @@ import storage.GameStorage
  * @throws CommandException if the game ended
  * @throws CommandException if move to be made not specified
  * @throws IllegalArgumentException if it's not this army's turn but SessionState is YOUR_TURN (database modified?)
- * @throws IllegalArgumentException if there's no piece in the specified from position in move
- * @throws IllegalMoveException if the player tried to play with an opponent's piece
  */
 class PlayCommand(private val db: GameStorage, private val session: Session) : Command {
 
@@ -25,12 +23,9 @@ class PlayCommand(private val db: GameStorage, private val session: Session) : C
         cmdRequire(session.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
         cmdRequireNotNull(parameter) { "Missing move." }
-        require(session.game.armyToPlay == session.army) { "It's not this army's turn! Session army is different from the current turn army." }
+        require(session.game.armyToPlay == session.army) { "It's not this army's turn! Session army is different from the army to play." }
 
         val move = Move.validated(parameter, session.game)
-
-        val piece = session.game.board.getPiece(move.from)
-        requireNotNull(piece) { "Move.validated() is not throwing IllegalMoveException in case of invalid from position." }
         
         val game = session.game.makeMove(move)
 

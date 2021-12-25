@@ -7,6 +7,7 @@ import domain.pieces.Army
 import domain.pieces.Pawn
 import kotlin.test.*
 import isValidMove
+import listOfMoves
 
 
 class PawnMoveTests { // [✔]

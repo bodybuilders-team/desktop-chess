@@ -2,8 +2,8 @@ package domainTests.gameTests
 
 import domain.game.*
 import domain.board.*
-import domain.move.*
 import domain.pieces.Army
+import listOfMoves
 import kotlin.test.*
 
 
@@ -78,14 +78,14 @@ class AvailableMovesTests { // [✔]
             "RNBQKBNR"
         )
         val position = Board.Position('e', 5)
-        val previousMoves = listOfMoves("Pe2e4", "Pa7a5", "Pe4e5", "Pd7d5")
 
         val piece = sut.getPiece(position)
 
         assertNotNull(piece)
         assertEquals(
             setOf("Pe5e6", "Pe5xd6"),
-            piece.getAvailableMoves(Game(sut, previousMoves), position).map { it.toString() }.toSet()
+            piece.getAvailableMoves(Game(sut, listOfMoves("Pe2e4", "Pa7a5", "Pe4e5", "Pd7d5")), position)
+                .map { it.toString() }.toSet()
         )
     }
 

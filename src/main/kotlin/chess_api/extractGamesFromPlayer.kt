@@ -167,6 +167,7 @@ fun playExtractedGames(monthExtraction: MonthExtraction) {
         try {
             if (extractedGame.movesToMake.isNotEmpty())
                 extractedGame.game.makeMoves(extractedGame.movesToMake.split(" "))
+            
             successfullyPlayedGames++
         } catch (err: IllegalMoveException) {
             println("Move \"${err.move}\" in game ${gameNum + 1} considered illegal: ${err.message}")

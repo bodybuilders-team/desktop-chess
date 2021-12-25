@@ -4,6 +4,7 @@ import domain.game.*
 import domain.board.*
 import domain.move.*
 import domain.pieces.*
+import listOfMoves
 import kotlin.test.*
 
 

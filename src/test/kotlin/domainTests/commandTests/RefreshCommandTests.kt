@@ -1,6 +1,9 @@
 package domainTests.commandTests
 
 import GameStorageStub
+import defaultGameResultingInBlackCheck
+import defaultGameResultingInCheckMate
+import defaultGameResultingInStaleMate
 import domain.*
 import domain.game.*
 import domain.board.*
@@ -86,7 +89,7 @@ class RefreshCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val game = gameFromMoves("f3", "e5", "g4", "Qh4")
+        val game = defaultGameResultingInCheckMate
         game.moves.forEach { db.postMove(gameName, it) }
 
         var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.WHITE, game)
@@ -108,8 +111,7 @@ class RefreshCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val game = gameFromMoves("e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
-            "Qd3", "Qb8", "Qh7", "Qc8", "Kg6", "Qe6")
+        val game = defaultGameResultingInStaleMate
         game.moves.forEach { db.postMove(gameName, it) }
 
         var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game)
@@ -153,7 +155,7 @@ class RefreshCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val game = gameFromMoves("c3", "d6", "a3", "e6", "Qa4")
+        val game = defaultGameResultingInBlackCheck
         game.moves.forEach { db.postMove(gameName, it) }
 
         var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game)

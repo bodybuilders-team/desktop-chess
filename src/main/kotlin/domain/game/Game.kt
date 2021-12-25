@@ -10,14 +10,7 @@ import domain.pieces.Army
  * @property board game board
  * @property moves previously played moves
  */
-data class Game(
-    val board: Board,
-    val moves: List<Move>
-) {
-    override fun toString(): String {
-        return board.toString().chunked(BOARD_SIDE_LENGTH).joinToString("\n")
-    }
-}
+data class Game(val board: Board, val moves: List<Move>)
 
 
 /**

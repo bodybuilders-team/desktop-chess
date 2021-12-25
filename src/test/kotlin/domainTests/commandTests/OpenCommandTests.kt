@@ -1,6 +1,9 @@
 package domainTests.commandTests
 
 import GameStorageStub
+import defaultGameResultingInCheckMate
+import defaultGameResultingInStaleMate
+import defaultGameResultingInWhiteCheck
 import domain.*
 import domain.game.*
 import domain.commands.*
@@ -57,9 +60,8 @@ class OpenCommandTests { // [✔]
 
         val db = GameStorageStub()
         db.createGame(gameName)
-
-        // Fool's mate! 🤡 - https://www.chess.com/article/view/fastest-chess-checkmates
-        val movesForFoolsMate = gameFromMoves("f3", "e5", "g4", "Qh4").moves
+        
+        val movesForFoolsMate = defaultGameResultingInCheckMate.moves
 
         movesForFoolsMate.forEach { db.postMove(gameName, it) }
 
@@ -78,13 +80,8 @@ class OpenCommandTests { // [✔]
 
         val db = GameStorageStub()
         db.createGame(gameName)
-
-        // Fastest stalemate known - https://www.chess.com/forum/view/game-showcase/fastest-stalemate-known-in-chess
-        val movesForFastestStalemate =
-            gameFromMoves(
-                "e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
-                "Qd3", "Qb8", "Qh7", "Qc8", "Kg6", "Qe6"
-            ).moves
+        
+        val movesForFastestStalemate = defaultGameResultingInStaleMate.moves
 
         movesForFastestStalemate.forEach { db.postMove(gameName, it) }
 
@@ -146,7 +143,7 @@ class OpenCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val movesForCheck = gameFromMoves("f3", "e5", "g4", "b6", "e3", "Qh4").moves
+        val movesForCheck = defaultGameResultingInWhiteCheck.moves
 
         movesForCheck.forEach { db.postMove(gameName, it) }
 
@@ -160,7 +157,7 @@ class OpenCommandTests { // [✔]
     }
 
     @Test
-    fun `Open command game state is NO_CHECK if the white King isn't in Check`() {
+    fun `Open command game state is NO_CHECK if none of the Kings is in Check`() {
         val gameName = "test"
 
         val db = GameStorageStub()

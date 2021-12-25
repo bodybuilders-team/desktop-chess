@@ -9,6 +9,7 @@ import domain.game.*
 import domain.board.*
 import domain.move.*
 import domain.pieces.Army
+import listOfMoves
 import kotlin.test.*
 
 

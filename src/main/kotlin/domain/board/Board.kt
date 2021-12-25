@@ -69,7 +69,7 @@ data class Board(private val matrix: List<Piece?>) {
 
 
     /**
-     * Makes a move in the board.
+     * Makes a move in the board. Expects the move to already be validated.
      * @param move move to make
      * @return new board with the move made
      */

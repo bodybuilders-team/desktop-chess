@@ -10,7 +10,6 @@ import domain.move.*
 
 // King Check Constants
 const val DOUBLE_CHECK = 2
-const val MAX_KING_ATTACKERS = DOUBLE_CHECK
 
 
 /**
@@ -19,22 +18,7 @@ const val MAX_KING_ATTACKERS = DOUBLE_CHECK
  * @param army army of the king to check
  * @return true if the king is in check
  */
-fun Board.isKingInCheck(position: Position, army: Army) = kingAttackers(position, army).isNotEmpty()
-
-
-/**
- * Returns list of moves attacking [army] king.
- * @param position position of the king
- * @param army army of the king to attack
- * @return list of moves attacking [army] king.
- * @throws IllegalArgumentException if the king is attacked by more than two pieces
- */
-fun Board.kingAttackers(position: Position, army: Army): List<Move> {
-    val kingAttackers = positionAttackers(position, army.other())
-    require(kingAttackers.size <= MAX_KING_ATTACKERS) { "A king cannot be attacked by more than two pieces." }
-
-    return kingAttackers
-}
+fun Board.isKingInCheck(position: Position, army: Army) = positionAttackers(position, army.other()).isNotEmpty()
 
 
 /**
@@ -50,8 +34,8 @@ fun Board.kingAttackers(position: Position, army: Army): List<Move> {
  * @return true if the king of the [army] can be protected from a check.
  */
 fun Board.isKingProtectable(position: Position, army: Army): Boolean {
-    val kingAttackers = kingAttackers(position, army)
-    if (kingAttackers.size == DOUBLE_CHECK) return false
+    val kingAttackers = positionAttackers(position, army.other())
+    if (kingAttackers.size >= DOUBLE_CHECK) return false
 
     kingAttackers.first().apply {
         return when {

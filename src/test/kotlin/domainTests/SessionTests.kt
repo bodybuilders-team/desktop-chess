@@ -2,9 +2,9 @@ package domainTests
 
 import domain.*
 import domain.game.*
-import domain.move.*
 import domain.board.*
 import domain.pieces.*
+import listOfMoves
 import kotlin.test.*
 
 
