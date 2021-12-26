@@ -1,6 +1,8 @@
 package domain.pieces
 
 import domain.board.*
+import domain.game.Game
+import domain.game.searchMoves
 import domain.move.*
 
 
@@ -20,6 +22,26 @@ data class Pawn(override val army: Army) : Piece {
         move.isVertical() && isValidPawnVerticalMove(board, move) ||
                 move.isDiagonal() && isValidPawnDiagonalMove(board, move)
 
+    override fun getAvailableMoves(game: Game, position: Board.Position): List<Move> {
+        val promotionMove = "P$position${position.copy(row = if (isWhite()) BLACK_FIRST_ROW else WHITE_FIRST_ROW)}=Q"
+
+        return super.getAvailableMoves(game, position) +
+                game.searchMoves(
+                    Move.extractMoveInfo(
+                        if (position.col != LAST_COL) promotionMove.replaceRange(3..3, (position.col + 1).toString())
+                        else promotionMove
+                    ), false
+                ) +
+
+                game.searchMoves(Move.extractMoveInfo(promotionMove), false) +
+
+                game.searchMoves(
+                    Move.extractMoveInfo(
+                        if (position.col != FIRST_COL) promotionMove.replaceRange(3..3, (position.col - 1).toString())
+                        else promotionMove
+                    ), false
+                )
+    }
 
     /**
      * Checks if the vertical pawn move is possible.

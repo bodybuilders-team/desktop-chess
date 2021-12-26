@@ -1,93 +1,87 @@
-import androidx.compose.desktop.DesktopMaterialTheme
-
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
-
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowSize
+import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import domain.board.*
-import domain.game.Game
+import domain.board.BOARD_SIDE_LENGTH
+import domain.board.Board
+import domain.board.FIRST_COL
 import domain.game.gameFromMoves
 import domain.game.getAvailableMoves
 import domain.game.makeMove
-import domain.pieces.Piece
+import domain.move.Move
 import domain.pieces.isWhite
+import ui.compose.BoardView
+import ui.compose.IMAGE_CENTERING_LEFT_OFFSET
+import ui.compose.IMAGE_DIMENSIONS
+import ui.compose.TILE_SIZE
 
 
-val WINDOW_SIZE = 1024.dp
+// Constants
+val BOARD_WINDOW_HEIGHT = TILE_SIZE * BOARD_SIDE_LENGTH
+val BOARD_WINDOW_WIDTH = BOARD_WINDOW_HEIGHT
+val MOVES_WINDOW_WIDTH = 200.dp
+val MOVES_WINDOW_HEIGHT = BOARD_WINDOW_HEIGHT
 val WINDOW_PADDING = 32.dp
+val WINDOW_WIDTH =  BOARD_WINDOW_WIDTH + MOVES_WINDOW_WIDTH + WINDOW_PADDING * 2
+val WINDOW_HEIGHT = BOARD_WINDOW_HEIGHT + WINDOW_PADDING * 2 + 39.dp
 
+
+/**
+ *
+ */
 @Composable
 @Preview
 fun App() {
     val game = remember { mutableStateOf(gameFromMoves()) }
+    val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
 
-    DesktopMaterialTheme {
-        Box(modifier = Modifier.size(WINDOW_SIZE).background(color = Color.DarkGray).padding(WINDOW_PADDING)) {
-            Row(modifier = Modifier.background(Color.Black)) {
-                repeat(BOARD_SIDE_LENGTH) { columnIdx ->
-                    Column(modifier = Modifier.background(Color.White)) {
-                        repeat(BOARD_SIDE_LENGTH) { rowIdx ->
-                            val position = Board.Position(FIRST_COL + columnIdx, LAST_ROW - rowIdx)
-                            val availableMoves = game.value.getAvailableMoves(position)
-                            
-                            Tile(position, game.value.board.getPiece(position), false) {
-                                
-                                /*if (availableMoves.isNotEmpty())
-                                    game.value = game.value.makeMove(availableMoves.first())*/
-                                
-                                println(position)
-                            }
+    MaterialTheme {
+            Box(modifier = Modifier.width(WINDOW_WIDTH).height(WINDOW_HEIGHT).background(Color.Gray)) {
+                /*Image(
+                    painter = painterResource("background.png"),
+                    contentDescription = null,
+                    modifier = Modifier.width(WINDOW_WIDTH).height(WINDOW_HEIGHT),
+                    alignment = Alignment.TopStart
+                )*/
+                Row(modifier = Modifier.padding(WINDOW_PADDING)) {
+                    BoardView(game.value, availableMoves.value) { position ->
+                        if (position in availableMoves.value.map { it.to }) {
+                            game.value = game.value.makeMove(availableMoves.value.first { it.to == position })
+                            availableMoves.value = emptyList()
+                        } else {
+                            availableMoves.value = game.value.getAvailableMoves(position)
                         }
                     }
+                    // MOVES BOX
                 }
             }
         }
     }
-}
 
-
-@Composable
-fun Tile(position: Board.Position, piece: Piece?, isAvailable: Boolean, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(56.dp)
-            .clickable(true, onClick = onClick)
-            .background(color = if ((position.col - FIRST_COL + position.row) % 2 == 0) Color.White else Color.Gray)
-    ) {
-        if (piece != null) {
-            val painter = painterResource(
-                "${if (piece.isWhite()) "w" else "b"}_${piece.type.toString().lowercase()}.png"
-            )
-
-            Image(painter = painter, contentDescription = null, modifier = Modifier.size(256.dp, 256.dp))
-        }
-        if (isAvailable) {
-            androidx.compose.foundation.Canvas(modifier = Modifier.size(20.dp).align(Alignment.Center), onDraw = {
-                drawCircle(color = Color.Green)
-            })
-        }
-    }
-}
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
+    Window(
+        resizable = false,
+        state = WindowState(size = DpSize(WINDOW_WIDTH, WINDOW_HEIGHT)),
+        onCloseRequest = ::exitApplication
+    ) {
         App()
     }
 }
