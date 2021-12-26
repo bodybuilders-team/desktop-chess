@@ -1,12 +1,8 @@
 package ui.compose
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material.Text
+import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.TextUnitType
 import domain.board.*
 import domain.game.Game
 import domain.move.Move
@@ -19,7 +15,8 @@ import domain.move.Move
  * @param onTileSelected Event to be made after a tile is selected
  */
 @Composable
-fun BoardView (
+@Preview
+fun BoardView(
     game: Game,
     availableMoves: List<Move>,
     onTileSelected: (Board.Position) -> Unit
@@ -29,10 +26,11 @@ fun BoardView (
             Column {
                 repeat(BOARD_SIDE_LENGTH) { rowIdx ->
                     val position = Board.Position(FIRST_COL + columnIdx, LAST_ROW - rowIdx)
-                    Tile(position,
-                         game.board.getPiece(position),
-                         isAvailable = position in availableMoves.map { it.to },
-                         onClick = onTileSelected
+                    Tile(
+                        position,
+                        piece = game.board.getPiece(position),
+                        isAvailable = position in availableMoves.map { it.to },
+                        onClick = onTileSelected
                     )
                 }
             }

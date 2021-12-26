@@ -1,29 +1,21 @@
 package ui.compose
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.absolutePadding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import domain.board.Board
-import domain.board.FIRST_COL
-import domain.pieces.Piece
-import domain.pieces.isWhite
+import domain.board.*
+import domain.pieces.*
 
 
 // Constants
-const val RED_TILE = 0xFF794839
-const val ORANGE_TILE = 0xFF5D3231
-const val LIGHT_TILE = 0xFFEBEBD0
-const val DARK_TILE = RED_TILE
+const val RED = 0xFF794839
+const val WHITE = 0xFFEBEBD0
+val LIGHT_TILE_COLOR = Color(WHITE)
+val DARK_TILE_COLOR = Color(RED)
 val TILE_SIZE = 88.dp
 val IMAGE_DIMENSIONS = 256.dp
 val IMAGE_CENTERING_LEFT_OFFSET = 2.dp
@@ -42,11 +34,9 @@ fun Tile(position: Board.Position, piece: Piece?, isAvailable: Boolean, onClick:
     Box(
         modifier = Modifier
             .size(TILE_SIZE)
-            .clickable(true) {
-                onClick(position)
-            }
+            .clickable(true) { onClick(position) }
             .background(
-                color = if ((position.col - FIRST_COL + position.row) % 2 == 0) Color(LIGHT_TILE) else Color(DARK_TILE)
+                color = if ((position.col - FIRST_COL + position.row) % 2 == 0) LIGHT_TILE_COLOR else DARK_TILE_COLOR
             )
     )
     {
@@ -62,10 +52,10 @@ fun Tile(position: Board.Position, piece: Piece?, isAvailable: Boolean, onClick:
                     .absolutePadding(left = IMAGE_CENTERING_LEFT_OFFSET)
             )
         }
-        if (isAvailable) {
-            Canvas(modifier = Modifier.size(GREEN_CIRCLES_SIZE).align(Alignment.Center), onDraw = {
-                drawCircle(color = Color.Green)
-            })
-        }
+        if (isAvailable)
+            Canvas(
+                modifier = Modifier.size(GREEN_CIRCLES_SIZE).align(Alignment.Center),
+                onDraw = { drawCircle(color = Color.Green) }
+            )
     }
 }
