@@ -21,7 +21,7 @@ val promotionPieces = listOf(PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT
 @Composable
 @Preview
 @OptIn(ExperimentalMaterialApi::class)
-fun PromotionView(onPieceTypeSelected: () -> Unit) {
+fun PromotionView(onPieceTypeSelected: (Char) -> Unit) {
     var openDialog by mutableStateOf(true)
 
     if (openDialog) {
@@ -30,7 +30,7 @@ fun PromotionView(onPieceTypeSelected: () -> Unit) {
             title = { Text("Promotion Piece") },
             text = { Text("Select Promotion Piece") },
             buttons = {
-                Row(
+                Row (
                     modifier = Modifier.padding(8.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -38,7 +38,7 @@ fun PromotionView(onPieceTypeSelected: () -> Unit) {
                         Button(
                             onClick = {
                                 openDialog = false
-                                onPieceTypeSelected()
+                                onPieceTypeSelected(piece.symbol)
                             }
                         ) {
                             val painter = painterResource(
@@ -46,7 +46,8 @@ fun PromotionView(onPieceTypeSelected: () -> Unit) {
                             )
                             Image(
                                 painter = painter,
-                                contentDescription = null
+                                contentDescription = null,
+                                modifier = Modifier.size(80.dp)
                             )
                         }
                     }

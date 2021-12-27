@@ -11,7 +11,7 @@ import domain.move.Move
 /**
  * Composable used to display a Chess Board
  * @param game chess game
- * @param availableMoves all possible moves of the selected piece
+ * @param availableMoves all possible moves of the selected position
  * @param onTileSelected Event to be made after a tile is selected
  */
 @Composable

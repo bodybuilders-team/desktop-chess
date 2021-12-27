@@ -12,7 +12,10 @@ import domain.Session
 import domain.SessionState
 import domain.board.BOARD_SIDE_LENGTH
 import domain.board.Board
+import domain.commands.JoinCommand
+import domain.commands.OpenCommand
 import domain.commands.PlayCommand
+import domain.commands.RefreshCommand
 import domain.game.*
 import domain.move.Move
 import domain.pieces.Army
@@ -30,49 +33,105 @@ val WINDOW_PADDING = 32.dp
 val WINDOW_WIDTH = BOARD_WINDOW_WIDTH + MOVES_WINDOW_WIDTH + WINDOW_PADDING * 4
 val WINDOW_HEIGHT = BOARD_WINDOW_HEIGHT + WINDOW_PADDING * 2 + 39.dp
 
+const val SINGLE_PLAYER = true
+
+val initialGame = Game(
+    Board(
+        "rnbqkbnr" +
+                " P     P" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
+    ), emptyList()
+)
 
 /**
  * Main Composable used to display the chess app.
+ * @param dataBase database where the games are stored
  */
 @Composable
 @Preview
-fun App() {
-    val dbInfo = getDBConnectionInfo()
-    val driver = createMongoClient(if (dbInfo.mode == DbMode.REMOTE) dbInfo.connectionString else null)
-
-    driver.use {
-        /*var session by mutableStateOf(
+fun App(dataBase: GameStorage) {
+    val gameName = "test11331"
+    val session = remember {
+        mutableStateOf(
             Session(
-                name = NO_NAME,
+                name = gameName,
                 state = SessionState.YOUR_TURN,
                 army = Army.WHITE,
-                game = Game(board = Board(), moves = emptyList())
+                game = initialGame
             )
         )
-        val dataBase = MongoDBGameStorage(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })*/
-        var game by mutableStateOf(gameFromMoves())
-        var availableMoves by mutableStateOf<List<Move>>(emptyList())
+    }
+    OpenCommand(dataBase).execute(gameName).getOrThrow()
 
-        MaterialTheme {
-            Box(modifier = Modifier.width(WINDOW_WIDTH).height(WINDOW_HEIGHT).background(Color.Gray)) {
-                Row(modifier = Modifier.padding(WINDOW_PADDING)) {
-                    BoardView(game, availableMoves) { position ->
-                        availableMoves =
-                            if (position in availableMoves.map { it.to }) {
-                                val move = availableMoves.first { it.to == position }
+    //val (command, name) = readLine()!!.split(" ")
+    //if (command == "open") session.value = OpenCommand(dataBase).execute(name).getOrThrow()
 
-                                //if (move.promotion != null) PromotionView { }
+    val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
 
-                                game = game.makeMove(move)
-                                emptyList()
-                            } else
-                                game.getAvailableMoves(position)
-                    }
-                    MovesView(game)
+    var selectedPosition by mutableStateOf<Board.Position?>(null)
+
+    MaterialTheme {
+        Box(modifier = Modifier.width(WINDOW_WIDTH).height(WINDOW_HEIGHT).background(Color.Gray)) {
+            Row(modifier = Modifier.padding(WINDOW_PADDING)) {
+
+                BoardView(session.value.game, availableMoves.value) { position -> selectedPosition = position }
+
+                if (selectedPosition != null) {
+                    UseSelectedPosition(selectedPosition!!, dataBase, session, availableMoves)
                 }
+
+                MovesView(session.value.game)
             }
         }
     }
+}
+
+
+/**
+ * Use the selected position.
+ * @param selectedPosition selected position
+ * @param dataBase database where the games are stored
+ * @param session game session
+ * @param availableMoves all possible moves of the selected position
+ */
+@Composable
+fun UseSelectedPosition(
+    selectedPosition: Board.Position,
+    dataBase: GameStorage,
+    session: MutableState<Session>,
+    availableMoves: MutableState<List<Move>>
+) {
+    val move = availableMoves.value.find { it.to == selectedPosition }
+
+    if (move != null) {
+        if (move.promotion != null)
+            PromotionView { pieceSymbol ->
+                makeMove(move.copy(promotion = pieceSymbol), dataBase, session, availableMoves)
+            }
+        else
+            makeMove(move, dataBase, session, availableMoves)
+    } else
+        availableMoves.value = session.value.game.getAvailableMoves(selectedPosition)
+}
+
+
+/**
+ * Makes a move in the session game, clearing the available moves.
+ * @param move move to make
+ * @param dataBase database where the games are stored
+ * @param session game session
+ * @param availableMoves all possible moves of the selected position
+ */
+private fun makeMove(
+    move: Move, dataBase: GameStorage, session: MutableState<Session>, availableMoves: MutableState<List<Move>>
+) {
+    session.value = PlayCommand(dataBase, session.value).execute(move.toString()).getOrThrow()
+    availableMoves.value = emptyList()
 }
 
 
@@ -84,13 +143,21 @@ fun App() {
  * - MONGO_DB_CONNECTION, bearing the connection string to the database server. If absent, the application
  * uses a local server instance (it must be already running)
  */
-fun main() = application {
-    Window(
-        title = "Desktop Chess by Nyck, Jesus and Santos",
-        resizable = false,
-        state = WindowState(size = DpSize(WINDOW_WIDTH, WINDOW_HEIGHT)),
-        onCloseRequest = ::exitApplication
-    ) {
-        App()
+fun main() {
+    val dbInfo = getDBConnectionInfo()
+    val driver = createMongoClient(if (dbInfo.mode == DbMode.REMOTE) dbInfo.connectionString else null)
+
+    val dataBase = MongoDBGameStorage(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
+
+    driver.use {
+        application {
+            Window(
+                title = "Desktop Chess by Nyck, Jesus and Santos",
+                state = WindowState(size = DpSize(WINDOW_WIDTH, WINDOW_HEIGHT)),
+                onCloseRequest = ::exitApplication
+            ) {
+                App(dataBase)
+            }
+        }
     }
 }
