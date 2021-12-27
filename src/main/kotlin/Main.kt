@@ -118,12 +118,6 @@ private fun makeMove(
     move: Move, dataBase: GameStorage, session: MutableState<Session>, availableMoves: MutableState<List<Move>>
 ) {
     session.value = PlayCommand(dataBase, session.value).execute(move.toString()).getOrThrow()
-    if (SINGLE_PLAYER) {
-        session.value = when (session.value.game.armyToPlay) {
-            Army.WHITE -> OpenCommand(dataBase).execute(session.value.name).getOrThrow()
-            else -> JoinCommand(dataBase).execute(session.value.name).getOrThrow()
-        }
-    }
     availableMoves.value = emptyList()
 }
 

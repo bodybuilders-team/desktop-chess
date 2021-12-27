@@ -31,7 +31,8 @@ enum class SessionState {
     LOGGING,
     YOUR_TURN,
     WAITING_FOR_OPPONENT,
-    ENDED
+    ENDED,
+    SINGLE_PLAYER
 }
 
 

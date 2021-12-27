@@ -10,6 +10,7 @@ import domain.board.*
 import domain.commands.*
 import domain.move.*
 import domain.pieces.*
+import listOfMoves
 import kotlin.test.*
 
 class RefreshCommandTests { // [✔]
@@ -89,17 +90,20 @@ class RefreshCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val game = defaultGameResultingInCheckMate
+        val game = gameFromMoves("f3", "e5", "g4")
         game.moves.forEach { db.postMove(gameName, it) }
 
         var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.WHITE, game)
 
+        val move = Move.validated("Qh4", game)
+        db.postMove(gameName, move)
+        
         val result = RefreshCommand(db, session).invoke()
         session = result.getOrThrow()
 
         assertTrue(result.isSuccess)
         assertEquals(gameName, session.name)
-        assertEquals(game.moves, session.game.moves)
+        assertEquals(game.moves + move, session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
         assertEquals(GameState.CHECKMATE, session.game.state)
     }
@@ -111,41 +115,24 @@ class RefreshCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val game = defaultGameResultingInStaleMate
+        val game = gameFromMoves(
+            "e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
+            "Qd3", "Qb8", "Qh7", "Qc8", "Kg6")
         game.moves.forEach { db.postMove(gameName, it) }
 
         var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game)
 
+        val move = Move.validated("Qe6", game)
+        db.postMove(gameName, move)
+        
         val result = RefreshCommand(db, session).invoke()
         session = result.getOrThrow()
 
         assertTrue(result.isSuccess)
         assertEquals(gameName, session.name)
-        assertEquals(game.moves, session.game.moves)
+        assertEquals(game.moves + move, session.game.moves)
         assertEquals(SessionState.ENDED, session.state)
         assertEquals(GameState.STALEMATE, session.game.state)
-    }
-
-    @Test
-    fun `Refresh command session state is WAITING_FOR_OPPONENT if it's not your turn to play`() {
-        val gameName = "test"
-
-        val db = GameStorageStub()
-        db.createGame(gameName)
-
-        val game = gameFromMoves("e3", "e6")
-        game.moves.forEach { db.postMove(gameName, it) }
-
-        var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game)
-
-        val result = RefreshCommand(db, session).invoke()
-        session = result.getOrThrow()
-
-        assertTrue(result.isSuccess)
-        assertEquals(gameName, session.name)
-        assertEquals(game.moves, session.game.moves)
-        assertEquals(SessionState.WAITING_FOR_OPPONENT, session.state)
-        assertEquals(GameState.NO_CHECK, session.game.state)
     }
 
     @Test
@@ -155,17 +142,20 @@ class RefreshCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val game = defaultGameResultingInBlackCheck
+        val game = gameFromMoves("c3", "d6", "a3", "e6")
         game.moves.forEach { db.postMove(gameName, it) }
 
         var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game)
+        
+        val move = Move.validated("Qa4", game)
+        db.postMove(gameName, move)
 
         val result = RefreshCommand(db, session).execute(gameName)
         session = result.getOrThrow()
 
         assertTrue(result.isSuccess)
         assertEquals(gameName, session.name)
-        assertEquals(game.moves, session.game.moves)
+        assertEquals(game.moves + move, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
         assertEquals(GameState.CHECK, session.game.state)
     }
@@ -177,17 +167,19 @@ class RefreshCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val game = gameFromMoves("e3")
-        game.moves.forEach { db.postMove(gameName, it) }
+        val game = gameFromMoves()
 
         var session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.BLACK, game)
+
+        val move = Move("Pe2e3")
+        db.postMove(gameName, move)
 
         val result = RefreshCommand(db, session).invoke()
         session = result.getOrThrow()
 
         assertTrue(result.isSuccess)
         assertEquals(gameName, session.name)
-        assertEquals(game.moves, session.game.moves)
+        assertEquals(game.moves + move, session.game.moves)
         assertEquals(SessionState.YOUR_TURN, session.state)
         assertEquals(GameState.NO_CHECK, session.game.state)
     }

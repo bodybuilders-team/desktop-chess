@@ -22,26 +22,12 @@ data class Pawn(override val army: Army) : Piece {
         move.isVertical() && isValidPawnVerticalMove(board, move) ||
                 move.isDiagonal() && isValidPawnDiagonalMove(board, move)
 
-    override fun getAvailableMoves(game: Game, position: Board.Position): List<Move> {
-        val promotionMove = "P$position${position.copy(row = if (isWhite()) BLACK_FIRST_ROW else WHITE_FIRST_ROW)}=Q"
-
-        return super.getAvailableMoves(game, position) +
+    override fun getAvailableMoves(game: Game, position: Board.Position): List<Move> =
+        super.getAvailableMoves(game, position) +
                 game.searchMoves(
-                    Move.extractMoveInfo(
-                        if (position.col != LAST_COL) promotionMove.replaceRange(3..3, (position.col + 1).toString())
-                        else promotionMove
-                    ), false
-                ) +
-
-                game.searchMoves(Move.extractMoveInfo(promotionMove), false) +
-
-                game.searchMoves(
-                    Move.extractMoveInfo(
-                        if (position.col != FIRST_COL) promotionMove.replaceRange(3..3, (position.col - 1).toString())
-                        else promotionMove
-                    ), false
+                    Move.extractMoveInfo("${type.symbol}${position}$DEFAULT_TO_POSITION=Q"),
+                    optionalToPos = true
                 )
-    }
 
     /**
      * Checks if the vertical pawn move is possible.

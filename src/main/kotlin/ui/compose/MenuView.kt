@@ -1,5 +1,6 @@
 package ui.compose
 
+import SINGLE_PLAYER
 import WINDOW_PADDING
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,6 +12,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import domain.Session
+import domain.SessionState
 import domain.commands.JoinCommand
 import domain.commands.OpenCommand
 import storage.GameStorage
@@ -120,8 +122,11 @@ fun MenuOptionView(session: MutableState<Session>, db: GameStorage, command: Men
                         Button(
                             onClick = {
                                 session.value =
-                                    if (command == MenuCommand.OPEN)
-                                        OpenCommand(db).execute(textState.value.text).getOrThrow()
+                                    if (command == MenuCommand.OPEN){
+                                        val openSession = OpenCommand(db).execute(textState.value.text).getOrThrow()
+                                        if (SINGLE_PLAYER) openSession.copy(state = SessionState.SINGLE_PLAYER)
+                                        else openSession
+                                    }
                                     else
                                         JoinCommand(db).execute(textState.value.text).getOrThrow()
                             },

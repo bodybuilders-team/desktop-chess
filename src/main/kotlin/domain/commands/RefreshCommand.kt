@@ -21,7 +21,9 @@ class RefreshCommand(private val db: GameStorage, private val session: Session) 
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. There aren't any new moves." }
 
         val moves = db.getAllMoves(session.name)
-        val game = gameFromMoves(moves)
+        val game =
+            if (session.game.moves.size < moves.size) session.game.makeMove(moves.last())
+            else session.game
 
         return Result.success(
             session.copy(

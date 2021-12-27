@@ -1,10 +1,8 @@
 package domain.game
 
-import domain.board.Board
+import domain.board.*
 import domain.pieces.*
 import domain.board.Board.*
-import domain.board.COLS_RANGE
-import domain.board.ROWS_RANGE
 import domain.move.*
 
 
@@ -89,7 +87,7 @@ fun Board.positionAttackers(position: Position, armyThatAttacks: Army): List<Mov
             if (piece.army != armyThatAttacks) continue
 
             val move = Move("${piece.type.symbol}$fromPos$position")
-            if (move.isValidNormal(piece, this))
+            if (move.isValidNormal(piece, this) || move.copy(promotion = 'Q').isValidNormal(piece, this))
                 attackingMoves += move
         }
     }

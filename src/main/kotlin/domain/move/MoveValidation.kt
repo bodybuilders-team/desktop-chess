@@ -55,7 +55,7 @@ fun Move.isValidNormal(piece: Piece, board: Board): Boolean =
  * @return true if the capture is valid
  */
 fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
-    val isPromotion = piece is Pawn && (to.row == if(piece.isWhite()) BLACK_FIRST_ROW else WHITE_FIRST_ROW)
+    val isPromotion = piece is Pawn && (to.row == if (piece.isWhite()) BLACK_FIRST_ROW else WHITE_FIRST_ROW)
 
     val isValidPromotion = isPromotion == (promotion != null)
 
@@ -72,7 +72,7 @@ fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
  * @return true if the move is a valid en passant
  */
 fun Move.isValidEnPassant(piece: Piece, game: Game) =
-    piece is Pawn && piece.isValidEnPassant(game.board, this) &&
+    piece is Pawn && promotion == null && piece.isValidEnPassant(game.board, this) &&
             isEnPassantPossible(piece, game.moves)
 
 
@@ -83,7 +83,7 @@ fun Move.isValidEnPassant(piece: Piece, game: Game) =
  * @return true if the move is a valid castle
  */
 fun Move.isValidCastle(piece: Piece, game: Game) =
-    piece is King && !game.board.isKingInCheck(piece.army) &&
+    piece is King && promotion == null && !game.board.isKingInCheck(piece.army) &&
             piece.isValidCastle(game.board, this) && isCastlePossible(piece, game.moves)
 
 
