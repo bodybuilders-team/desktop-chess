@@ -1,25 +1,23 @@
 package ui.compose
 
-import SINGLE_PLAYER
-import WINDOW_PADDING
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
-import domain.Session
-import domain.SessionState
-import domain.commands.JoinCommand
-import domain.commands.OpenCommand
+import domain.*
+import domain.commands.*
 import storage.GameStorage
 
 
 // Constants
-val MENU_WIDTH = 260.dp
+val MENU_WIDTH = 320.dp
 val MENU_HEIGHT = BOARD_HEIGHT
 val MENU_TITLE_SIZE = 40.sp
 val MENU_BUTTON_WIDTH = 200.dp
@@ -46,26 +44,42 @@ fun MenuView(onCommandSelected: (MenuCommand?) -> Unit) {
         Text(
             text = "Welcome to Desktop Chess",
             fontSize = MENU_TITLE_SIZE,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold
         )
         Button(
             onClick = { onCommandSelected(MenuCommand.OPEN) },
             modifier = MENU_BUTTON_MODIFIER
         ) {
-            Text("Open a game")
+            Text(
+                text = "Open a game",
+                fontWeight = FontWeight.Bold
+            )
         }
         Button(
             onClick = { onCommandSelected(MenuCommand.JOIN) },
             modifier = MENU_BUTTON_MODIFIER
         ) {
-            Text("Join a game")
+            Text(
+                text = "Join a game",
+                fontWeight = FontWeight.Bold
+            )
         }
         Button(
             onClick = { onCommandSelected(MenuCommand.EXIT) },
             modifier = MENU_BUTTON_MODIFIER
         ) {
-            Text("Exit")
+            Text(
+                text = "Exit",
+                fontWeight = FontWeight.Bold
+            )
         }
+
+        Image(
+            painter = painterResource("chess.png"),
+            contentDescription = null,
+            modifier = Modifier.padding(WINDOW_PADDING)
+        )
     }
 }
 
@@ -88,7 +102,7 @@ enum class MenuCommand {
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MenuOptionView(session: MutableState<Session>, db: GameStorage, command: MenuCommand) {
+fun MenuOptionView(session: MutableState<Session>, db: GameStorage, command: MenuCommand, singlePlayer: MutableState<Boolean>) {
     if (command == MenuCommand.EXIT) return
 
     val openDialog = remember { mutableStateOf(true) }
@@ -124,8 +138,10 @@ fun MenuOptionView(session: MutableState<Session>, db: GameStorage, command: Men
                                 session.value =
                                     if (command == MenuCommand.OPEN){
                                         val openSession = OpenCommand(db).execute(textState.value.text).getOrThrow()
-                                        if (SINGLE_PLAYER) openSession.copy(state = SessionState.SINGLE_PLAYER)
-                                        else openSession
+                                        if (singlePlayer.value)
+                                            openSession.copy(state = SessionState.SINGLE_PLAYER)
+                                        else
+                                            openSession
                                     }
                                     else
                                         JoinCommand(db).execute(textState.value.text).getOrThrow()
@@ -137,7 +153,7 @@ fun MenuOptionView(session: MutableState<Session>, db: GameStorage, command: Men
 
                         Button(onClick = { openDialog.value = false }) {
                             Text("Cancel")
-                        }
+                        }// TODO: 27/12/2021 Arranjar Cancel
                     }
                 }
             }

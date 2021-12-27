@@ -105,6 +105,7 @@ fun Game.isTiedByThreefold(): Boolean {
 }
 
 
+// TODO: 27/12/2021 Test
 /**
  * Checks if a game is tied by dead position:
  *
@@ -114,7 +115,16 @@ fun Game.isTiedByThreefold(): Boolean {
  * @return true if the game is tied by dead position
  */
 fun Game.isTiedByDeadPosition(): Boolean {
-    // TODO: 21/12/2021 To be implemented
-    return false
-}
+    val boardPieces = board.toString().replace(" ", "")
+    val pieceCount = boardPieces.count()
 
+    val whiteKingPos = board.toString().indexOf('K')
+    val blackKingPos = board.toString().indexOf('k')
+
+    val whiteBishopPos = board.toString().indexOf('B')
+    val blackBishopPos = board.toString().indexOf('b')
+
+
+    return pieceCount == 2 //|| pieceCount == 3 && whiteBishopPos != -1 && blackKingPos
+    // TODO: 21/12/2021 Continue implementation
+}

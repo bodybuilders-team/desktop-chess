@@ -1,132 +1,11 @@
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
-import domain.*
-import domain.board.Board
-import domain.commands.*
-import domain.game.*
-import domain.move.Move
-import domain.pieces.Army
 import storage.*
 import storage.mongodb.createMongoClient
 import ui.compose.*
-import ui.compose.menu.*
-
-
-// Constants
-val WINDOW_PADDING = 32.dp
-val WINDOW_WIDTH = BOARD_WIDTH + MOVES_WIDTH + WINDOW_PADDING * 4
-val WINDOW_HEIGHT = BOARD_HEIGHT + WINDOW_PADDING * 2 + 39.dp + GAME_INFO_PADDING * 2
-
-const val SINGLE_PLAYER = true
-val INITIAL_GAME = Game(
-    Board(),
-    emptyList()
-)
-
-
-/**
- * Main Composable used to display the chess app.
- * @param dataBase database where the games are stored
- */
-@Composable
-@Preview
-fun App(dataBase: GameStorage) {
-    val session = remember {
-        mutableStateOf(
-            Session(
-                name = NO_NAME,
-                state = SessionState.LOGGING,
-                army = Army.WHITE,
-                game = INITIAL_GAME
-            )
-        )
-    }
-
-    val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
-    var selectedPosition by mutableStateOf<Board.Position?>(null)
-    var selectedCommand by mutableStateOf<MenuCommand?>(null)
-
-    MaterialTheme {
-        Box(modifier = Modifier.width(WINDOW_WIDTH).height(WINDOW_HEIGHT).background(Color.Gray)) {
-            Row(modifier = Modifier.padding(WINDOW_PADDING)) {
-
-                Column {
-                    ColumnView()
-                    Row {
-                        RowView()
-                        BoardView(session.value.game, availableMoves.value) { position -> selectedPosition = position }
-                    }
-                    GameInfoView(session.value)
-                }
-                if (!session.value.isLogging() && selectedPosition != null)
-                    UseSelectedPosition(selectedPosition!!, dataBase, session, availableMoves)
-
-                if (session.value.isLogging()) {
-                    MenuView { option -> selectedCommand = option }
-
-                    when (selectedCommand) {
-                        MenuCommand.OPEN -> MenuOptionView(session, dataBase, selectedCommand!!)
-                        MenuCommand.JOIN -> MenuOptionView(session, dataBase, selectedCommand!!)
-                        MenuCommand.EXIT -> ExitCommand().execute(null)
-                    }
-
-                } else
-                    MovesView(session.value.game)
-            }
-        }
-    }
-}
-
-
-/**
- * Use the selected position.
- * @param selectedPosition selected position
- * @param dataBase database where the games are stored
- * @param session game session
- * @param availableMoves all possible moves of the selected position
- */
-@Composable
-fun UseSelectedPosition(
-    selectedPosition: Board.Position,
-    dataBase: GameStorage,
-    session: MutableState<Session>,
-    availableMoves: MutableState<List<Move>>
-) {
-    val move = availableMoves.value.find { it.to == selectedPosition }
-
-    if (move != null) {
-        if (move.promotion != null)
-            PromotionView(session.value) { pieceSymbol ->
-                makeMove(move.copy(promotion = pieceSymbol), dataBase, session, availableMoves)
-            }
-        else
-            makeMove(move, dataBase, session, availableMoves)
-    } else
-        availableMoves.value = session.value.game.getAvailableMoves(selectedPosition)
-}
-
-
-/**
- * Makes a move in the session game, clearing the available moves.
- * @param move move to make
- * @param dataBase database where the games are stored
- * @param session game session
- * @param availableMoves all possible moves of the selected position
- */
-private fun makeMove(
-    move: Move, dataBase: GameStorage, session: MutableState<Session>, availableMoves: MutableState<List<Move>>
-) {
-    session.value = PlayCommand(dataBase, session.value).execute(move.toString()).getOrThrow()
-    availableMoves.value = emptyList()
-}
 
 
 /**
@@ -147,12 +26,20 @@ fun main() {
         application {
             Window(
                 title = "Desktop Chess by Nyck, Jesus and Santos",
-                state = WindowState(size = DpSize(WINDOW_WIDTH, WINDOW_HEIGHT)),
+                state = WindowState(
+                    size = DpSize(WINDOW_WIDTH, WINDOW_HEIGHT),
+                    position = WindowPosition(Alignment.Center)
+                ),
                 onCloseRequest = ::exitApplication,
                 icon = painterResource("chess_icon.png"),
                 resizable = false
             ) {
-                App(dataBase)
+                val singlePlayer = remember { mutableStateOf(true) }
+                val targetsOn = remember { mutableStateOf(true) }
+                val closeGame = remember { mutableStateOf(true) }
+
+                MenuBar(Options(singlePlayer, targetsOn, closeGame))
+                App(dataBase, Options(singlePlayer, targetsOn, closeGame))
             }
         }
     }

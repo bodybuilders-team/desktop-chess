@@ -1,8 +1,8 @@
 package ui.compose
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import domain.board.*
 import domain.game.Game
 import domain.move.Move
@@ -20,10 +20,10 @@ val BOARD_WIDTH = BOARD_HEIGHT
  * @param onTileSelected Event to be made after a tile is selected
  */
 @Composable
-@Preview
 fun BoardView(
     game: Game,
     availableMoves: List<Move>,
+    targetsOn: MutableState<Boolean>,
     onTileSelected: (Board.Position) -> Unit
 ) {
     Row {
@@ -35,7 +35,8 @@ fun BoardView(
                         position,
                         piece = game.board.getPiece(position),
                         isAvailable = position in availableMoves.map { it.to },
-                        onClick = onTileSelected
+                        onClick = onTileSelected,
+                        targetsOn = targetsOn
                     )
                 }
             }

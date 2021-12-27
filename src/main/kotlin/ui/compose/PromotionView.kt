@@ -1,6 +1,5 @@
 package ui.compose
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -9,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import domain.Session
+import domain.game.armyToPlay
 import domain.pieces.PieceType
 
 
@@ -24,7 +24,6 @@ val promotionPieces = listOf(PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT
  * @param onPieceTypeSelected function to be executed when the promotion piece type is selected
  */
 @Composable
-@Preview
 @OptIn(ExperimentalMaterialApi::class)
 fun PromotionView(session: Session, onPieceTypeSelected: (Char) -> Unit) {
     var openDialog by mutableStateOf(true)
@@ -42,13 +41,16 @@ fun PromotionView(session: Session, onPieceTypeSelected: (Char) -> Unit) {
                                 openDialog = false
                                 onPieceTypeSelected(piece.symbol)
                             },
-                            modifier = Modifier.size(PROMOTION_BUTTON_SIZE).padding(PROMOTION_BUTTON_PADDING)
+                            modifier = Modifier
+                                .size(PROMOTION_BUTTON_SIZE)
+                                .padding(PROMOTION_BUTTON_PADDING)
                         ) {
-                            val painter = painterResource(
-                                "${session.army.toString().first().lowercase()}_${piece.toString().lowercase()}.png"
-                            )
                             Image(
-                                painter = painter,
+                                painter = painterResource(
+                                    "${session.game.armyToPlay.toString().first().lowercase()}_${
+                                        piece.toString().lowercase()
+                                    }.png"
+                                ),
                                 contentDescription = null
                             )
                         }

@@ -3,6 +3,7 @@ package ui.compose
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -30,31 +31,36 @@ val GREEN_CIRCLES_SIZE = 20.dp
  * @param onClick Event to be made after a tile is selected
  */
 @Composable
-fun Tile(position: Board.Position, piece: Piece?, isAvailable: Boolean, onClick: (Board.Position) -> Unit) {
+fun Tile(
+    position: Board.Position,
+    piece: Piece?,
+    isAvailable: Boolean,
+    onClick: (Board.Position) -> Unit,
+    targetsOn: MutableState<Boolean>
+) {
     Box(
         modifier = Modifier
             .size(TILE_SIZE)
             .clickable(true) { onClick(position) }
-            .background(
-                color = if ((position.col - FIRST_COL + position.row) % 2 == 0) LIGHT_TILE_COLOR else DARK_TILE_COLOR
-            )
+            .background(if ((position.col - FIRST_COL + position.row) % 2 == 0) LIGHT_TILE_COLOR else DARK_TILE_COLOR)
     )
     {
         if (piece != null) {
-            val painter = painterResource(
-                "${if (piece.isWhite()) "w" else "b"}_${piece.type.toString().lowercase()}.png"
-            )
-
             Image(
-                painter = painter,
+                painter = painterResource(
+                    "${if (piece.isWhite()) "w" else "b"}_${piece.type.toString().lowercase()}.png"
+                ),
                 contentDescription = null,
-                modifier = Modifier.size(IMAGE_DIMENSIONS, IMAGE_DIMENSIONS)
+                modifier = Modifier
+                    .size(IMAGE_DIMENSIONS, IMAGE_DIMENSIONS)
                     .absolutePadding(left = IMAGE_CENTERING_LEFT_OFFSET)
             )
         }
-        if (isAvailable)
+        if (isAvailable && targetsOn.value)
             Canvas(
-                modifier = Modifier.size(GREEN_CIRCLES_SIZE).align(Alignment.Center),
+                modifier = Modifier
+                    .size(GREEN_CIRCLES_SIZE)
+                    .align(Alignment.Center),
                 onDraw = { drawCircle(color = Color.Green) }
             )
     }
