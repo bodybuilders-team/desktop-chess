@@ -8,6 +8,11 @@ import domain.game.Game
 import domain.move.Move
 
 
+// Constants
+val BOARD_HEIGHT = TILE_SIZE * BOARD_SIDE_LENGTH
+val BOARD_WIDTH = BOARD_HEIGHT
+
+
 /**
  * Composable used to display a Chess Board
  * @param game chess game

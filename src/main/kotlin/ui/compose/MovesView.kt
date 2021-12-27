@@ -1,8 +1,6 @@
 package ui.compose
 
-import WINDOW_HEIGHT
 import WINDOW_PADDING
-import WINDOW_WIDTH
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -10,24 +8,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import domain.game.Game
 
+
 // Constants
+val MOVES_WIDTH = 260.dp
+val MOVES_HEIGHT = BOARD_HEIGHT
 val FONT_FAMILY = FontFamily.Monospace
 val FONT_SIZE = 20.sp
 
 
 /**
- * Composable used to display a box with the moves already made in a chess game.
+ * Composable used to display a column with the moves already made in a chess game.
  * @param game chess game
  */
 @Composable
 fun MovesView(game: Game) {
     Column(
         modifier = Modifier.padding(start = WINDOW_PADDING)
-            .width(WINDOW_WIDTH / 4)
-            .height(WINDOW_HEIGHT)
+            .width(MOVES_WIDTH)
+            .height(MOVES_HEIGHT)
             .background(Color(WHITE))
     ) {
         game.moves.forEachIndexed { idx, move ->

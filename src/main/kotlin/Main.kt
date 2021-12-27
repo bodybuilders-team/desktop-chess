@@ -7,46 +7,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
-import domain.NO_NAME
-import domain.Session
-import domain.SessionState
-import domain.board.BOARD_SIDE_LENGTH
+import domain.*
 import domain.board.Board
-import domain.commands.JoinCommand
-import domain.commands.OpenCommand
-import domain.commands.PlayCommand
-import domain.commands.RefreshCommand
+import domain.commands.*
 import domain.game.*
 import domain.move.Move
 import domain.pieces.Army
 import storage.*
 import storage.mongodb.createMongoClient
 import ui.compose.*
+import ui.compose.menu.*
 
 
 // Constants
-val BOARD_WINDOW_HEIGHT = TILE_SIZE * BOARD_SIDE_LENGTH
-val BOARD_WINDOW_WIDTH = BOARD_WINDOW_HEIGHT
-val MOVES_WINDOW_WIDTH = 200.dp
-val MOVES_WINDOW_HEIGHT = BOARD_WINDOW_HEIGHT
 val WINDOW_PADDING = 32.dp
-val WINDOW_WIDTH = BOARD_WINDOW_WIDTH + MOVES_WINDOW_WIDTH + WINDOW_PADDING * 4
-val WINDOW_HEIGHT = BOARD_WINDOW_HEIGHT + WINDOW_PADDING * 2 + 39.dp
+val WINDOW_WIDTH = BOARD_WIDTH + MOVES_WIDTH + WINDOW_PADDING * 4
+val WINDOW_HEIGHT = BOARD_HEIGHT + WINDOW_PADDING * 2 + 39.dp
 
 const val SINGLE_PLAYER = true
-
-val initialGame = Game(
-    Board(
-        "rnbqkbnr" +
-                " P     P" +
-                "        " +
-                "        " +
-                "        " +
-                "        " +
-                "PPPPPPPP" +
-                "RNBQKBNR"
-    ), emptyList()
+val INITIAL_GAME = Game(
+    Board(),
+    emptyList()
 )
+
 
 /**
  * Main Composable used to display the chess app.
@@ -55,25 +38,20 @@ val initialGame = Game(
 @Composable
 @Preview
 fun App(dataBase: GameStorage) {
-    val gameName = "test11331"
     val session = remember {
         mutableStateOf(
             Session(
-                name = gameName,
-                state = SessionState.YOUR_TURN,
+                name = NO_NAME,
+                state = SessionState.LOGGING,
                 army = Army.WHITE,
-                game = initialGame
+                game = INITIAL_GAME
             )
         )
     }
-    OpenCommand(dataBase).execute(gameName).getOrThrow()
-
-    //val (command, name) = readLine()!!.split(" ")
-    //if (command == "open") session.value = OpenCommand(dataBase).execute(name).getOrThrow()
 
     val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
-
     var selectedPosition by mutableStateOf<Board.Position?>(null)
+    var optionSelected by mutableStateOf<String?>(null)
 
     MaterialTheme {
         Box(modifier = Modifier.width(WINDOW_WIDTH).height(WINDOW_HEIGHT).background(Color.Gray)) {
@@ -81,11 +59,20 @@ fun App(dataBase: GameStorage) {
 
                 BoardView(session.value.game, availableMoves.value) { position -> selectedPosition = position }
 
-                if (selectedPosition != null) {
+                if (!session.value.isLogging() && selectedPosition != null)
                     UseSelectedPosition(selectedPosition!!, dataBase, session, availableMoves)
-                }
 
-                MovesView(session.value.game)
+                if (session.value.isLogging()) {
+                    MenuView { option -> optionSelected = option }
+
+                    when (optionSelected) {
+                        "open" -> OpenView(session, dataBase)
+                        "join" -> JoinView(session, dataBase)
+                        "exit" -> ExitCommand().execute(null)
+                    }
+
+                } else
+                    MovesView(session.value.game)
             }
         }
     }
@@ -110,7 +97,7 @@ fun UseSelectedPosition(
 
     if (move != null) {
         if (move.promotion != null)
-            PromotionView { pieceSymbol ->
+            PromotionView(session.value) { pieceSymbol ->
                 makeMove(move.copy(promotion = pieceSymbol), dataBase, session, availableMoves)
             }
         else
@@ -131,6 +118,12 @@ private fun makeMove(
     move: Move, dataBase: GameStorage, session: MutableState<Session>, availableMoves: MutableState<List<Move>>
 ) {
     session.value = PlayCommand(dataBase, session.value).execute(move.toString()).getOrThrow()
+    if (SINGLE_PLAYER) {
+        session.value = when (session.value.game.armyToPlay) {
+            Army.WHITE -> OpenCommand(dataBase).execute(session.value.name).getOrThrow()
+            else -> JoinCommand(dataBase).execute(session.value.name).getOrThrow()
+        }
+    }
     availableMoves.value = emptyList()
 }
 

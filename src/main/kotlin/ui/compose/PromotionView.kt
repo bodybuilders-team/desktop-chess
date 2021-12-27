@@ -8,20 +8,25 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import domain.Session
 import domain.pieces.PieceType
 
 
 // Constants
+val PROMOTION_BUTTON_PADDING = 10.dp
+val PROMOTION_BUTTON_SIZE = 160.dp
 val promotionPieces = listOf(PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK)
 
 
 /**
- * Composable used to display a box with the moves already made in a chess game.
+ * Composable used to display a dialog with the promotion pieces.
+ * @param session game session
+ * @param onPieceTypeSelected function to be executed when the promotion piece type is selected
  */
 @Composable
 @Preview
 @OptIn(ExperimentalMaterialApi::class)
-fun PromotionView(onPieceTypeSelected: (Char) -> Unit) {
+fun PromotionView(session: Session, onPieceTypeSelected: (Char) -> Unit) {
     var openDialog by mutableStateOf(true)
 
     if (openDialog) {
@@ -30,24 +35,21 @@ fun PromotionView(onPieceTypeSelected: (Char) -> Unit) {
             title = { Text("Promotion Piece") },
             text = { Text("Select Promotion Piece") },
             buttons = {
-                Row (
-                    modifier = Modifier.padding(8.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
+                Row(horizontalArrangement = Arrangement.Center) {
                     promotionPieces.forEach { piece ->
                         Button(
                             onClick = {
                                 openDialog = false
                                 onPieceTypeSelected(piece.symbol)
-                            }
+                            },
+                            modifier = Modifier.size(PROMOTION_BUTTON_SIZE).padding(PROMOTION_BUTTON_PADDING)
                         ) {
                             val painter = painterResource(
-                                "w_${piece.toString().lowercase()}.png" // TODO(Mudar a cor tendo em conta o army da session)
+                                "${session.army.toString().first().lowercase()}_${piece.toString().lowercase()}.png"
                             )
                             Image(
                                 painter = painter,
-                                contentDescription = null,
-                                modifier = Modifier.size(80.dp)
+                                contentDescription = null
                             )
                         }
                     }
