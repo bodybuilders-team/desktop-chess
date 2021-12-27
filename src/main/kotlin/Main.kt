@@ -5,6 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import domain.*
@@ -22,7 +23,7 @@ import ui.compose.menu.*
 // Constants
 val WINDOW_PADDING = 32.dp
 val WINDOW_WIDTH = BOARD_WIDTH + MOVES_WIDTH + WINDOW_PADDING * 4
-val WINDOW_HEIGHT = BOARD_HEIGHT + WINDOW_PADDING * 2 + 39.dp + GAME_INFO_PADDING * 2
+val WINDOW_HEIGHT = BOARD_HEIGHT + WINDOW_PADDING * 2 + 39.dp
 
 const val SINGLE_PLAYER = true
 val INITIAL_GAME = Game(
@@ -51,30 +52,24 @@ fun App(dataBase: GameStorage) {
 
     val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
     var selectedPosition by mutableStateOf<Board.Position?>(null)
-    var optionSelected by mutableStateOf<String?>(null)
+    var selectedCommand by mutableStateOf<MenuCommand?>(null)
 
     MaterialTheme {
         Box(modifier = Modifier.width(WINDOW_WIDTH).height(WINDOW_HEIGHT).background(Color.Gray)) {
-            Row(modifier = Modifier.absolutePadding(top = WINDOW_PADDING, right = WINDOW_PADDING, left = WINDOW_PADDING)) {
+            Row(modifier = Modifier.padding(WINDOW_PADDING)) {
 
-                Column {
-                    ColumnView()
-                    Row {
-                        RowView()
-                        BoardView(session.value.game, availableMoves.value) { position -> selectedPosition = position }
-                    }
-                    GameInfoView(session.value)
-                }
+                BoardView(session.value.game, availableMoves.value) { position -> selectedPosition = position }
+
                 if (!session.value.isLogging() && selectedPosition != null)
                     UseSelectedPosition(selectedPosition!!, dataBase, session, availableMoves)
 
                 if (session.value.isLogging()) {
-                    MenuView { option -> optionSelected = option }
+                    MenuView { option -> selectedCommand = option }
 
-                    when (optionSelected) {
-                        "open" -> OpenView(session, dataBase)
-                        "join" -> JoinView(session, dataBase)
-                        "exit" -> ExitCommand().execute(null)
+                    when (selectedCommand) {
+                        MenuCommand.OPEN -> MenuOptionView(session, dataBase, selectedCommand!!)
+                        MenuCommand.JOIN -> MenuOptionView(session, dataBase, selectedCommand!!)
+                        MenuCommand.EXIT -> ExitCommand().execute(null)
                     }
 
                 } else
@@ -153,8 +148,9 @@ fun main() {
             Window(
                 title = "Desktop Chess by Nyck, Jesus and Santos",
                 state = WindowState(size = DpSize(WINDOW_WIDTH, WINDOW_HEIGHT)),
-                resizable = false,
-                onCloseRequest = ::exitApplication
+                onCloseRequest = ::exitApplication,
+                icon = painterResource("chess_icon.png"),
+                resizable = false
             ) {
                 App(dataBase)
             }
