@@ -5,6 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import domain.*
@@ -16,7 +17,6 @@ import domain.pieces.Army
 import storage.*
 import storage.mongodb.createMongoClient
 import ui.compose.*
-import ui.compose.menu.*
 
 
 // Constants
@@ -51,7 +51,7 @@ fun App(dataBase: GameStorage) {
 
     val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
     var selectedPosition by mutableStateOf<Board.Position?>(null)
-    var optionSelected by mutableStateOf<String?>(null)
+    var selectedCommand by mutableStateOf<MenuCommand?>(null)
 
     MaterialTheme {
         Box(modifier = Modifier.width(WINDOW_WIDTH).height(WINDOW_HEIGHT).background(Color.Gray)) {
@@ -63,12 +63,12 @@ fun App(dataBase: GameStorage) {
                     UseSelectedPosition(selectedPosition!!, dataBase, session, availableMoves)
 
                 if (session.value.isLogging()) {
-                    MenuView { option -> optionSelected = option }
+                    MenuView { option -> selectedCommand = option }
 
-                    when (optionSelected) {
-                        "open" -> OpenView(session, dataBase)
-                        "join" -> JoinView(session, dataBase)
-                        "exit" -> ExitCommand().execute(null)
+                    when (selectedCommand) {
+                        MenuCommand.OPEN -> MenuOptionView(session, dataBase, selectedCommand!!)
+                        MenuCommand.JOIN -> MenuOptionView(session, dataBase, selectedCommand!!)
+                        MenuCommand.EXIT -> ExitCommand().execute(null)
                     }
 
                 } else
@@ -147,7 +147,9 @@ fun main() {
             Window(
                 title = "Desktop Chess by Nyck, Jesus and Santos",
                 state = WindowState(size = DpSize(WINDOW_WIDTH, WINDOW_HEIGHT)),
-                onCloseRequest = ::exitApplication
+                onCloseRequest = ::exitApplication,
+                icon = painterResource("chess_icon.png"),
+                resizable = false
             ) {
                 App(dataBase)
             }
