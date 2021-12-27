@@ -19,6 +19,7 @@ import ui.compose.FONT_SIZE
 import ui.compose.TILE_SIZE
 
 
+
 //Constants
 val GAME_INFO_PADDING = 64.dp
 val SPACE_BETWEEN_INFO_PADDING = 8.dp

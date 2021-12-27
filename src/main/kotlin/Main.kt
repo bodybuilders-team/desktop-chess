@@ -23,7 +23,7 @@ import ui.compose.menu.*
 // Constants
 val WINDOW_PADDING = 32.dp
 val WINDOW_WIDTH = BOARD_WIDTH + MOVES_WIDTH + WINDOW_PADDING * 4
-val WINDOW_HEIGHT = BOARD_HEIGHT + WINDOW_PADDING * 2 + 39.dp
+val WINDOW_HEIGHT = BOARD_HEIGHT + WINDOW_PADDING * 2 + 39.dp + GAME_INFO_PADDING * 2
 
 const val SINGLE_PLAYER = true
 val INITIAL_GAME = Game(
@@ -58,8 +58,14 @@ fun App(dataBase: GameStorage) {
         Box(modifier = Modifier.width(WINDOW_WIDTH).height(WINDOW_HEIGHT).background(Color.Gray)) {
             Row(modifier = Modifier.padding(WINDOW_PADDING)) {
 
-                BoardView(session.value.game, availableMoves.value) { position -> selectedPosition = position }
-
+                Column {
+                    ColumnView()
+                    Row {
+                        RowView()
+                        BoardView(session.value.game, availableMoves.value) { position -> selectedPosition = position }
+                    }
+                    GameInfoView(session.value)
+                }
                 if (!session.value.isLogging() && selectedPosition != null)
                     UseSelectedPosition(selectedPosition!!, dataBase, session, availableMoves)
 
