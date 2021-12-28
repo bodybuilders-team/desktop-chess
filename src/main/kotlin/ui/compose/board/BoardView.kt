@@ -9,6 +9,7 @@ import domain.Session
 import domain.board.*
 import domain.commands.PlayCommand
 import domain.game.getAvailableMoves
+import domain.isNotLogging
 import domain.isPlayable
 import domain.move.Move
 import storage.GameStorage
@@ -38,7 +39,7 @@ fun BoardView(session: MutableState<Session>, targetsOn: MutableState<Boolean>, 
                     Tile(
                         position,
                         piece = session.value.game.board.getPiece(position),
-                        isAvailable = position in availableMoves.value.map { it.to },
+                        isAvailable = position in availableMoves.value.map { it.to } && session.value.isNotLogging() && session.value.isPlayable(),
                         onClick = { clickedPosition -> selectedPosition.value = clickedPosition },
                         targetsOn = targetsOn
                     )
