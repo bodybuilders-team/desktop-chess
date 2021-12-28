@@ -43,14 +43,14 @@ fun MovesView(game: Game) {
                     Row {
                         val round = idx / 2
                         Text(
-                            text = " ${"$round.".padEnd(4)} ${"$move".padEnd(8)} - ",
+                            text = " ${"$round.".padStart(4)} ${"$move".padEnd(8)}",
                             fontFamily = FONT_FAMILY,
                             fontSize = FONT_SIZE
                         )
 
                         if (idx != game.moves.size - 1)
                             Text(
-                                text = "${game.moves[idx + 1]}".padEnd(8),
+                                text = " - ${game.moves[idx + 1]}".padEnd(8),
                                 fontFamily = FONT_FAMILY,
                                 fontSize = FONT_SIZE
                             )

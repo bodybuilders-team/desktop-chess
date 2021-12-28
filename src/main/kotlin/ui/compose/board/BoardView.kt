@@ -9,7 +9,7 @@ import domain.Session
 import domain.board.*
 import domain.commands.PlayCommand
 import domain.game.getAvailableMoves
-import domain.isNotLogging
+import domain.isLogging
 import domain.isPlayable
 import domain.move.Move
 import storage.GameStorage
@@ -31,6 +31,11 @@ fun BoardView(session: MutableState<Session>, targetsOn: MutableState<Boolean>, 
     val selectedPosition = remember { mutableStateOf<Board.Position?>(null) }
     val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
 
+    if (session.value.isLogging()) {
+        selectedPosition.value = null
+        availableMoves.value = emptyList()
+    }
+
     Row {
         repeat(BOARD_SIDE_LENGTH) { columnIdx ->
             Column {
@@ -39,8 +44,11 @@ fun BoardView(session: MutableState<Session>, targetsOn: MutableState<Boolean>, 
                     Tile(
                         position,
                         piece = session.value.game.board.getPiece(position),
-                        isAvailable = position in availableMoves.value.map { it.to } && session.value.isNotLogging() && session.value.isPlayable(),
-                        onClick = { clickedPosition -> selectedPosition.value = clickedPosition },
+                        isAvailable = position in availableMoves.value.map { it.to },
+                        onClick = { clickedPosition ->
+                            if (session.value.isPlayable())
+                                selectedPosition.value = clickedPosition
+                        },
                         targetsOn = targetsOn
                     )
                 }
