@@ -19,7 +19,7 @@ import storage.GameStorage
 class PlayCommand(private val db: GameStorage, private val session: Session) : Command {
 
     override fun execute(parameter: String?): Result<Session> {
-        cmdRequire(!session.isLogging()) { "Can't play without a game: try open or join commands." }
+        cmdRequire(session.isNotLogging()) { "Can't play without a game: try open or join commands." }
         cmdRequire(session.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
         cmdRequireNotNull(parameter) { "Missing move." }

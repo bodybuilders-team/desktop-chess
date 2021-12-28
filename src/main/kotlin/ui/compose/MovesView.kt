@@ -11,6 +11,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.*
 import domain.game.Game
+import ui.compose.app.WINDOW_PADDING
+import ui.compose.board.BOARD_HEIGHT
+import ui.compose.board.WHITE
 
 
 // Constants

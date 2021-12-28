@@ -1,11 +1,8 @@
-import domain.*
-import domain.game.*
-import domain.board.*
 import domain.commands.CommandException
 import domain.move.IllegalMoveException
-import domain.pieces.Army
 import storage.*
 import storage.mongodb.createMongoClient
+import ui.compose.app.INITIAL_SESSION
 import ui.console.*
 
 
@@ -32,12 +29,7 @@ fun main() {
 
     driver.use {
         try {
-            var session = Session(
-                name = NO_NAME,
-                state = SessionState.LOGGING,
-                army = Army.WHITE,
-                game = Game(board = Board(), moves = emptyList())
-            )
+            var session = INITIAL_SESSION
             val dataBase = MongoDBGameStorage(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
 
             while (true) {
@@ -73,7 +65,7 @@ fun main() {
                         else "Is your local database started?"
             )
         } finally {
-            println("BYE.\n")
+            println("BYE.")
         }
     }
 }

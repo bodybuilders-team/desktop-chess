@@ -44,6 +44,20 @@ fun Session.isLogging() = state == SessionState.LOGGING
 
 
 /**
+ * Checks if a session is not in logging state.
+ * @return true if a session is not in logging state.
+ */
+fun Session.isNotLogging() = state != SessionState.LOGGING
+
+
+/**
+ * Checks if a session is playable.
+ * @return true if a session is playable.
+ */
+fun Session.isPlayable() = state in listOf(SessionState.YOUR_TURN, SessionState.SINGLE_PLAYER)
+
+
+/**
  * Returns the state of a session, given its game and army.
  * @param game session game
  * @param army session army

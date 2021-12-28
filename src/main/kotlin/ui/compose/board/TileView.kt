@@ -1,4 +1,4 @@
-package ui.compose
+package ui.compose.board
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -29,6 +29,7 @@ val GREEN_CIRCLES_SIZE = 20.dp
  * @param piece Piece supposed to be (or not) in that tile
  * @param isAvailable Indicates whether a move is possible to that tile or not
  * @param onClick Event to be made after a tile is selected
+ * @param targetsOn when true, the available move targets are on
  */
 @Composable
 fun Tile(

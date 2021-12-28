@@ -12,6 +12,10 @@ import domain.NO_NAME
 import domain.Session
 import domain.board.*
 import domain.game.*
+import ui.compose.app.WINDOW_PADDING
+import ui.compose.board.BOARD_WIDTH
+import ui.compose.board.TILE_SIZE
+import ui.compose.board.WHITE
 
 
 //Constants

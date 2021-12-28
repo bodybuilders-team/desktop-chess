@@ -1,4 +1,4 @@
-package ui.compose
+package ui.compose.board
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*

@@ -6,6 +6,7 @@ import androidx.compose.ui.window.*
 import storage.*
 import storage.mongodb.createMongoClient
 import ui.compose.*
+import ui.compose.app.*
 
 
 /**
@@ -24,13 +25,15 @@ fun main() {
 
     driver.use {
         application {
+            val exitApp = remember { mutableStateOf(false) }
+
             Window(
                 title = "Desktop Chess by Nyck, Jesus and Santos",
                 state = WindowState(
                     size = DpSize(WINDOW_WIDTH, WINDOW_HEIGHT),
                     position = WindowPosition(Alignment.Center)
                 ),
-                onCloseRequest = ::exitApplication,
+                onCloseRequest = { exitApp.value = true },
                 icon = painterResource("chess_icon.png"),
                 resizable = false
             ) {
@@ -38,8 +41,14 @@ fun main() {
                 val targetsOn = remember { mutableStateOf(true) }
                 val closeGame = remember { mutableStateOf(true) }
 
-                MenuBar(Options(singlePlayer, targetsOn, closeGame))
-                App(dataBase, Options(singlePlayer, targetsOn, closeGame))
+                if (exitApp.value) {
+                    driver.close()
+                    println("BYE.")
+                    exitApplication()
+                }
+
+                MenuBar(Options(singlePlayer, targetsOn, closeGame, exitApp))
+                App(dataBase, Options(singlePlayer, targetsOn, closeGame, exitApp))
             }
         }
     }

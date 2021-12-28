@@ -14,6 +14,11 @@ import androidx.compose.ui.unit.*
 import domain.*
 import domain.commands.*
 import storage.GameStorage
+import ui.compose.app.Options
+import ui.compose.app.WINDOW_PADDING
+import ui.compose.board.BOARD_HEIGHT
+import ui.compose.board.PROMOTION_BUTTON_PADDING
+import ui.compose.board.WHITE
 
 
 // Constants
@@ -97,66 +102,91 @@ enum class MenuCommand {
 /**
  * Composable used to display a menu command view
  * @param session game session
- * @param db database
- * @param command command to display the view
+ * @param dataBase database
+ * @param selectedCommand command to display the view
+ * @param singlePlayer when true, single player mode is on
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MenuOptionView(session: MutableState<Session>, db: GameStorage, command: MenuCommand, singlePlayer: MutableState<Boolean>) {
-    if (command == MenuCommand.EXIT) return
+fun MenuOptionView(
+    session: MutableState<Session>,
+    dataBase: GameStorage,
+    selectedCommand: MutableState<MenuCommand?>,
+    singlePlayer: MutableState<Boolean>
+) {
+    val command = selectedCommand.value
 
-    val openDialog = remember { mutableStateOf(true) }
-
-    if (openDialog.value) {
-        AlertDialog(
-            onDismissRequest = { openDialog.value = false },
-            title = {
-                Text("${if (command == MenuCommand.OPEN) "Open" else "Join"} a game")
-            },
-            text = {
-                Text(
-                    if (command == MenuCommand.OPEN)
-                        "Opens or joins a game to play with the White pieces"
-                    else
-                        "Joins a game named to play with the Black pieces"
+    AlertDialog(
+        onDismissRequest = { selectedCommand.value = null },
+        title = { Text("${if (command == MenuCommand.OPEN) "Open" else "Join"} a game") },
+        text = {
+            Text(
+                if (command == MenuCommand.OPEN)
+                    "Opens or joins a game to play with the White pieces"
+                else
+                    "Joins a game named to play with the Black pieces"
+            )
+        },
+        modifier = Modifier.size(MENU_OPTION_VIEW_WIDTH, MENU_OPTION_VIEW_HEIGHT),
+        buttons = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.width(MENU_OPTION_VIEW_WIDTH)
+            ) {
+                val textState = remember { mutableStateOf(TextFieldValue()) }
+                TextField(
+                    value = textState.value,
+                    onValueChange = { textState.value = it }
                 )
-            },
-            modifier = Modifier.size(MENU_OPTION_VIEW_WIDTH, MENU_OPTION_VIEW_HEIGHT),
-            buttons = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.width(MENU_OPTION_VIEW_WIDTH)
-                ) {
-                    val textState = remember { mutableStateOf(TextFieldValue()) }
-                    TextField(
-                        value = textState.value,
-                        onValueChange = { textState.value = it }
-                    )
-                    Row {
-                        Button(
-                            onClick = {
-                                session.value =
-                                    if (command == MenuCommand.OPEN){
-                                        val openSession = OpenCommand(db).execute(textState.value.text).getOrThrow()
-                                        if (singlePlayer.value)
-                                            openSession.copy(state = SessionState.SINGLE_PLAYER)
-                                        else
-                                            openSession
-                                    }
+                Row {
+                    Button(
+                        onClick = {
+                            session.value =
+                                if (command == MenuCommand.OPEN) {
+                                    val openSession =
+                                        OpenCommand(dataBase).execute(textState.value.text).getOrThrow()
+                                    if (singlePlayer.value)
+                                        openSession.copy(state = SessionState.SINGLE_PLAYER)
                                     else
-                                        JoinCommand(db).execute(textState.value.text).getOrThrow()
-                            },
-                            modifier = Modifier.padding(end = WINDOW_PADDING)
-                        ) {
-                            Text(if (command == MenuCommand.OPEN) "Open" else "Join")
-                        }
+                                        openSession
+                                } else
+                                    JoinCommand(dataBase).execute(textState.value.text).getOrThrow()
+                        },
+                        modifier = Modifier.padding(end = WINDOW_PADDING)
+                    ) {
+                        Text(if (command == MenuCommand.OPEN) "Open" else "Join")
+                    }
 
-                        Button(onClick = { openDialog.value = false }) {
-                            Text("Cancel")
-                        }// TODO: 27/12/2021 Arranjar Cancel
+                    Button(onClick = { selectedCommand.value = null }) {
+                        Text("Cancel")
                     }
                 }
             }
-        )
+        }
+    )
+}
+
+
+/**
+ * Composable used to display a menu and other composable when the session is in logging state.
+ * @param session game session
+ * @param dataBase database
+ * @param options app options
+ */
+@Composable
+fun LoggingView(session: MutableState<Session>, dataBase: GameStorage, options: Options) {
+    require(session.value.isLogging()) { "The session is not in logging state." }
+
+    val selectedCommand = remember { mutableStateOf<MenuCommand?>(null) }
+
+    MenuView { menuCommand -> selectedCommand.value = menuCommand }
+
+    when (selectedCommand.value) {
+        in listOf(MenuCommand.OPEN, MenuCommand.JOIN) -> {
+            MenuOptionView(session, dataBase, selectedCommand, options.singlePlayer)
+        }
+
+        MenuCommand.EXIT -> options.exitApp.value = true
+        else -> {}
     }
 }
