@@ -36,8 +36,7 @@ fun Tile(
     position: Board.Position,
     piece: Piece?,
     isAvailable: Boolean,
-    onClick: (Board.Position) -> Unit,
-    targetsOn: MutableState<Boolean>
+    onClick: (Board.Position) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -57,7 +56,7 @@ fun Tile(
                     .absolutePadding(left = IMAGE_CENTERING_LEFT_OFFSET)
             )
         }
-        if (isAvailable && targetsOn.value)
+        if (isAvailable)
             Canvas(
                 modifier = Modifier
                     .size(GREEN_CIRCLES_SIZE)

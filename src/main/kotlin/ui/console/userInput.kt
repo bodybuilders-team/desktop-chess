@@ -1,6 +1,7 @@
 package ui.console
 
 import domain.*
+import domain.game.armyToPlay
 
 
 /**
@@ -10,7 +11,7 @@ import domain.*
  */
 fun getPrompt(session: Session): String {
     if (session.name.isEmpty()) return ""
-    val turn = (if (session.state == SessionState.WAITING_FOR_OPPONENT) session.army.other() else session.army).toString()
+    val turn = session.game.armyToPlay.toString()
     return "${session.name}:${turn.first() + turn.substring(1).lowercase()}"
 }
 

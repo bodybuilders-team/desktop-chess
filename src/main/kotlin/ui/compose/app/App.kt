@@ -47,7 +47,8 @@ fun App(dataBase: GameStorage, options: Options) {
                     else
                         MovesView(session.value.game)
                 }
-                GameInfoView(session.value)
+                if (session.value.isNotLogging())
+                    GameInfoView(session.value)
             }
         }
     }

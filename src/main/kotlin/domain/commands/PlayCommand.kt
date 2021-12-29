@@ -23,9 +23,6 @@ class PlayCommand(private val db: GameStorage, private val session: Session) : C
         cmdRequire(session.state != SessionState.WAITING_FOR_OPPONENT) { "Wait for your turn: try refresh command." }
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. Can't play any more moves." }
         cmdRequireNotNull(parameter) { "Missing move." }
-        require(session.state == SessionState.SINGLE_PLAYER || session.game.armyToPlay == session.army) {
-            "It's not this army's turn! Session army is different from the army to play."
-        }
 
         val move = Move.validated(parameter, session.game)
 

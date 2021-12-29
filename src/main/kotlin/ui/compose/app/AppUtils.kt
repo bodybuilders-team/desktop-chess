@@ -8,7 +8,6 @@ import domain.Session
 import domain.SessionState
 import domain.commands.RefreshCommand
 import domain.game.gameFromMoves
-import domain.pieces.Army
 import kotlinx.coroutines.delay
 import storage.GameStorage
 import ui.compose.*
@@ -28,7 +27,6 @@ val INITIAL_GAME = gameFromMoves()
 val INITIAL_SESSION = Session(
     name = NO_NAME,
     state = SessionState.LOGGING,
-    army = Army.WHITE,
     game = INITIAL_GAME
 )
 

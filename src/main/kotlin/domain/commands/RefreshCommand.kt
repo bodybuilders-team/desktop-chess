@@ -21,13 +21,19 @@ class RefreshCommand(private val db: GameStorage, private val session: Session) 
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. There aren't any new moves." }
 
         val moves = db.getAllMoves(session.name)
-        val game =
-            if (session.game.moves.size < moves.size) session.game.makeMove(moves.last())
-            else session.game
+        val yourTurn = session.game.moves.size < moves.size
+        
+        val game = if (yourTurn) session.game.makeMove(moves.last())
+        else session.game
 
         return Result.success(
             session.copy(
-                state = getSessionState(game, session.army),
+                state =
+                when {
+                    game.ended()    -> SessionState.ENDED
+                    yourTurn        -> SessionState.YOUR_TURN
+                    else            -> SessionState.WAITING_FOR_OPPONENT
+                },
                 game = game
             )
         )

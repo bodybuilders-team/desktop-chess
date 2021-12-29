@@ -6,7 +6,6 @@ import domain.game.*
 import domain.board.*
 import domain.commands.*
 import domain.move.*
-import domain.pieces.*
 import kotlin.test.*
 
 class PlayCommandTests { // [✔]
@@ -17,7 +16,7 @@ class PlayCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val session = Session(gameName, SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()))
+        val session = Session(gameName, SessionState.LOGGING, Game(Board(), emptyList()))
 
         assertEquals(
             "Can't play without a game: try open or join commands.",
@@ -34,7 +33,7 @@ class PlayCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Army.WHITE, Game(Board(), emptyList()))
+        val session = Session(gameName, SessionState.WAITING_FOR_OPPONENT, Game(Board(), emptyList()))
 
         assertEquals(
             "Wait for your turn: try refresh command.",
@@ -51,7 +50,7 @@ class PlayCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val session = Session(gameName, SessionState.ENDED, Army.WHITE, Game(Board(), emptyList()))
+        val session = Session(gameName, SessionState.ENDED, Game(Board(), emptyList()))
 
         assertEquals(
             "Game ended. Can't play any more moves.",
@@ -69,30 +68,12 @@ class PlayCommandTests { // [✔]
         db.createGame(gameName)
 
         val session =
-            Session(gameName, SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()))
+            Session(gameName, SessionState.YOUR_TURN, Game(Board(), emptyList()))
 
         assertEquals(
             "Missing move.",
             assertFailsWith<CommandException> {
                 PlayCommand(db, session).execute(null)
-            }.message
-        )
-    }
-
-    @Test
-    fun `Play command throws IllegalArgumentException if it's not the army's turn to play`() {
-        val gameName = "test"
-
-        val db = GameStorageStub()
-        db.createGame(gameName)
-
-        val session =
-            Session(gameName, SessionState.YOUR_TURN, Army.BLACK, Game(Board(), emptyList()))
-
-        assertEquals(
-            "It's not this army's turn! Session army is different from the army to play.",
-            assertFailsWith<IllegalArgumentException> {
-                PlayCommand(db, session).execute("Pe2e4")
             }.message
         )
     }
@@ -107,7 +88,7 @@ class PlayCommandTests { // [✔]
         val game = gameFromMoves("f3", "e5", "g4")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.YOUR_TURN, Army.BLACK, game)
+        var session = Session(gameName, SessionState.YOUR_TURN, game)
 
         val move = "Qh4"
         val result = PlayCommand(db, session).execute(move)
@@ -127,11 +108,13 @@ class PlayCommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val game = gameFromMoves("e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
-            "Qd3", "Qb8", "Qh7", "Qc8", "Kg6")
+        val game = gameFromMoves(
+            "e3", "a5", "Qh5", "Ra6", "Qa5", "h5", "h4", "Rah6", "Qc7", "f6", "Qd7", "Kf7", "Qb7",
+            "Qd3", "Qb8", "Qh7", "Qc8", "Kg6"
+        )
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.YOUR_TURN, Army.WHITE, game)
+        var session = Session(gameName, SessionState.YOUR_TURN, game)
 
         val move = "Qe6"
         val result = PlayCommand(db, session).execute(move)
@@ -154,7 +137,7 @@ class PlayCommandTests { // [✔]
         val game = gameFromMoves("c3", "d6", "a3", "e6")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.YOUR_TURN, Army.WHITE, game)
+        var session = Session(gameName, SessionState.YOUR_TURN, game)
 
         val move = "Qa4"
         val result = PlayCommand(db, session).execute(move)
@@ -177,7 +160,7 @@ class PlayCommandTests { // [✔]
         val game = gameFromMoves("c3", "d6", "a3", "e6")
         game.moves.forEach { db.postMove(gameName, it) }
 
-        var session = Session(gameName, SessionState.YOUR_TURN, Army.WHITE, game)
+        var session = Session(gameName, SessionState.YOUR_TURN, game)
 
         val move = "e3"
         val result = PlayCommand(db, session).execute(move)

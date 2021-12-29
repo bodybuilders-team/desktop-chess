@@ -1,14 +1,13 @@
 import domain.game.*
 import domain.Session
 import domain.SessionState
-import domain.pieces.Army
 import ui.console.*
 
 
 object ViewsTests { // []
     data class ViewTest(val view: View, val name: String, val session: Session)
 
-    private val defaultSession = Session(name = "test", SessionState.YOUR_TURN, Army.WHITE, gameFromMoves())
+    private val defaultSession = Session(name = "test", SessionState.YOUR_TURN, gameFromMoves())
     
     fun openViewTests(){
         testViews(listOf(

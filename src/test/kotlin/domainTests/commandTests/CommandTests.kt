@@ -5,7 +5,6 @@ import domain.game.*
 import GameStorageStub
 import domain.board.*
 import domain.commands.*
-import domain.pieces.Army
 import kotlin.test.*
 
 
@@ -22,7 +21,7 @@ class CommandTests { // [✔]
 
     @Test
     fun `Help command returns successful result with the same session`() {
-        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()))
+        val session = Session("test", SessionState.YOUR_TURN, Game(Board(), emptyList()))
         val result = HelpCommand(session).invoke()
 
         assertTrue(result.isSuccess)
@@ -38,7 +37,7 @@ class CommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val session = Session("test", SessionState.LOGGING, Army.WHITE, Game(Board(), emptyList()))
+        val session = Session("test", SessionState.LOGGING, Game(Board(), emptyList()))
 
         assertEquals(
             "No game, no moves: try open or join commands.",
@@ -55,7 +54,7 @@ class CommandTests { // [✔]
         val db = GameStorageStub()
         db.createGame(gameName)
 
-        val session = Session("test", SessionState.YOUR_TURN, Army.WHITE, Game(Board(), emptyList()))
+        val session = Session("test", SessionState.YOUR_TURN, Game(Board(), emptyList()))
 
         val result = MovesCommand(db, session).execute(gameName)
         val newSession = result.getOrThrow()

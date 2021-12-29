@@ -117,7 +117,7 @@ fun MenuOptionView(
     val command = selectedCommand.value
 
     AlertDialog(
-        onDismissRequest = { selectedCommand.value = null },
+        onDismissRequest = { },
         title = { Text("${if (command == MenuCommand.OPEN) "Open" else "Join"} a game") },
         text = {
             Text(
@@ -141,16 +141,17 @@ fun MenuOptionView(
                 Row {
                     Button(
                         onClick = {
-                            session.value =
-                                if (command == MenuCommand.OPEN) {
-                                    val openSession =
-                                        OpenCommand(dataBase).execute(textState.value.text).getOrThrow()
-                                    if (singlePlayer.value)
-                                        openSession.copy(state = SessionState.SINGLE_PLAYER)
-                                    else
-                                        openSession
-                                } else
-                                    JoinCommand(dataBase).execute(textState.value.text).getOrThrow()
+                            if (textState.value.text.isNotBlank()) {
+                                session.value =
+                                    if (command == MenuCommand.OPEN) {
+                                        val openSession = OpenCommand(dataBase).execute(textState.value.text).getOrThrow()
+                                        if (singlePlayer.value && openSession.isPlayable())
+                                            openSession.copy(state = SessionState.SINGLE_PLAYER)
+                                        else
+                                            openSession
+                                    } else
+                                        JoinCommand(dataBase).execute(textState.value.text).getOrThrow()
+                            }
                         },
                         modifier = Modifier.padding(end = WINDOW_PADDING)
                     ) {

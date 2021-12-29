@@ -1,14 +1,17 @@
 package ui.compose.board
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import domain.Session
+import domain.SessionState
 import domain.board.*
 import domain.commands.PlayCommand
 import domain.game.getAvailableMoves
+import domain.game.state
 import domain.isLogging
 import domain.isPlayable
 import domain.move.Move
@@ -44,12 +47,11 @@ fun BoardView(session: MutableState<Session>, targetsOn: MutableState<Boolean>, 
                     Tile(
                         position,
                         piece = session.value.game.board.getPiece(position),
-                        isAvailable = position in availableMoves.value.map { it.to },
+                        isAvailable = targetsOn.value && position in availableMoves.value.map { it.to },
                         onClick = { clickedPosition ->
                             if (session.value.isPlayable())
                                 selectedPosition.value = clickedPosition
-                        },
-                        targetsOn = targetsOn
+                        }
                     )
                 }
             }
@@ -58,6 +60,35 @@ fun BoardView(session: MutableState<Session>, targetsOn: MutableState<Boolean>, 
 
     if (session.value.isPlayable() && selectedPosition.value != null)
         UseSelectedPosition(selectedPosition.value!!, dataBase, session, availableMoves)
+
+    EndGamePopUp(session)
+}
+
+
+/**
+ * Composable used to show the endgame pop-up in case of a play that ends the game, i.e. checkmate.
+ * @param session game session
+ */
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun EndGamePopUp(session: MutableState<Session>) {
+    // TODO: 29/12/2021  
+    val showEnd = remember { mutableStateOf(0) }
+
+    if (session.value.state == SessionState.ENDED && showEnd.value == 0) showEnd.value = 1
+
+    if (showEnd.value == 1) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text("Game ended") },
+            text = { Text("${session.value.game.state}!") },
+            buttons = {
+                Button(onClick = { showEnd.value = 2 }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 }
 
 

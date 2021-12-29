@@ -13,20 +13,24 @@ import domain.Session
 import domain.board.*
 import domain.game.*
 import ui.compose.app.WINDOW_PADDING
-import ui.compose.board.BOARD_WIDTH
-import ui.compose.board.TILE_SIZE
-import ui.compose.board.WHITE
+import ui.compose.board.*
 
 
 //Constants
 val GAME_INFO_HEIGHT = 70.dp
 val GAME_INFO_PADDING = 10.dp
 val GAME_INFO_FONT_SIZE = 20.sp
-val GAME_INFO_FONT_COLOR = Color.Black
 val ROWS_COLS_FONT_COLOR = Color.White
+
+val GAME_INFO_FONT_COLOR = Color.Black
+val GAME_INFO_CHECK_FONT_COLOR = Color(0xFFFF4500)
+val GAME_INFO_CHECKMATE_FONT_COLOR = Color.Red
+val GAME_INFO_TIE_FONT_COLOR = Color.Blue
+
 val COLS_VIEW_HEIGHT = 30.dp
 val CHARACTER_SIZE = 24.sp
 
+operator fun Color.plus(other: Color) = Color(this.value + other.value)
 
 /**
  * Composable used to display additional information related to the game.
@@ -41,22 +45,18 @@ fun GameInfoView(session: Session) {
             .background(Color(WHITE))
     ) {
         Text(
-            "Game: ${if (session.name != NO_NAME) session.name.trim() else "???"} | Turn: ${session.game.armyToPlay}",
+            "Game: ${if (session.name != NO_NAME) session.name.trim() else "???"}" +
+            "\nTurn: ${session.game.armyToPlay}",
             fontFamily = FONT_FAMILY,
             fontSize = GAME_INFO_FONT_SIZE,
             color = GAME_INFO_FONT_COLOR
         )
         Text(
-            "Game State: ${session.state}",
-            fontFamily = FONT_FAMILY,
-            fontSize = GAME_INFO_FONT_SIZE,
-            color = GAME_INFO_FONT_COLOR
-        )
-        Text(
-            "Info: ${session.game.state}",
+            "Info: ${session.game.state.toString().replace("_", " ").lowercase().replaceFirstChar { it.uppercaseChar() }}",
             color = when (session.game.state) {
-                GameState.CHECK     -> Color.Red
-                GameState.CHECKMATE -> Color.Red
+                GameState.CHECK     -> GAME_INFO_CHECK_FONT_COLOR
+                GameState.CHECKMATE -> GAME_INFO_CHECKMATE_FONT_COLOR
+                GameState.TIE       -> GAME_INFO_TIE_FONT_COLOR
                 else                -> GAME_INFO_FONT_COLOR
             },
             fontFamily = FONT_FAMILY,
@@ -67,7 +67,7 @@ fun GameInfoView(session: Session) {
 
 
 /**
- * Composable used to display additional information related to columns.
+ * Composable used to display chess board column letters.
  */
 @Composable
 fun ColumnsView() {
@@ -91,7 +91,7 @@ fun ColumnsView() {
 
 
 /**
- * Composable used to display additional information related to rows.
+ * Composable used to display chess board row numbers.
  */
 @Composable
 fun RowsView() {

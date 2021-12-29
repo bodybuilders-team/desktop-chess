@@ -30,7 +30,7 @@ fun PromotionView(session: Session, onPieceTypeSelected: (Char) -> Unit) {
 
     if (openDialog) {
         AlertDialog(
-            onDismissRequest = { openDialog = false },
+            onDismissRequest = { },
             title = { Text("Promotion Piece") },
             text = { Text("Select Promotion Piece") },
             buttons = {

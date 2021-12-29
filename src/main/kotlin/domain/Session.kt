@@ -9,13 +9,11 @@ import domain.pieces.Army
  * A game session.
  * @property name session name
  * @property state current session state
- * @property army session army
  * @property game game with current board and list of previously played moves
  */
 data class Session(
     val name: String,
     val state: SessionState,
-    val army: Army,
     val game: Game
 )
 
@@ -84,7 +82,6 @@ fun getOpeningBoardSession(gameName: String, moves: List<Move>, army: Army): Ses
     return Session(
         name = gameName,
         state = getSessionState(game, army),
-        army = army,
         game = game
     )
 }
