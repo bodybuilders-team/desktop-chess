@@ -3,7 +3,6 @@ package ui.compose.board
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -15,27 +14,31 @@ import domain.pieces.*
 // Constants
 const val RED = 0xFF794839
 const val WHITE = 0xFFEBEBD0
-val LIGHT_TILE_COLOR = Color(WHITE)
-val DARK_TILE_COLOR = Color(RED)
+
 val TILE_SIZE = 88.dp
-val IMAGE_DIMENSIONS = 256.dp
-val IMAGE_CENTERING_LEFT_OFFSET = 2.dp
-val GREEN_CIRCLES_SIZE = 20.dp
+private val LIGHT_TILE_COLOR = Color(WHITE)
+private val DARK_TILE_COLOR = Color(RED)
+private val IMAGE_DIMENSIONS = 256.dp
+private val IMAGE_CENTERING_OFFSET = 3.dp
+private val GREEN_CIRCLES_SIZE = 20.dp
+private val TILE_BORDER_WIDTH = 3.dp
+private val TILE_BORDER_COLOR = Color.Green
 
 
 /**
  * Composable used to display a Chess Tile
  * @param position board position relative to that tile
- * @param piece Piece supposed to be (or not) in that tile
- * @param isAvailable Indicates whether a move is possible to that tile or not
- * @param onClick Event to be made after a tile is selected
- * @param targetsOn when true, the available move targets are on
+ * @param piece piece supposed to be (or not) in that tile
+ * @param isAvailable indicates whether a move is possible to that tile or not
+ * @param isSelected indicates if the tile is selected
+ * @param onClick event to be made after a tile is selected
  */
 @Composable
 fun Tile(
     position: Board.Position,
     piece: Piece?,
     isAvailable: Boolean,
+    isSelected: Boolean,
     onClick: (Board.Position) -> Unit
 ) {
     Box(
@@ -43,6 +46,7 @@ fun Tile(
             .size(TILE_SIZE)
             .clickable(true) { onClick(position) }
             .background(if ((position.col - FIRST_COL + position.row) % 2 == 0) LIGHT_TILE_COLOR else DARK_TILE_COLOR)
+            .border(if (isSelected) TILE_BORDER_WIDTH else (-1).dp, TILE_BORDER_COLOR)
     )
     {
         if (piece != null) {
@@ -53,7 +57,7 @@ fun Tile(
                 contentDescription = null,
                 modifier = Modifier
                     .size(IMAGE_DIMENSIONS, IMAGE_DIMENSIONS)
-                    .absolutePadding(left = IMAGE_CENTERING_LEFT_OFFSET)
+                    .absolutePadding(left = IMAGE_CENTERING_OFFSET, top = IMAGE_CENTERING_OFFSET)
             )
         }
         if (isAvailable)

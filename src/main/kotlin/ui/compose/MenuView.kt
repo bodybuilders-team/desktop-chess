@@ -14,22 +14,20 @@ import androidx.compose.ui.unit.*
 import domain.*
 import domain.commands.*
 import storage.GameStorage
-import ui.compose.app.Options
-import ui.compose.app.WINDOW_PADDING
-import ui.compose.board.BOARD_HEIGHT
-import ui.compose.board.PROMOTION_BUTTON_PADDING
-import ui.compose.board.WHITE
+import ui.compose.app.*
+import ui.compose.board.*
 
 
 // Constants
-val MENU_WIDTH = 320.dp
-val MENU_HEIGHT = BOARD_HEIGHT
-val MENU_TITLE_SIZE = 40.sp
-val MENU_BUTTON_WIDTH = 200.dp
-val MENU_BUTTON_HEIGHT = 60.dp
-val MENU_BUTTON_MODIFIER = Modifier.size(MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT).padding(PROMOTION_BUTTON_PADDING)
-val MENU_OPTION_VIEW_WIDTH = 400.dp
-val MENU_OPTION_VIEW_HEIGHT = 200.dp
+private val MENU_WIDTH = 320.dp
+private val MENU_HEIGHT = BOARD_HEIGHT
+private val MENU_TITLE_SIZE = 40.sp
+private val MENU_BUTTON_WIDTH = 200.dp
+private val MENU_BUTTON_HEIGHT = 60.dp
+private val MENU_BUTTON_PADDING = 10.dp
+private val MENU_BUTTON_MODIFIER = Modifier.size(MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT).padding(MENU_BUTTON_PADDING)
+private val MENU_OPTION_VIEW_WIDTH = 400.dp
+private val MENU_OPTION_VIEW_HEIGHT = 200.dp
 
 
 /**

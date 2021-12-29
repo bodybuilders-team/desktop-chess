@@ -44,10 +44,12 @@ fun BoardView(session: MutableState<Session>, targetsOn: MutableState<Boolean>, 
             Column {
                 repeat(BOARD_SIDE_LENGTH) { rowIdx ->
                     val position = Board.Position(FIRST_COL + columnIdx, LAST_ROW - rowIdx)
+                    val piece = session.value.game.board.getPiece(position)
                     Tile(
-                        position,
-                        piece = session.value.game.board.getPiece(position),
+                        position = position,
+                        piece = piece,
                         isAvailable = targetsOn.value && position in availableMoves.value.map { it.to },
+                        isSelected = selectedPosition.value == position && piece != null,
                         onClick = { clickedPosition ->
                             if (session.value.isPlayable())
                                 selectedPosition.value = clickedPosition
@@ -72,7 +74,7 @@ fun BoardView(session: MutableState<Session>, targetsOn: MutableState<Boolean>, 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EndGamePopUp(session: MutableState<Session>) {
-    // TODO: 29/12/2021  
+    // TODO: 29/12/2021
     val showEnd = remember { mutableStateOf(0) }
 
     if (session.value.state == SessionState.ENDED && showEnd.value == 0) showEnd.value = 1

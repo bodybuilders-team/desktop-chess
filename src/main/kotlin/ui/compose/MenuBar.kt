@@ -12,6 +12,12 @@ import ui.compose.app.Options
 @Composable
 fun FrameWindowScope.MenuBar(options: Options) {
     MenuBar {
+        Menu("File") {
+            Item(
+                text = "Close game",
+                onClick = { options.closeGame.value = true }
+            )
+        }
         Menu("Options") {
             CheckboxItem(
                 text = "Show targets",
@@ -25,10 +31,6 @@ fun FrameWindowScope.MenuBar(options: Options) {
                 onCheckedChange = { options.singlePlayer.value = it }
             )
 
-            Item(
-                text = "Close game",
-                onClick = { options.closeGame.value = true }
-            )
         }
     }
 }

@@ -2,8 +2,7 @@ package ui.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,15 +11,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.*
 import domain.game.Game
 import ui.compose.app.WINDOW_PADDING
-import ui.compose.board.BOARD_HEIGHT
-import ui.compose.board.WHITE
+import ui.compose.board.*
 
 
 // Constants
 val MOVES_WIDTH = 320.dp
-val MOVES_HEIGHT = BOARD_HEIGHT
+private val MOVES_HEIGHT = BOARD_HEIGHT
+private val FONT_SIZE = 20.sp
 val FONT_FAMILY = FontFamily.Monospace
-val FONT_SIZE = 20.sp
 
 
 /**

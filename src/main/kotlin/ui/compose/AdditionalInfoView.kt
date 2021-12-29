@@ -8,8 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.*
-import domain.NO_NAME
-import domain.Session
+import domain.*
 import domain.board.*
 import domain.game.*
 import ui.compose.app.WINDOW_PADDING
@@ -18,17 +17,17 @@ import ui.compose.board.*
 
 //Constants
 val GAME_INFO_HEIGHT = 70.dp
-val GAME_INFO_PADDING = 10.dp
-val GAME_INFO_FONT_SIZE = 20.sp
-val ROWS_COLS_FONT_COLOR = Color.White
-
-val GAME_INFO_FONT_COLOR = Color.Black
-val GAME_INFO_CHECK_FONT_COLOR = Color(0xFFFF4500)
-val GAME_INFO_CHECKMATE_FONT_COLOR = Color.Red
-val GAME_INFO_TIE_FONT_COLOR = Color.Blue
-
 val COLS_VIEW_HEIGHT = 30.dp
-val CHARACTER_SIZE = 24.sp
+private val GAME_INFO_PADDING = 10.dp
+private val GAME_INFO_FONT_SIZE = 20.sp
+private val CHARACTER_SIZE = 24.sp
+
+private val ROWS_COLS_FONT_COLOR = Color.White
+private val GAME_INFO_FONT_COLOR = Color.Black
+private val GAME_INFO_CHECK_FONT_COLOR = Color(0xFFFF4500)
+private val GAME_INFO_CHECKMATE_FONT_COLOR = Color.Red
+private val GAME_INFO_TIE_FONT_COLOR = Color.Blue
+
 
 operator fun Color.plus(other: Color) = Color(this.value + other.value)
 
