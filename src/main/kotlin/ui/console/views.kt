@@ -60,10 +60,12 @@ private fun openingGameView(session: Session, whiteArmy: Boolean) {
     if (session.game.state != GameState.NO_CHECK) {
         println(
             when (session.game.state) {
-                GameState.CHECK     -> "${if (session.state == SessionState.YOUR_TURN) "Your" else "Enemy"} King is in check."
-                GameState.CHECKMATE -> "Game ended in checkmate, ${session.game.armyToPlay.other().toString().lowercase()} won!"
-                GameState.STALEMATE -> "Game ended in stalemate, it's a draw!"
-                GameState.TIE       -> "Game is tied!"
+                GameState.CHECK             -> "${if (session.state == SessionState.YOUR_TURN) "Your" else "Enemy"} King is in check."
+                GameState.CHECKMATE         -> "Game ended in checkmate, ${session.game.armyToPlay.other().toString().lowercase()} won!"
+                GameState.STALEMATE         -> "Game ended in draw by stalemate!"
+                GameState.FIFTY_MOVE_RULE   -> "Game ended in draw by fifty move rule!"
+                GameState.THREE_FOLD        -> "Game ended in draw by repetition!"
+                GameState.DEAD_POSITION     -> "Game ended in draw by insufficient material!"
                 GameState.NO_CHECK  -> ""
             }
         )
@@ -84,8 +86,10 @@ private fun afterMoveView(session: Session, playerTurn: Boolean) {
                     GameState.CHECK     -> "${if (playerTurn) "Your" else "Enemy"} King is in check."
                     GameState.CHECKMATE -> "${if (playerTurn) "Your" else "Enemy"} King is in checkmate. Game ended, you ${if (playerTurn) "lose" else "win"}!"
                     GameState.STALEMATE -> "${if (playerTurn) "Your" else "Enemy"} King is in stalemate. Game ended, it's a draw!"
-                    GameState.TIE       -> "Game is tied!"
-                    GameState.NO_CHECK  -> ""
+                    GameState.FIFTY_MOVE_RULE   -> "Game ended in draw by fifty move rule!"
+                    GameState.THREE_FOLD        -> "Game ended in draw by repetition!"
+                    GameState.DEAD_POSITION     -> "Game ended in draw by insufficient material!"
+                    GameState.NO_CHECK          -> ""
                 }
         )
     }

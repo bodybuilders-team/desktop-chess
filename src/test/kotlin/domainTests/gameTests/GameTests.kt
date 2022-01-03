@@ -3,7 +3,6 @@ package domainTests.gameTests
 import defaultGameResultingInBlackCheck
 import defaultGameResultingInCheckMate
 import defaultGameResultingInStaleMate
-import defaultGameResultingInTie
 import defaultGameResultingInWhiteCheck
 import domain.board.*
 import domain.game.*
@@ -274,11 +273,6 @@ class GameTests { // [✔]
     @Test
     fun `Game state is STALEMATE when there's a stalemate in game`(){
         assertEquals(GameState.STALEMATE, defaultGameResultingInStaleMate.state)
-    }
-
-    @Test
-    fun `Game state is TIE when there's a tie in game`(){
-        assertEquals(GameState.TIE, defaultGameResultingInTie.state)
     }
 
     // makeMoves [✔]

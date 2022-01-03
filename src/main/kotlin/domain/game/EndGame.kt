@@ -21,7 +21,20 @@ const val NUMBER_OF_MOVES_TO_DRAW = 100
  *
  * @return true if the game ended
  */
-fun Game.ended() = state in listOf(GameState.CHECKMATE, GameState.STALEMATE, GameState.TIE)
+fun Game.ended() = state in listOf(
+    GameState.CHECKMATE,
+    GameState.STALEMATE,
+    GameState.FIFTY_MOVE_RULE,
+    GameState.THREE_FOLD,
+    GameState.DEAD_POSITION
+)
+
+fun Game.endedInDraw() = state in listOf(
+    GameState.STALEMATE,
+    GameState.FIFTY_MOVE_RULE,
+    GameState.THREE_FOLD,
+    GameState.DEAD_POSITION
+)
 
 
 /**
@@ -118,13 +131,5 @@ fun Game.isTiedByDeadPosition(): Boolean {
     val boardPieces = board.toString().replace(" ", "")
     val pieceCount = boardPieces.count()
 
-    val whiteKingPos = board.toString().indexOf('K')
-    val blackKingPos = board.toString().indexOf('k')
-
-    val whiteBishopPos = board.toString().indexOf('B')
-    val blackBishopPos = board.toString().indexOf('b')
-
-
-    return pieceCount == 2 //|| pieceCount == 3 && whiteBishopPos != -1 && blackKingPos
-    // TODO: 21/12/2021 Continue implementation
+    return pieceCount == 2
 }

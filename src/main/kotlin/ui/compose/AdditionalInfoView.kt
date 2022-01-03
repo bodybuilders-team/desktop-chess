@@ -45,18 +45,32 @@ fun GameInfoView(session: Session) {
     ) {
         Text(
             "Game: ${if (session.name != NO_NAME) session.name.trim() else "???"}" +
-            "\nTurn: ${session.game.armyToPlay}",
+                    "\nTurn: ${session.game.armyToPlay}",
             fontFamily = FONT_FAMILY,
             fontSize = GAME_INFO_FONT_SIZE,
             color = GAME_INFO_FONT_COLOR
         )
         Text(
-            "Info: ${session.game.state.toString().replace("_", " ").lowercase().replaceFirstChar { it.uppercaseChar() }}",
+            "Info: " +
+                    if (session.game.endedInDraw()) "Draw " +
+                            when (session.game.state) {
+                                GameState.STALEMATE -> "by stalemate"
+                                GameState.FIFTY_MOVE_RULE -> "by fifty-move-rule"
+                                GameState.THREE_FOLD -> "by repetition"
+                                GameState.DEAD_POSITION -> "by insufficient material"
+                                else -> ""
+                            }
+                    else
+                        session.game.state.toString().replace("_", " ").lowercase()
+                            .replaceFirstChar { it.uppercaseChar() },
             color = when (session.game.state) {
-                GameState.CHECK     -> GAME_INFO_CHECK_FONT_COLOR
+                GameState.CHECK -> GAME_INFO_CHECK_FONT_COLOR
                 GameState.CHECKMATE -> GAME_INFO_CHECKMATE_FONT_COLOR
-                GameState.TIE       -> GAME_INFO_TIE_FONT_COLOR
-                else                -> GAME_INFO_FONT_COLOR
+                GameState.STALEMATE -> GAME_INFO_TIE_FONT_COLOR
+                GameState.FIFTY_MOVE_RULE -> GAME_INFO_TIE_FONT_COLOR
+                GameState.THREE_FOLD -> GAME_INFO_TIE_FONT_COLOR
+                GameState.DEAD_POSITION -> GAME_INFO_TIE_FONT_COLOR
+                else -> GAME_INFO_FONT_COLOR
             },
             fontFamily = FONT_FAMILY,
             fontSize = GAME_INFO_FONT_SIZE
