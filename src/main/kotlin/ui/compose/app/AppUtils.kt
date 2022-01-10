@@ -37,12 +37,14 @@ val INITIAL_SESSION = Session(
  * @property targetsOn when true, the available move targets are on
  * @property closeGame when true, the current game is closed
  * @property exitApp when true, the app is closed
+ * @property refreshGame when true, the current game is refreshed
  */
 data class Options(
     val singlePlayer: MutableState<Boolean>,
     val targetsOn: MutableState<Boolean>,
     val closeGame: MutableState<Boolean>,
-    val exitApp: MutableState<Boolean>
+    val exitApp: MutableState<Boolean>,
+    val refreshGame: MutableState<Boolean>
 )
 
 
@@ -59,11 +61,9 @@ fun Timer(session: MutableState<Session>, dataBase: GameStorage) {
         LaunchedEffect(key1 = timerValue.value, key2 = session.value) {
             if (timerValue.value <= 0) {
                 timerValue.value = REFRESH_TIME
-                println("refresh")
                 session.value = RefreshCommand(dataBase, session.value).execute(null).getOrThrow()
             } else {
                 delay(REFRESH_TIME_DELAY)
-                println(timerValue.value)
                 timerValue.value--
             }
         }

@@ -97,11 +97,7 @@ fun EndGamePopUp(session: MutableState<Session>) {
                     modifier = Modifier.width(END_GAME_POP_UP_WIDTH)
                 ) {
                     Text(
-                        text =
-                        if (session.value.game.state == GameState.CHECKMATE) "CHECKMATE!"
-                        else {
-                            "DRAW"
-                        },
+                        text = if (session.value.game.state == GameState.CHECKMATE) "CHECKMATE!" else "DRAW",
                         fontSize = END_GAME_POP_UP_TEXT_FONT_SIZE,
                         fontWeight = FontWeight.Bold
                     )
@@ -109,11 +105,11 @@ fun EndGamePopUp(session: MutableState<Session>) {
                     Text(
                         text =
                         when (session.value.game.state) {
-                            GameState.CHECKMATE -> "${session.value.game.armyToPlay.other()} won!"
-                            GameState.STALEMATE -> "by stalemate"
-                            GameState.FIFTY_MOVE_RULE -> "by fifty-move-rule"
-                            GameState.THREE_FOLD -> "by repetition"
-                            GameState.DEAD_POSITION -> "by insufficient material"
+                            GameState.CHECKMATE         -> "${session.value.game.armyToPlay.other()} won!"
+                            GameState.STALEMATE         -> "by stalemate"
+                            GameState.FIFTY_MOVE_RULE   -> "by fifty-move-rule"
+                            GameState.THREE_FOLD        -> "by repetition"
+                            GameState.DEAD_POSITION     -> "by insufficient material"
                             else -> ""
                         },
                         fontSize = END_GAME_POP_UP_TEXT_FONT_SIZE,

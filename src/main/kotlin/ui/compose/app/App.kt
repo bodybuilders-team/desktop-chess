@@ -7,6 +7,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import domain.*
+import domain.commands.RefreshCommand
 import storage.*
 import ui.compose.*
 import ui.compose.board.*
@@ -14,17 +15,21 @@ import ui.compose.board.*
 
 /**
  * Main Composable used to display the chess app.
+ * @param session app session
  * @param dataBase database where the games are stored
  * @param options app options
  */
 @Composable
 @Preview
-fun App(dataBase: GameStorage, options: Options) {
-    val session = remember { mutableStateOf(INITIAL_SESSION) }
-
+fun App(session: MutableState<Session>, dataBase: GameStorage, options: Options) {
     if (options.closeGame.value) {
         session.value = INITIAL_SESSION
         options.closeGame.value = false
+    }
+
+    if (options.refreshGame.value) {
+        session.value = RefreshCommand(dataBase, session.value).execute(null).getOrThrow()
+        options.refreshGame.value = false
     }
 
     Timer(session, dataBase)

@@ -25,7 +25,13 @@ fun main() {
 
     driver.use {
         application {
-            val exitApp = remember { mutableStateOf(false) }
+            val appOptions = Options(
+                singlePlayer = remember { mutableStateOf(true) },
+                targetsOn = remember { mutableStateOf(true) },
+                closeGame = remember { mutableStateOf(true) },
+                exitApp = remember { mutableStateOf(false) },
+                refreshGame = remember { mutableStateOf(false) }
+            )
 
             Window(
                 title = "Desktop Chess by Nyck, Jesus and Santos",
@@ -33,22 +39,20 @@ fun main() {
                     size = DpSize(WINDOW_WIDTH, WINDOW_HEIGHT),
                     position = WindowPosition(Alignment.Center)
                 ),
-                onCloseRequest = { exitApp.value = true },
+                onCloseRequest = { appOptions.exitApp.value = true },
                 icon = painterResource("chess_icon.png"),
                 resizable = false
             ) {
-                val singlePlayer = remember { mutableStateOf(true) }
-                val targetsOn = remember { mutableStateOf(true) }
-                val closeGame = remember { mutableStateOf(true) }
-
-                if (exitApp.value) {
+                if (appOptions.exitApp.value) {
                     driver.close()
                     println("BYE.")
                     exitApplication()
                 }
 
-                MenuBar(Options(singlePlayer, targetsOn, closeGame, exitApp))
-                App(dataBase, Options(singlePlayer, targetsOn, closeGame, exitApp))
+                val session = remember { mutableStateOf(INITIAL_SESSION) }
+
+                MenuBar(session, appOptions)
+                App(session, dataBase, appOptions)
             }
         }
     }
