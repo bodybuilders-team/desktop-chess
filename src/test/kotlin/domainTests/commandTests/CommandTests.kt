@@ -2,7 +2,7 @@ package domainTests.commandTests
 
 import domain.*
 import domain.game.*
-import GameStorageStub
+import storage.GameStorageStub
 import domain.board.*
 import domain.commands.*
 import kotlin.test.*

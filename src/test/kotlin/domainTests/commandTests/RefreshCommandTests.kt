@@ -1,6 +1,6 @@
 package domainTests.commandTests
 
-import GameStorageStub
+import storage.GameStorageStub
 import domain.*
 import domain.game.*
 import domain.board.*

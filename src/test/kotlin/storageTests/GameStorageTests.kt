@@ -1,6 +1,6 @@
 package storageTests
 
-import GameStorageStub
+import storage.GameStorageStub
 import domain.move.*
 import listOfMoves
 import kotlin.test.*

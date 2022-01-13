@@ -15,7 +15,9 @@ import domain.pieces.*
 const val RED = 0xFF794839
 const val WHITE = 0xFFEBEBD0
 
-val TILE_SIZE = 88.dp
+const val WINDOW_SCALE = 0.5f
+
+val TILE_SIZE = 88.dp * WINDOW_SCALE
 private val LIGHT_TILE_COLOR = Color(WHITE)
 private val DARK_TILE_COLOR = Color(RED)
 private val IMAGE_DIMENSIONS = 256.dp

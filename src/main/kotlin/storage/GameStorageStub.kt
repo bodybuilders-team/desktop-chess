@@ -1,5 +1,6 @@
+package storage
+
 import domain.move.Move
-import storage.GameStorage
 
 
 /**
