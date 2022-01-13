@@ -43,97 +43,43 @@ data class MonthExtraction(val player: String, val month: String, val location: 
     override fun toString() = "${player}/${month}/${location}"
 }
 
-
-/**
- * Extract games from a player in a given month, given the location to get data from (API, JSON or PGN).
- *
- * Exact same games will be extracted regardless of location.
- * @param player player to get games from
- * @param month month to get games from
- * @param location type of location to get data from
- * @param logger logger to log information to
- * @return extracted games
- */
-fun extractGames(player: String, month: String, location: Location, logger: PrintWriter): List<ExtractedGame> {
-    val fileName = "$CHESS_API_FOLDER_LOCATION/${location} files/ChessCom_${player}_$month.${location}"
-    val file = File(fileName)
-
-    if (location != Location.API)
-        require(file.exists()) { "File $fileName does not exist. Check the player and month or download the file." }
-
-    val whatToExtractString = "games from $player in ${month.substring(4..5)}/${month.substring(0..3)}"
-
-    println("Extracting $whatToExtractString...")
-    logger.println("Extracting $whatToExtractString...")
-
-    val games = when (location) {
-        Location.API -> extractGamesFromPGN(
-            getMonthPGNList("$CHESS_COM_API_URL/pub/player/erik/games/${month.substring(0..3)}/${month.substring(4..5)}"),
-            logger
-        )
-        Location.JSON -> extractGamesFromJSON(file.readLines(), logger)
-        Location.PGN -> TODO("") //extractGamesFromJSON(file.readLines(), logger) //extractGamesFromPGN(file.readLines(), logger)
+data class PlayerExtraction(val player: String, val location: Location) {
+    val monthExtractions: List<MonthExtraction> = extractAllGamesFromPlayer(player, location)
+    val totalGameCount = monthExtractions.sumOf { monthExtraction ->
+        monthExtraction.games.size
     }
-
-    println("Extracted ${games.size} $whatToExtractString.")
-
-    return games
 }
 
 
 /**
- * Extract games from a player in a given month, given a list of string [lines] in JSON format.
+ * Extracts all games from player.
  *
- * Writes to a logger information on what games where ignored and for what reason.
- *
- * @param lines list of string in JSON format
- * @param logger logger to log information to
- * @return extracted games
+ * @param player name of the player
+ * @param location location where the games will be extracted from
+ * @return [PlayerExtraction] containing the name of the player and all the monthExtractions.
  */
-fun extractGamesFromJSON(lines: List<String>, logger: PrintWriter): List<ExtractedGame> {
-    val pgnList = getPGNListFromJSON(lines.joinToString("") { it.replace("\n", "") })
+fun extractAllGamesFromPlayer(player: String, location: Location): List<MonthExtraction> {
+    val months = getMonthlyArchives(player).map { it.substring((it.length - 7) until it.length).replace("/", "") }
 
-    return extractGamesFromPGN(pgnList, logger)
-}
+    val logger = File("$CHESS_EXTRACTED_FOLDER_LOCATION/log/${player}.txt").printWriter()
 
-
-/**
- * Extract games from a player in a given month, given a list of PGN [pgnList].
- *
- * Writes to a logger information on what games where ignored and for what reason.
- *
- *
- * Removes information from moves:
- * - comments (timestamp included)
- * - turn number
- * - check character '+'
- * - checkmate character '#'
- * - who won
- *
- * @param pgnList list of PGN objects
- * @param logger logger to log information to
- * @return extracted games
- */
-fun extractGamesFromPGN(pgnList: List<PGN>, logger: PrintWriter): List<ExtractedGame> {
-    return pgnList
-        .filterIndexed { idx, pgn ->
-            if (pgn["Variant"] != null) {
-                logger.println("Ignored game ${idx + 1} because it is of a different game variant.")
+    val monthExtractions =
+        months.mapNotNull {
+            try {
+                MonthExtraction(player = player, month = it, location = location, logger = logger)
+            } catch (exception: Exception) {
+                println("Couldn't get that month's games!")
+                null
             }
+        }
 
-            pgn["Variant"] == null && pgn.moves.substringBefore(" ") == "1."
-        }
-        .map { pgn ->
-            ExtractedGame(
-                movesToMake = pgn.moves.replace(Regex("\\{.*?} "), "")
-                    .replace(Regex("\\d+\\.(\\.\\.)? "), "")
-                    .replace("+", "")
-                    .replace("#", "")
-                    .replace(Regex("( )?(0-1|1-0|1/2-1/2)"), ""),
-                game = if (pgn["SetUp"] == "1") gameFromFEN(pgn["FEN"]!!) else gameFromMoves()
-            )
-        }
+    logger.close()
+
+    writeToFile(monthExtractions)
+
+    return monthExtractions
 }
+
 
 /**
  * Writes the all [monthExtractions] to a file.
@@ -149,37 +95,6 @@ fun writeToFile(monthExtractions: List<MonthExtraction>) {
         }
     }
     printWriter.close()
-}
-
-
-/**
- * Plays extracted games from a [monthExtraction], catching [IllegalMoveException]s.
- *
- * If an [IllegalMoveException] is caught, prints to the console that that move in the game was illegal.
- *
- * At the end of playing all games, prints to the console the percentage of successfully played games.
- * @param monthExtraction month extraction with the extracted games
- */
-fun playExtractedGames(monthExtraction: MonthExtraction) {
-    var successfullyPlayedGames = 0
-
-    monthExtraction.games.forEachIndexed { gameNum, extractedGame ->
-        try {
-            if (extractedGame.movesToMake.isNotEmpty())
-                extractedGame.game.makeMoves(extractedGame.movesToMake.split(" "))
-            
-            successfullyPlayedGames++
-        } catch (err: IllegalMoveException) {
-            println("Move \"${err.move}\" in game ${gameNum + 1} considered illegal: ${err.message}")
-        }
-    }
-
-    monthExtraction.apply {
-        val playerAndMonth = "$player - ${month.substring(4..5)}/${month.substring(0..3)}"
-        val percentage = "${successfullyPlayedGames.toDouble() / games.size * 100}%"
-
-        println("$playerAndMonth - $successfullyPlayedGames successfully played games ($percentage)")
-    }
 }
 
 
@@ -223,29 +138,4 @@ fun gameFromFEN(fen: String): Game {
         moves.add(0, "Pe2e4")
 
     return Game(Board(boardInString), moves.map { Move(it) })
-}
-
-
-fun main() {
-    println("\n---------------Extracting games---------------\n")
-
-    val location = Location.API
-    val player = "erik"
-
-    val months = getMonthlyArchives(player).map { it.substring((it.length - 7) until it.length).replace("/", "") }
-
-    val logger = File("$CHESS_EXTRACTED_FOLDER_LOCATION/log/${player}.txt").printWriter()
-
-    val monthExtractions =
-        months.map { MonthExtraction(player = player, month = it, location = location, logger = logger) }
-
-    logger.close()
-
-    println("\n----------------Playing games----------------\n")
-
-    writeToFile(monthExtractions)
-
-    monthExtractions.forEach { monthExtraction ->
-        playExtractedGames(monthExtraction)
-    }
 }

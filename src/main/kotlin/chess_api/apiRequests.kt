@@ -87,7 +87,8 @@ fun getJsonResponse(uri: String): JsonObject {
         .header("accept", "application/json")
         .build()
 
-    val response = client?.send(request, HttpResponse.BodyHandlers.ofString())!!
+    val response = client?.sendAsync(request, HttpResponse.BodyHandlers.ofString())!!
+        .get()
 
     return JsonObject(response.body())
 }
