@@ -1,8 +1,7 @@
-package chess_api
+package play_games_from_chess_com
 
 import domain.game.makeMoves
 import domain.move.IllegalMoveException
-import java.io.File
 
 
 /**
@@ -23,11 +22,13 @@ fun MonthExtraction.playExtractedGames(): Float {
 
             successfullyPlayedGames++
         } catch (err: IllegalMoveException) {
-            println("Month ${month} - Move \"${err.move}\" in game ${gameNum + 1} considered illegal: ${err.message}")
+            println("Month $month - Move \"${err.move}\" in game ${gameNum + 1} considered illegal: ${err.message}")
         }
     }
 
-    return successfullyPlayedGames.toFloat() / games.size * 100
+    val percentage = (successfullyPlayedGames.toFloat() / games.size * 100)
+
+    return percentage.takeUnless { it.isNaN() } ?: 100.0f
 }
 
 /**
@@ -39,14 +40,13 @@ fun PlayerExtraction.playExtractedGames() =
     monthExtractions.map { it.playExtractedGames() }.average()
 
 
-
-
 fun main() {
-    val grandMasters = getPlayersFromTitle("GM").take(1)
+    val grandMasters = getPlayersFromTitle("GM").take(5)
 
     println("\n---------------Extracting games---------------\n")
 
-    val playerExtractions = grandMasters.map { player -> PlayerExtraction(player, Location.API) }
+    val playerExtractions =
+        grandMasters.map { player -> PlayerExtraction(player, Location.API, log = false, storeGames = false) }
 
     println("\n----------------Playing games----------------\n")
 

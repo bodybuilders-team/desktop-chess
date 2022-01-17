@@ -1,4 +1,4 @@
-package chess_api
+package play_games_from_chess_com
 
 import org.bson.json.JsonObject
 import java.net.URI
@@ -53,12 +53,12 @@ fun getMonthlyArchives(player: String): List<String> {
 
 /**
  * Gets pgn file as list of strings containing information on all the games played in a month by a specific player.
- * @param uri uri of the monthly archive
+ * @param player player to get games from
+ * @param month month when the games where played
  */
-fun getMonthPGNList(uri: String): List<PGN> {
-    require(Regex("^$CHESS_COM_API_URL/pub/player/(.+)/games/\\d{4}/\\d{2}\$").containsMatchIn(uri)) {
-        "Wrong format for monthly games. Use: https://api.chess.com/pub/player/{username}/games/{YYYY}/{MM}"
-    }
+fun getMonthPGNList(player: String, month: Month): List<PGN> {
+    val uri =
+        "$CHESS_COM_API_URL/pub/player/$player/games/${month.toString(monthFirst = false, separatingString = "/")}"
 
     val json = getJsonResponse(uri)
 

@@ -51,50 +51,11 @@ val Game.armyToPlay
 val Game.state
     get() =
         when {
-            board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK)  -> GameState.CHECKMATE
-            isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK)              -> GameState.STALEMATE
-            isTiedByFiftyMoveRule()                                                     -> GameState.FIFTY_MOVE_RULE
-            isTiedByThreefold()                                                         -> GameState.THREE_FOLD
-            isTiedByDeadPosition()                                                      -> GameState.DEAD_POSITION
-            board.isKingInCheck(Army.WHITE) || board.isKingInCheck(Army.BLACK)          -> GameState.CHECK
-            else                                                                        -> GameState.NO_CHECK
+            board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK) -> GameState.CHECKMATE
+            isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK) -> GameState.STALEMATE
+            isTiedByFiftyMoveRule() -> GameState.FIFTY_MOVE_RULE
+            isTiedByThreefold() -> GameState.THREE_FOLD
+            isTiedByDeadPosition() -> GameState.DEAD_POSITION
+            board.isKingInCheck(Army.WHITE) || board.isKingInCheck(Army.BLACK) -> GameState.CHECK
+            else -> GameState.NO_CHECK
         }
-
-
-/**
- * Makes the moves [movesInString] in the game.
- * @param movesInString moves to make
- * @return new game with the moves [movesInString] made in the game.
- */
-fun Game.makeMoves(movesInString: List<String>): Game =
-    movesInString.fold(this.copy()) { newGame, moveInString ->
-        newGame.makeMove(Move.validated(moveInString, newGame))
-    }
-
-
-/**
- * Returns a new game with the moves [movesInString] consecutively made and validated in the game.
- * @param movesInString moves to make
- * @return new game with the moves [movesInString] consecutively made and validated in the game
- */
-fun gameFromMoves(movesInString: List<String>): Game =
-    Game(Board(), emptyList()).makeMoves(movesInString)
-
-
-/**
- * Returns a new game with the [moves] consecutively made and validated in the game.
- * @param moves moves to make
- * @return new game with the [moves] consecutively made and validated in the game
- */
-@JvmName("gameFromMovesListOfMove")
-fun gameFromMoves(moves: List<Move>): Game =
-    gameFromMoves(moves.map { it.toString() })
-
-
-/**
- * Returns a new game with the moves [movesInString] consecutively made and validated in the game.
- * @param movesInString moves to make in string
- * @return new game with the moves [movesInString] consecutively made and validated in the game
- */
-fun gameFromMoves(vararg movesInString: String): Game =
-    gameFromMoves(movesInString.toList())

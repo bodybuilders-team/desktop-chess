@@ -1,4 +1,4 @@
-package chess_api
+package play_games_from_chess_com
 
 import org.bson.json.JsonObject
 

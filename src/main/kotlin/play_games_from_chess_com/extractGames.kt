@@ -1,8 +1,31 @@
-package chess_api
+package play_games_from_chess_com
 
+import domain.game.gameFromFEN
 import domain.game.gameFromMoves
 import java.io.File
 import java.io.PrintWriter
+
+
+const val PLAY_GAMES_FROM_CHESS_API_FOLDER_LOCATION = "src/main/kotlin/play_games_from_chess_com"
+const val CHESS_EXTRACTED_FOLDER_LOCATION = "$PLAY_GAMES_FROM_CHESS_API_FOLDER_LOCATION/extracted"
+
+/**
+ * Type of the location where the games will be extracted from.
+ */
+enum class Location {
+    API, JSON, PGN;
+
+    override fun toString() = name.lowercase()
+}
+
+data class Month(val month: String, val year: String) {
+
+    fun toString(monthFirst: Boolean, separatingString: String) =
+        "${if (monthFirst) month else year}$separatingString${if (monthFirst) year else month}"
+
+    override fun toString() = toString(monthFirst = false, separatingString = "")
+}
+
 
 /**
  * Extract games from a player in a given month, given the location to get data from (API, JSON or PGN).
@@ -14,22 +37,20 @@ import java.io.PrintWriter
  * @param logger logger to log information to
  * @return extracted games
  */
-fun extractGames(player: String, month: String, location: Location, logger: PrintWriter): List<ExtractedGame> {
-    val fileName = "$CHESS_API_FOLDER_LOCATION/${location} files/ChessCom_${player}_$month.${location}"
+fun extractGames(player: String, month: Month, location: Location, logger: PrintWriter?): List<ExtractedGame> {
+    val fileName = "$PLAY_GAMES_FROM_CHESS_API_FOLDER_LOCATION/${location} files/ChessCom_${player}_$month.${location}"
     val file = File(fileName)
 
     if (location != Location.API)
         require(file.exists()) { "File $fileName does not exist. Check the player and month or download the file." }
 
-    val extractingMessage = "Extracting games from $player in ${month.substring(4..5)}/${month.substring(0..3)}..."
+    val extractingMessage =
+        "Extracting games from $player in ${month.toString(monthFirst = true, separatingString = "/")}..."
     print(extractingMessage)
-    logger.println(extractingMessage)
+    logger?.println(extractingMessage)
 
     val games = when (location) {
-        Location.API -> extractGamesFromPGN(
-            getMonthPGNList("$CHESS_COM_API_URL/pub/player/erik/games/${month.substring(0..3)}/${month.substring(4..5)}"),
-            logger
-        )
+        Location.API -> extractGamesFromPGN(getMonthPGNList(player, month), logger)
         Location.JSON -> extractGamesFromJSON(file.readLines(), logger)
         Location.PGN -> TODO("") //extractGamesFromJSON(file.readLines(), logger) //extractGamesFromPGN(file.readLines(), logger)
     }
@@ -49,7 +70,7 @@ fun extractGames(player: String, month: String, location: Location, logger: Prin
  * @param logger logger to log information to
  * @return extracted games
  */
-fun extractGamesFromJSON(lines: List<String>, logger: PrintWriter): List<ExtractedGame> {
+fun extractGamesFromJSON(lines: List<String>, logger: PrintWriter?): List<ExtractedGame> {
     val pgnList = getPGNListFromJSON(lines.joinToString("") { it.replace("\n", "") })
 
     return extractGamesFromPGN(pgnList, logger)
@@ -73,11 +94,11 @@ fun extractGamesFromJSON(lines: List<String>, logger: PrintWriter): List<Extract
  * @param logger logger to log information to
  * @return extracted games
  */
-fun extractGamesFromPGN(pgnList: List<PGN>, logger: PrintWriter): List<ExtractedGame> {
+fun extractGamesFromPGN(pgnList: List<PGN>, logger: PrintWriter?): List<ExtractedGame> {
     return pgnList
         .filterIndexed { idx, pgn ->
             if (pgn["Variant"] != null) {
-                logger.println("Ignored game ${idx + 1} because it is of a different game variant.")
+                logger?.println("Ignored game ${idx + 1} because it is of a different game variant.")
             }
 
             pgn["Variant"] == null && pgn.moves.substringBefore(" ") == "1."
