@@ -21,8 +21,10 @@ import domain.game.GameState
 import domain.game.armyToPlay
 import domain.game.state
 
-val END_GAME_POP_UP_WIDTH = 200.dp
-val END_GAME_POP_UP_TEXT_FONT_SIZE = 20.sp
+
+private val END_GAME_POP_UP_WIDTH = 200.dp
+private val END_GAME_POP_UP_TEXT_FONT_SIZE = 20.sp
+
 
 /**
  * Composable used to show the endgame pop-up in case of a play that ends the game, i.e. checkmate.
@@ -31,10 +33,11 @@ val END_GAME_POP_UP_TEXT_FONT_SIZE = 20.sp
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EndGamePopUp(session: MutableState<Session>) {
-    // TODO: 29/12/2021
+    // TODO: 29/12/2021 Ver bem a programming, maybe 3 state enum
     val showEnd = remember { mutableStateOf(0) }
 
-    if (session.value.state == SessionState.ENDED && showEnd.value == 0) showEnd.value = 1
+    if (session.value.state == SessionState.ENDED && showEnd.value == 0)
+        showEnd.value = 1
 
     if (showEnd.value == 1) {
         AlertDialog(

@@ -14,7 +14,7 @@ import domain.pieces.PieceType
 
 // Constants
 private val PROMOTION_BUTTON_PADDING = 10.dp
-val PROMOTION_BUTTON_SIZE = 160.dp
+private val PROMOTION_BUTTON_SIZE = 160.dp
 private val promotionPieces = listOf(PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK)
 
 

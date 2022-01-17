@@ -20,6 +20,11 @@ data class Session(
 
 // Session Constants
 const val NO_NAME = ""
+val INITIAL_SESSION = Session(
+    name = NO_NAME,
+    state = SessionState.LOGGING,
+    game = INITIAL_GAME
+)
 
 
 /**
@@ -63,9 +68,9 @@ fun Session.isPlayable() = state in listOf(SessionState.YOUR_TURN, SessionState.
  */
 fun getSessionState(game: Game, army: Army) =
     when {
-        game.ended()                    -> SessionState.ENDED
-        game.armyToPlay == army         -> SessionState.YOUR_TURN
-        else                            -> SessionState.WAITING_FOR_OPPONENT
+        game.ended() -> SessionState.ENDED
+        game.armyToPlay == army -> SessionState.YOUR_TURN
+        else -> SessionState.WAITING_FOR_OPPONENT
     }
 
 

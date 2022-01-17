@@ -9,21 +9,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import domain.board.*
 import domain.pieces.*
+import ui.compose.WINDOW_SCALE
 
 
 // Constants
-const val RED = 0xFF794839
-const val WHITE = 0xFFEBEBD0
-
-const val WINDOW_SCALE = 0.5f
-
-val TILE_SIZE = 88.dp * WINDOW_SCALE
-private val LIGHT_TILE_COLOR = Color(WHITE)
-private val DARK_TILE_COLOR = Color(RED)
+val TILE_SIZE = 88.dp * WINDOW_SCALE //TODO Scale
 private val IMAGE_DIMENSIONS = 256.dp
 private val IMAGE_CENTERING_OFFSET = 3.dp
 private val GREEN_CIRCLES_SIZE = 20.dp
-private val TILE_BORDER_WIDTH = 3.dp
+
+val LIGHT_TILE_COLOR = Color(0xFFEBEBD0)
+private val DARK_TILE_COLOR = Color(0xFF794839)
+
+private val TILE_SELECTED_BORDER_WIDTH = 3.dp
 private val TILE_BORDER_COLOR = Color.Green
 
 
@@ -48,7 +46,7 @@ fun Tile(
             .size(TILE_SIZE)
             .clickable(true) { onClick(position) }
             .background(if ((position.col - FIRST_COL + position.row) % 2 == 0) LIGHT_TILE_COLOR else DARK_TILE_COLOR)
-            .border(if (isSelected) TILE_BORDER_WIDTH else (-1).dp, TILE_BORDER_COLOR)
+            .border(if (isSelected) TILE_SELECTED_BORDER_WIDTH else (-1).dp, TILE_BORDER_COLOR)
     )
     {
         if (piece != null) {
@@ -59,15 +57,17 @@ fun Tile(
                 contentDescription = null,
                 modifier = Modifier
                     .size(IMAGE_DIMENSIONS, IMAGE_DIMENSIONS)
-                    .absolutePadding(left = IMAGE_CENTERING_OFFSET, top = IMAGE_CENTERING_OFFSET)
+                    .padding(start = IMAGE_CENTERING_OFFSET, top = IMAGE_CENTERING_OFFSET)
             )
         }
-        if (isAvailable)
+
+        if (isAvailable) {
             Canvas(
                 modifier = Modifier
                     .size(GREEN_CIRCLES_SIZE)
                     .align(Alignment.Center),
                 onDraw = { drawCircle(color = Color.Green) }
             )
+        }
     }
 }

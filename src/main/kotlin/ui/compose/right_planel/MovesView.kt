@@ -1,25 +1,18 @@
-package ui.compose
+package ui.compose.right_planel
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.*
 import domain.game.Game
-import ui.compose.app.WINDOW_PADDING
-import ui.compose.board.*
 
 
 // Constants
-val MOVES_WIDTH = 320.dp
-private val MOVES_HEIGHT = BOARD_HEIGHT
 private val FONT_SIZE = 20.sp
 val FONT_FAMILY = FontFamily.Monospace
-
+// TODO: 17/01/2022 font family e isso no utils
 
 /**
  * Composable used to display a column with the moves already made in a chess game.
@@ -28,12 +21,7 @@ val FONT_FAMILY = FontFamily.Monospace
 @Composable
 fun MovesView(game: Game) {
     LazyColumn(
-        state = LazyListState(game.moves.size / 2),
-        modifier = Modifier
-            .padding(start = WINDOW_PADDING)
-            .width(MOVES_WIDTH)
-            .height(MOVES_HEIGHT)
-            .background(Color(WHITE))
+        state = LazyListState(game.moves.size / 2)
     ) {
         game.moves.forEachIndexed { idx, move ->
             if (idx % 2 == 0) {

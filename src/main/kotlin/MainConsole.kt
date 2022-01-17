@@ -1,8 +1,8 @@
 import domain.commands.CommandException
+import domain.INITIAL_SESSION
 import domain.move.IllegalMoveException
 import storage.*
 import storage.mongodb.createMongoClient
-import ui.compose.app.INITIAL_SESSION
 import ui.console.*
 
 

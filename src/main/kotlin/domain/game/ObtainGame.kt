@@ -4,6 +4,9 @@ import domain.board.Board
 import domain.move.Move
 
 
+// Constants
+val INITIAL_GAME = gameFromMoves()
+
 /**
  * Makes the moves [movesInString] in the game.
  * @param movesInString moves to make

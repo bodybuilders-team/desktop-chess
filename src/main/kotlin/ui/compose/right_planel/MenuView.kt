@@ -1,11 +1,10 @@
-package ui.compose
+package ui.compose.right_planel
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -14,20 +13,21 @@ import androidx.compose.ui.unit.*
 import domain.*
 import domain.commands.*
 import storage.GameStorage
-import ui.compose.app.*
-import ui.compose.board.*
+import ui.compose.AppOptions
 
 
 // Constants
-private val MENU_WIDTH = 320.dp
-private val MENU_HEIGHT = BOARD_HEIGHT
 private val MENU_TITLE_SIZE = 40.sp
 private val MENU_BUTTON_WIDTH = 200.dp
 private val MENU_BUTTON_HEIGHT = 60.dp
 private val MENU_BUTTON_PADDING = 10.dp
+private val MENU_IMAGE_PADDING = 32.dp
+private val SPACE_BETWEEN_BUTTONS = 32.dp
 private val MENU_BUTTON_MODIFIER = Modifier.size(MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT).padding(MENU_BUTTON_PADDING)
 private val MENU_OPTION_VIEW_WIDTH = 400.dp
 private val MENU_OPTION_VIEW_HEIGHT = 200.dp
+
+private const val MENU_IMAGE = "menu_image.png"
 
 
 /**
@@ -37,10 +37,6 @@ private val MENU_OPTION_VIEW_HEIGHT = 200.dp
 @Composable
 fun MenuView(onCommandSelected: (MenuCommand?) -> Unit) {
     Column(
-        modifier = Modifier.padding(start = WINDOW_PADDING)
-            .width(MENU_WIDTH)
-            .height(MENU_HEIGHT)
-            .background(Color(WHITE)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -79,9 +75,9 @@ fun MenuView(onCommandSelected: (MenuCommand?) -> Unit) {
         }
 
         Image(
-            painter = painterResource("chess.png"),
+            painter = painterResource(MENU_IMAGE),
             contentDescription = null,
-            modifier = Modifier.padding(WINDOW_PADDING)
+            modifier = Modifier.padding(MENU_IMAGE_PADDING)
         )
     }
 }
@@ -142,7 +138,8 @@ fun MenuOptionView(
                             if (textState.value.text.isNotBlank()) {
                                 session.value =
                                     if (command == MenuCommand.OPEN) {
-                                        val openSession = OpenCommand(dataBase).execute(textState.value.text).getOrThrow()
+                                        val openSession =
+                                            OpenCommand(dataBase).execute(textState.value.text).getOrThrow()
                                         if (singlePlayer.value && openSession.isPlayable())
                                             openSession.copy(state = SessionState.SINGLE_PLAYER)
                                         else
@@ -151,7 +148,7 @@ fun MenuOptionView(
                                         JoinCommand(dataBase).execute(textState.value.text).getOrThrow()
                             }
                         },
-                        modifier = Modifier.padding(end = WINDOW_PADDING)
+                        modifier = Modifier.padding(end = SPACE_BETWEEN_BUTTONS)
                     ) {
                         Text(if (command == MenuCommand.OPEN) "Open" else "Join")
                     }
@@ -173,7 +170,7 @@ fun MenuOptionView(
  * @param options app options
  */
 @Composable
-fun LoggingView(session: MutableState<Session>, dataBase: GameStorage, options: Options) {
+fun LoggingView(session: MutableState<Session>, dataBase: GameStorage, options: AppOptions) {
     require(session.value.isLogging()) { "The session is not in logging state." }
 
     val selectedCommand = remember { mutableStateOf<MenuCommand?>(null) }
