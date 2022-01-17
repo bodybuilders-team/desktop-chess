@@ -171,7 +171,8 @@ fun MenuOptionView(
  * @param options app options
  */
 @Composable
-fun LoggingView(session: MutableState<Session>, dataBase: GameStorage, options: AppOptions) {
+fun LoggingView(session: MutableState<Session>, dataBase: GameStorage, options: AppOptions,
+                windowOnCloseRequest: () -> Unit) {
     require(session.value.isLogging()) { "The session is not in logging state." }
 
     val selectedCommand = remember { mutableStateOf<MenuCommand?>(null) }
@@ -181,7 +182,7 @@ fun LoggingView(session: MutableState<Session>, dataBase: GameStorage, options: 
     when (selectedCommand.value) {
         in listOf(MenuCommand.OPEN, MenuCommand.JOIN) ->
             MenuOptionView(session, dataBase, selectedCommand, options.singlePlayer)
-        MenuCommand.EXIT -> options.exitApp.value = true
+        MenuCommand.EXIT -> windowOnCloseRequest()
         else -> {}
     }
 }

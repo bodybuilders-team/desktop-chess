@@ -28,7 +28,8 @@ private val RIGHT_PANEL_BACKGROUND = LIGHT_TILE_COLOR
  * @param appOptions application options
  */
 @Composable
-fun RightPanelView(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions) {
+fun RightPanelView(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions,
+                   windowOnCloseRequest: () -> Unit) {
     Box(
         modifier = Modifier
             .padding(start = SPACE_BETWEEN_BOARD_AND_RIGHT_PANEL, top = COLUMNS_IDENTIFIER_HEIGHT)
@@ -36,7 +37,7 @@ fun RightPanelView(session: MutableState<Session>, dataBase: GameStorage, appOpt
             .background(RIGHT_PANEL_BACKGROUND)
     ) {
         if (session.value.isLogging())
-            LoggingView(session, dataBase, appOptions)
+            LoggingView(session, dataBase, appOptions, windowOnCloseRequest)
         else
             MovesView(session.value.game)
     }

@@ -25,17 +25,22 @@ private val MAIN_WINDOW_HEIGHT = APP_HEIGHT + APP_PADDING * 2 + MENU_BAR_HEIGHT
  * @param dataBase database where the games are stored
  */
 @Composable
-fun MainWindow(appOptions: AppOptions, dataBase: GameStorage) {
+fun MainWindow(dataBase: GameStorage, onCloseRequest: () -> Unit) {
     Window(
         title = MAIN_WINDOW_TITLE,
         state = WindowState(
             size = DpSize(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT),
             position = WindowPosition(Alignment.Center)
         ),
-        onCloseRequest = { appOptions.exitApp.value = true },
+        onCloseRequest = onCloseRequest,
         icon = painterResource(MAIN_WINDOW_ICON),
         resizable = false
     ) {
+        val appOptions = AppOptions(
+            singlePlayer =  remember { mutableStateOf(true) },
+            targetsOn =     remember { mutableStateOf(true) }
+        )
+        
         val session = remember { mutableStateOf(INITIAL_SESSION) }
 
         MenuBar(
@@ -47,6 +52,6 @@ fun MainWindow(appOptions: AppOptions, dataBase: GameStorage) {
             onSinglePlayerChange =  { appOptions.singlePlayer.value = it }
         )
 
-        App(session, dataBase, appOptions)
+        App(session, dataBase, appOptions, onCloseRequest)
     }
 }

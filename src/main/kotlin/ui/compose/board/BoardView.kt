@@ -48,7 +48,8 @@ fun BoardView(
         selectedPosition.value = null
         availableMoves.value = emptyList()
     }
-
+    println("Composed BoardView")
+    
     Column {
         ColumnsIdentifierView()
         Row {
@@ -67,6 +68,11 @@ fun BoardView(
                             onClick = { clickedPosition ->
                                 if (session.value.isPlayable()) {
                                     selectedPosition.value = clickedPosition
+
+                                    val move = availableMoves.value.find { it.to == selectedPosition.value }
+                                    
+                                    if (move == null) 
+                                        availableMoves.value = session.value.game.getAvailableMoves(selectedPosition.value!!)
                                 }
                             }
                         )
@@ -106,7 +112,6 @@ fun UseSelectedPosition(
                 makeMove(move.copy(promotion = pieceSymbol), dataBase, session, availableMoves)
             }
         move != null -> makeMove(move, dataBase, session, availableMoves)
-        else -> availableMoves.value = session.value.game.getAvailableMoves(selectedPosition)
     }
 }
 

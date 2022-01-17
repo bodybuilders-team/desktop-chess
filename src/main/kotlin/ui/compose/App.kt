@@ -35,7 +35,8 @@ val FONT_SIZE = 20.sp
  */
 @Composable
 @Preview
-fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions) {
+fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions,
+        windowOnCloseRequest: () -> Unit) {
     RefreshTimer(session, dataBase)
 
     MaterialTheme {
@@ -54,7 +55,7 @@ fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOp
                     }
                 )
 
-                RightPanelView(session, dataBase, appOptions)
+                RightPanelView(session, dataBase, appOptions, windowOnCloseRequest)
             }
             if (session.value.isNotLogging()) {
                 GameInfoView(session.value)
@@ -68,10 +69,8 @@ fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOp
  * App options
  * @property singlePlayer when true, single player mode is on
  * @property targetsOn when true, the available move targets are on
- * @property exitApp when true, the app is closed
  */
 data class AppOptions(
     val singlePlayer: MutableState<Boolean>,
-    val targetsOn: MutableState<Boolean>,
-    val exitApp: MutableState<Boolean>
+    val targetsOn: MutableState<Boolean>
 )

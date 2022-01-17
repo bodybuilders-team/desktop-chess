@@ -1,8 +1,6 @@
-import androidx.compose.runtime.*
 import androidx.compose.ui.window.*
 import storage.*
 import ui.compose.*
-
 
 /**
  * The application entry point.
@@ -22,18 +20,10 @@ fun main() {
 
     //driver.use {
     application {
-        val appOptions = AppOptions(
-            singlePlayer =  remember { mutableStateOf(true) },
-            targetsOn =     remember { mutableStateOf(true) },
-            exitApp =       remember { mutableStateOf(false) }
-        )
-
-        MainWindow(appOptions, dataBase)
-
-        if (appOptions.exitApp.value) {
+        MainWindow(dataBase, onCloseRequest = {
             println("BYE.")
             exitApplication()
-        }
+        })
     }
     //}
 }
