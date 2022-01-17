@@ -39,7 +39,7 @@ fun MainWindow(appOptions: AppOptions, dataBase: GameStorage) {
         val session = remember { mutableStateOf(INITIAL_SESSION) }
 
         MenuBar(
-            session,
+            session.value.state,
             appOptions,
             onRefreshGameRequest =  { appOptions.refreshGame.value = true },
             onCloseGameRequest =    { appOptions.closeGame.value = true },

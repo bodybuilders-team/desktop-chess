@@ -2,8 +2,8 @@ package ui.compose
 
 import androidx.compose.runtime.*
 import domain.Session
-import domain.SessionState
 import domain.commands.RefreshCommand
+import domain.isWaiting
 import kotlinx.coroutines.delay
 import storage.GameStorage
 
@@ -20,16 +20,16 @@ const val REFRESH_TIME_DELAY = 100L
  */
 @Composable
 fun RefreshTimer(session: MutableState<Session>, dataBase: GameStorage) {
-    if (session.value.state == SessionState.WAITING_FOR_OPPONENT) {
-        val timerValue = remember { mutableStateOf(REFRESH_TIME) }
+    if (session.value.state.isWaiting()) {
+        val timer = remember { mutableStateOf(REFRESH_TIME) }
 
-        LaunchedEffect(key1 = timerValue.value, key2 = session.value) {
-            if (timerValue.value <= 0) {
-                timerValue.value = REFRESH_TIME
+        LaunchedEffect(key1 = timer.value, key2 = session.value) {
+            if (timer.value <= 0) {
+                timer.value = REFRESH_TIME
                 session.value = RefreshCommand(dataBase, session.value).execute(null).getOrThrow()
             } else {
                 delay(REFRESH_TIME_DELAY)
-                timerValue.value--
+                timer.value--
             }
         }
     }

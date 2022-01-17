@@ -26,6 +26,13 @@ private val END_GAME_POP_UP_WIDTH = 200.dp
 private val END_GAME_POP_UP_TEXT_FONT_SIZE = 20.sp
 
 
+enum class EndState {
+    NOT_ENDED,
+    ENDED,
+    ACKNOWLEDGED
+}
+
+
 /**
  * Composable used to show the endgame pop-up in case of a play that ends the game, i.e. checkmate.
  * @param session game session
@@ -33,13 +40,13 @@ private val END_GAME_POP_UP_TEXT_FONT_SIZE = 20.sp
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EndGamePopUp(session: MutableState<Session>) {
-    // TODO: 29/12/2021 Ver bem a programming, maybe 3 state enum
-    val showEnd = remember { mutableStateOf(0) }
 
-    if (session.value.state == SessionState.ENDED && showEnd.value == 0)
-        showEnd.value = 1
+    val showEnd = remember { mutableStateOf(EndState.NOT_ENDED) }
 
-    if (showEnd.value == 1) {
+    if (session.value.state == SessionState.ENDED && showEnd.value == EndState.NOT_ENDED)
+        showEnd.value = EndState.ENDED
+
+    if (showEnd.value == EndState.ENDED) {
         AlertDialog(
             onDismissRequest = { },
             title = { Text("Game ended") },
@@ -75,7 +82,7 @@ fun EndGamePopUp(session: MutableState<Session>) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.width(END_GAME_POP_UP_WIDTH)
                 ) {
-                    Button(onClick = { showEnd.value = 2 }) {
+                    Button(onClick = { showEnd.value = EndState.ACKNOWLEDGED }) {
                         Text("OK")
                     }
                 }

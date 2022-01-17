@@ -4,7 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.window.*
 import domain.*
 
-// TODO: 17/01/2022 Receive only state
+
 /**
  * Window Menu Bar.
  * @param session app session
@@ -16,7 +16,7 @@ import domain.*
  */
 @Composable
 fun FrameWindowScope.MenuBar(
-    session: MutableState<Session>,
+    state: SessionState,
     appOptions: AppOptions,
     onRefreshGameRequest: () -> Unit,
     onCloseGameRequest: () -> Unit,
@@ -28,12 +28,12 @@ fun FrameWindowScope.MenuBar(
             Item(
                 text = "Refresh game",
                 onClick = onRefreshGameRequest,
-                enabled = session.value.state == SessionState.WAITING_FOR_OPPONENT
+                enabled = state.isWaiting()
             )
             Item(
                 text = "Close game",
                 onClick = onCloseGameRequest,
-                enabled = session.value.isNotLogging()
+                enabled = state.isNotLogging()
             )
         }
         Menu("Options") {
@@ -47,7 +47,7 @@ fun FrameWindowScope.MenuBar(
                 text = "Single player",
                 checked = appOptions.singlePlayer.value,
                 onCheckedChange = onSinglePlayerChange,
-                enabled = session.value.isLogging()
+                enabled = state.isLogging()
             )
         }
     }

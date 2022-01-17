@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import domain.*
-import domain.commands.RefreshCommand
-import domain.INITIAL_SESSION
 import storage.*
 import ui.compose.board.*
 import ui.compose.right_planel.*
@@ -34,10 +32,6 @@ val BACKGROUND_COLOR = Color(0xFF2B2B2B)
 @Composable
 @Preview
 fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions) {
-    when {
-        appOptions.closeGame.value      -> closeGame(session, appOptions)
-        appOptions.refreshGame.value    -> refreshGame(session, dataBase, appOptions)
-    }
 
     RefreshTimer(session, dataBase)
 
@@ -83,14 +77,4 @@ data class AppOptions(
     val refreshGame: MutableState<Boolean>
 )
 
-// TODO: 17/01/2022 Comment
-fun closeGame(session: MutableState<Session>, appOptions: AppOptions) {
-    session.value = INITIAL_SESSION
-    appOptions.closeGame.value = false
-}
 
-// TODO: 17/01/2022 Comment
-fun refreshGame(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions) {
-    session.value = RefreshCommand(dataBase, session.value).execute(null).getOrThrow()
-    appOptions.refreshGame.value = false
-}
