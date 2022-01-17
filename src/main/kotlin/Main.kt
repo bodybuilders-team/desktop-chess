@@ -25,9 +25,7 @@ fun main() {
         val appOptions = AppOptions(
             singlePlayer =  remember { mutableStateOf(true) },
             targetsOn =     remember { mutableStateOf(true) },
-            closeGame =     remember { mutableStateOf(true) },
-            exitApp =       remember { mutableStateOf(false) },
-            refreshGame =   remember { mutableStateOf(false) }
+            exitApp =       remember { mutableStateOf(false) }
         )
 
         MainWindow(appOptions, dataBase)

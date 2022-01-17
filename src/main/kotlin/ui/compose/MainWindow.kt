@@ -3,10 +3,10 @@ package ui.compose
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import domain.INITIAL_SESSION
+import domain.commands.RefreshCommand
 import storage.GameStorage
 
 
@@ -41,8 +41,8 @@ fun MainWindow(appOptions: AppOptions, dataBase: GameStorage) {
         MenuBar(
             session.value.state,
             appOptions,
-            onRefreshGameRequest =  { appOptions.refreshGame.value = true },
-            onCloseGameRequest =    { appOptions.closeGame.value = true },
+            onRefreshGameRequest =  { session.value = RefreshCommand(dataBase, session.value).execute(null).getOrThrow() },
+            onCloseGameRequest =    { session.value = INITIAL_SESSION },
             onShowTargetsChange =   { appOptions.targetsOn.value = it },
             onSinglePlayerChange =  { appOptions.singlePlayer.value = it }
         )

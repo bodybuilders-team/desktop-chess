@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.*
 import domain.*
 import domain.game.*
 import ui.compose.board.*
-import ui.compose.right_planel.FONT_FAMILY
 
 
 // Constants
@@ -51,25 +50,29 @@ fun GameInfoView(session: Session) {
         )
         Text(
             text = "Info: " +
-                    if (session.game.endedInDraw()) "Draw " +
-                            when (session.game.state) {
-                                GameState.STALEMATE -> "by stalemate"
-                                GameState.FIFTY_MOVE_RULE -> "by fifty-move-rule"
-                                GameState.THREE_FOLD -> "by repetition"
-                                GameState.DEAD_POSITION -> "by insufficient material"
-                                else -> ""
-                            }
-                    else
-                        session.game.state.toString().replace("_", " ").lowercase()
-                            .replaceFirstChar { it.uppercaseChar() },
+                    if (session.game.endedInDraw()) {
+                        "Draw " +
+                                when (session.game.state) {
+                                    GameState.STALEMATE         -> "by stalemate"
+                                    GameState.FIFTY_MOVE_RULE   -> "by fifty-move-rule"
+                                    GameState.THREE_FOLD        -> "by repetition"
+                                    GameState.DEAD_POSITION     -> "by insufficient material"
+                                    else -> ""
+                                }
+                    } else {
+                        session.game.state.toString()
+                            .replace("_", " ")
+                            .lowercase()
+                            .replaceFirstChar { it.uppercaseChar() }
+                    },
             color = when (session.game.state) {
-                GameState.CHECK -> GAME_INFO_CHECK_FONT_COLOR
-                GameState.CHECKMATE -> GAME_INFO_CHECKMATE_FONT_COLOR
-                GameState.STALEMATE -> GAME_INFO_TIE_FONT_COLOR
-                GameState.FIFTY_MOVE_RULE -> GAME_INFO_TIE_FONT_COLOR
-                GameState.THREE_FOLD -> GAME_INFO_TIE_FONT_COLOR
-                GameState.DEAD_POSITION -> GAME_INFO_TIE_FONT_COLOR
-                else -> GAME_INFO_FONT_COLOR
+                GameState.CHECK             -> GAME_INFO_CHECK_FONT_COLOR
+                GameState.CHECKMATE         -> GAME_INFO_CHECKMATE_FONT_COLOR
+                GameState.STALEMATE         -> GAME_INFO_TIE_FONT_COLOR
+                GameState.FIFTY_MOVE_RULE   -> GAME_INFO_TIE_FONT_COLOR
+                GameState.THREE_FOLD        -> GAME_INFO_TIE_FONT_COLOR
+                GameState.DEAD_POSITION     -> GAME_INFO_TIE_FONT_COLOR
+                else                        -> GAME_INFO_FONT_COLOR
             },
             fontFamily = FONT_FAMILY,
             fontSize = GAME_INFO_FONT_SIZE

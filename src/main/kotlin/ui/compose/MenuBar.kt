@@ -7,7 +7,7 @@ import domain.*
 
 /**
  * Window Menu Bar.
- * @param session app session
+ * @param state current session state
  * @param appOptions app options
  * @param onRefreshGameRequest callback to be executed when occurs a refresh game request
  * @param onCloseGameRequest callback to be executed when occurs a close game request

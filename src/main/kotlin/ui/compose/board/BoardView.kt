@@ -2,15 +2,10 @@ package ui.compose.board
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import domain.Session
 import domain.board.*
 import domain.board.Board.*
@@ -19,7 +14,7 @@ import domain.game.*
 import domain.*
 import domain.move.Move
 import storage.GameStorage
-import ui.compose.right_planel.FONT_FAMILY
+import ui.compose.FONT_FAMILY
 
 
 // Constants
@@ -27,8 +22,8 @@ val BOARD_HEIGHT = TILE_SIZE * BOARD_SIDE_LENGTH
 val BOARD_WIDTH = BOARD_HEIGHT
 
 val ROWS_IDENTIFIER_WIDTH = 30.dp
-
 val COLUMNS_IDENTIFIER_HEIGHT = 34.dp
+
 private val CHARACTER_SIZE = 24.sp
 private val ROWS_COLS_FONT_COLOR = Color.White
 
@@ -81,7 +76,6 @@ fun BoardView(
         }
     }
 
-
     if (session.value.isPlayable() && selectedPosition.value != null) {
         useSelectedTile(selectedPosition, availableMoves)
     }
@@ -112,18 +106,8 @@ fun UseSelectedPosition(
                 makeMove(move.copy(promotion = pieceSymbol), dataBase, session, availableMoves)
             }
         move != null -> makeMove(move, dataBase, session, availableMoves)
-        else         -> availableMoves.value = session.value.game.getAvailableMoves(selectedPosition)
+        else -> availableMoves.value = session.value.game.getAvailableMoves(selectedPosition)
     }
-    // TODO: 17/01/2022 Escolher qual preferem
-    /*if (move != null) {
-        if (move.promotion != null)
-            PromotionView(session.value) { pieceSymbol ->
-                makeMove(move.copy(promotion = pieceSymbol), dataBase, session, availableMoves)
-            }
-        else
-            makeMove(move, dataBase, session, availableMoves)
-    } else
-        availableMoves.value = session.value.game.getAvailableMoves(selectedPosition)*/
 }
 
 
@@ -189,5 +173,3 @@ fun RowsIdentifierView() {
         }
     }
 }
-
-

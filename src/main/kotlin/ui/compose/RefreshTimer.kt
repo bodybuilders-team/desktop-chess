@@ -9,8 +9,8 @@ import storage.GameStorage
 
 
 // Constants
-const val REFRESH_TIME = 10L
-const val REFRESH_TIME_DELAY = 100L
+private const val REFRESH_TIME = 10L
+private const val REFRESH_TIME_DELAY = 100L
 
 // TODO: 17/01/2022 Arranjar/Ver Refresh timer
 /**

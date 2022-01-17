@@ -38,7 +38,8 @@ private const val MENU_IMAGE = "menu_image.png"
 fun MenuView(onCommandSelected: (MenuCommand?) -> Unit) {
     Column(
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.size(RIGHT_PANEL_WIDTH, RIGHT_PANEL_HEIGHT)
     ) {
         Text(
             text = "Welcome to Desktop Chess",
@@ -178,10 +179,8 @@ fun LoggingView(session: MutableState<Session>, dataBase: GameStorage, options: 
     MenuView { menuCommand -> selectedCommand.value = menuCommand }
 
     when (selectedCommand.value) {
-        in listOf(MenuCommand.OPEN, MenuCommand.JOIN) -> {
+        in listOf(MenuCommand.OPEN, MenuCommand.JOIN) ->
             MenuOptionView(session, dataBase, selectedCommand, options.singlePlayer)
-        }
-
         MenuCommand.EXIT -> options.exitApp.value = true
         else -> {}
     }

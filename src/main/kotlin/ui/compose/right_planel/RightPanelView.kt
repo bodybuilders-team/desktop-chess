@@ -14,10 +14,9 @@ import ui.compose.board.*
 
 // Constants
 val RIGHT_PANEL_WIDTH = 320.dp
-private val RIGHT_PANEL_HEIGHT = BOARD_HEIGHT
+val RIGHT_PANEL_HEIGHT = BOARD_HEIGHT
 val SPACE_BETWEEN_BOARD_AND_RIGHT_PANEL = 32.dp
 private val RIGHT_PANEL_BACKGROUND = LIGHT_TILE_COLOR
-
 
 
 /**

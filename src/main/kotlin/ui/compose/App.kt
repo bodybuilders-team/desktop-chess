@@ -7,7 +7,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import domain.*
 import storage.*
 import ui.compose.board.*
@@ -15,13 +17,15 @@ import ui.compose.right_planel.*
 
 
 // Constants
-const val WINDOW_SCALE = 0.8f
+const val WINDOW_SCALE = 1f
 
 val APP_WIDTH = ROWS_IDENTIFIER_WIDTH + BOARD_WIDTH + SPACE_BETWEEN_BOARD_AND_RIGHT_PANEL + RIGHT_PANEL_WIDTH
 val APP_HEIGHT = COLUMNS_IDENTIFIER_HEIGHT + BOARD_HEIGHT + SPACE_BETWEEN_BOARD_AND_GAME_INFO + GAME_INFO_HEIGHT
 val APP_PADDING = 32.dp
-val BACKGROUND_COLOR = Color(0xFF2B2B2B)
+private val BACKGROUND_COLOR = Color(0xFF2B2B2B)
 
+val FONT_FAMILY = FontFamily.Monospace
+val FONT_SIZE = 20.sp
 
 /**
  * Main Composable used to display the chess app.
@@ -32,7 +36,6 @@ val BACKGROUND_COLOR = Color(0xFF2B2B2B)
 @Composable
 @Preview
 fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions) {
-
     RefreshTimer(session, dataBase)
 
     MaterialTheme {
@@ -41,12 +44,11 @@ fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOp
                 .background(BACKGROUND_COLOR)
                 .padding(APP_PADDING)
                 .size(APP_WIDTH, APP_HEIGHT)
-            //.scale(WINDOW_SCALE) //TODO(Scale)
         ) {
             Row {
                 BoardView(
-                    session,
-                    appOptions.targetsOn,
+                    session = session,
+                    targetsOn = appOptions.targetsOn,
                     useSelectedTile = @Composable { selectedPosition, availableMoves ->
                         UseSelectedPosition(selectedPosition.value!!, dataBase, session, availableMoves)
                     }
@@ -54,8 +56,9 @@ fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOp
 
                 RightPanelView(session, dataBase, appOptions)
             }
-            if (session.value.isNotLogging())
+            if (session.value.isNotLogging()) {
                 GameInfoView(session.value)
+            }
         }
     }
 }
@@ -65,16 +68,10 @@ fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOp
  * App options
  * @property singlePlayer when true, single player mode is on
  * @property targetsOn when true, the available move targets are on
- * @property closeGame when true, the current game is closed
  * @property exitApp when true, the app is closed
- * @property refreshGame when true, the current game is refreshed
  */
 data class AppOptions(
     val singlePlayer: MutableState<Boolean>,
     val targetsOn: MutableState<Boolean>,
-    val closeGame: MutableState<Boolean>,
-    val exitApp: MutableState<Boolean>,
-    val refreshGame: MutableState<Boolean>
+    val exitApp: MutableState<Boolean>
 )
-
-
