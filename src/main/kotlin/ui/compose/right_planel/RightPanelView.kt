@@ -6,13 +6,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import domain.*
+import ui.compose.WINDOW_SCALE
 import ui.compose.board.*
 
 
 // Constants
-val RIGHT_PANEL_WIDTH = 320.dp
+val RIGHT_PANEL_WIDTH = 320.dp * WINDOW_SCALE
 val RIGHT_PANEL_HEIGHT = BOARD_HEIGHT
-val SPACE_BETWEEN_BOARD_AND_RIGHT_PANEL = 32.dp
+val SPACE_BETWEEN_BOARD_AND_RIGHT_PANEL = 32.dp * WINDOW_SCALE
 private val RIGHT_PANEL_BACKGROUND = LIGHT_TILE_COLOR
 
 
@@ -21,8 +22,8 @@ private val RIGHT_PANEL_BACKGROUND = LIGHT_TILE_COLOR
  * If the current session is in "Logging" state, displays the menu, if not, displays the list of moves.
  *
  * @param session app session
- * @param dataBase where the games are stored
- * @param appOptions application options
+ * @param onOpenSessionRequest callback to be executed when the user clicks to open a session
+ * @param windowOnCloseRequest callback to be executed when the user clicks the exit button
  */
 @Composable
 fun RightPanelView(

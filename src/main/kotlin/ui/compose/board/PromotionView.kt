@@ -9,12 +9,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import domain.Session
 import domain.game.armyToPlay
+import domain.move.Move
 import domain.pieces.PieceType
+import storage.GameStorage
+import ui.compose.WINDOW_SCALE
 
 
 // Constants
-private val PROMOTION_BUTTON_PADDING = 10.dp
-private val PROMOTION_BUTTON_SIZE = 160.dp
+private val PROMOTION_BUTTON_PADDING = 10.dp * WINDOW_SCALE
+private val PROMOTION_BUTTON_SIZE = 160.dp * WINDOW_SCALE
 private val promotionPieces = listOf(PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK)
 
 
@@ -58,5 +61,27 @@ fun PromotionView(session: Session, onPieceTypeSelected: (Char) -> Unit) {
                 }
             }
         )
+    }
+}
+
+
+/**
+ * Shows the promotion view and makes the move.
+ *
+ * @param session current session
+ * @param move move to be made
+ * @param availableMoves list of available moves
+ * @param dataBase where the game is stored
+ */
+@Composable
+fun ShowPromotionView(
+    session: MutableState<Session>,
+    move: MutableState<Move?>,
+    availableMoves: MutableState<List<Move>>,
+    dataBase: GameStorage
+) {
+    PromotionView(session.value) { pieceSymbol ->
+        move.value = move.value!!.copy(promotion = pieceSymbol)
+        makeMove(move, availableMoves, session, dataBase)
     }
 }

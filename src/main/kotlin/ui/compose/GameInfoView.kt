@@ -13,9 +13,9 @@ import ui.compose.board.*
 
 
 // Constants
-val GAME_INFO_HEIGHT = 70.dp
-val SPACE_BETWEEN_BOARD_AND_GAME_INFO = 32.dp
-private val GAME_INFO_FONT_SIZE = 20.sp
+val GAME_INFO_HEIGHT = 72.dp * WINDOW_SCALE
+val SPACE_BETWEEN_BOARD_AND_GAME_INFO = 32.dp * WINDOW_SCALE
+private val GAME_INFO_FONT_SIZE = 20.sp * WINDOW_SCALE
 
 private val GAME_INFO_BACKGROUND = LIGHT_TILE_COLOR
 private val GAME_INFO_FONT_COLOR = Color.Black

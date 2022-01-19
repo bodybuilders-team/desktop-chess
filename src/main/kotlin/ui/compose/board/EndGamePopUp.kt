@@ -8,18 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import domain.Session
-import domain.SessionState
 import domain.game.*
+import ui.compose.WINDOW_SCALE
 
-
-private val END_GAME_POP_UP_WIDTH = 200.dp
-private val END_GAME_POP_UP_TEXT_FONT_SIZE = 20.sp
-
-
-private enum class EndState {
-    ENDED,
-    ACKNOWLEDGED
-}
+// Constants
+private val END_GAME_POP_UP_WIDTH = 200.dp * WINDOW_SCALE
+private val END_GAME_POP_UP_TEXT_FONT_SIZE = 20.sp * WINDOW_SCALE
 
 
 /**
@@ -29,9 +23,7 @@ private enum class EndState {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun EndGamePopUp(session: Session) {
-
     val showEnd = remember { mutableStateOf(EndState.ENDED) }
-
     if (showEnd.value == EndState.ACKNOWLEDGED) return
 
     AlertDialog(
@@ -52,11 +44,11 @@ fun EndGamePopUp(session: Session) {
                 Text(
                     text =
                     when (session.game.state) {
-                        GameState.CHECKMATE -> "${session.game.armyToPlay.other()} won!"
-                        GameState.STALEMATE -> "by stalemate"
-                        GameState.FIFTY_MOVE_RULE -> "by fifty-move-rule"
-                        GameState.THREE_FOLD -> "by repetition"
-                        GameState.DEAD_POSITION -> "by insufficient material"
+                        GameState.CHECKMATE         -> "${session.game.armyToPlay.other()} won!"
+                        GameState.STALEMATE         -> "by stalemate"
+                        GameState.FIFTY_MOVE_RULE   -> "by fifty-move-rule"
+                        GameState.THREE_FOLD        -> "by repetition"
+                        GameState.DEAD_POSITION     -> "by insufficient material"
                         else -> ""
                     },
                     fontSize = END_GAME_POP_UP_TEXT_FONT_SIZE,
@@ -69,10 +61,16 @@ fun EndGamePopUp(session: Session) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.width(END_GAME_POP_UP_WIDTH)
             ) {
-                Button(onClick = { showEnd.value = EndState.ACKNOWLEDGED }) {
-                    Text("OK")
-                }
+                Button(onClick = { showEnd.value = EndState.ACKNOWLEDGED }) { Text("OK") }
             }
         }
     )
+}
+
+/**
+ * Represents the EndState, used in end game pop up.
+ */
+private enum class EndState {
+    ENDED,
+    ACKNOWLEDGED
 }

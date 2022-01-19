@@ -24,7 +24,7 @@ class RefreshCommand(private val db: GameStorage, private val session: Session) 
         val yourTurn = session.game.moves.size < moves.size
         
         val game = if (yourTurn) session.game.makeMove(moves.last())
-        else session.game
+                   else session.game
 
         return Result.success(
             session.copy(

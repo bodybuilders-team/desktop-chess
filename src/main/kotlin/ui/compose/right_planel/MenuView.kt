@@ -13,16 +13,16 @@ import androidx.compose.ui.unit.*
 import domain.*
 import domain.commands.*
 import storage.GameStorage
-import ui.compose.AppOptions
+import ui.compose.*
 
 
 // Constants
-private val MENU_TITLE_SIZE = 40.sp
-private val MENU_BUTTON_WIDTH = 200.dp
-private val MENU_BUTTON_HEIGHT = 60.dp
-private val MENU_BUTTON_PADDING = 10.dp
-private val MENU_IMAGE_PADDING = 32.dp
-private val SPACE_BETWEEN_BUTTONS = 32.dp
+private val MENU_TITLE_SIZE = 40.sp * WINDOW_SCALE
+private val MENU_BUTTON_WIDTH = 200.dp * WINDOW_SCALE
+private val MENU_BUTTON_HEIGHT = 60.dp * WINDOW_SCALE
+private val MENU_BUTTON_PADDING = 10.dp * WINDOW_SCALE
+private val MENU_IMAGE_PADDING = 32.dp * WINDOW_SCALE
+private val SPACE_BETWEEN_BUTTONS = 32.dp * WINDOW_SCALE
 private val MENU_BUTTON_MODIFIER = Modifier.size(MENU_BUTTON_WIDTH, MENU_BUTTON_HEIGHT).padding(MENU_BUTTON_PADDING)
 private val MENU_OPTION_VIEW_WIDTH = 400.dp
 private val MENU_OPTION_VIEW_HEIGHT = 200.dp
@@ -95,11 +95,10 @@ enum class MenuCommand {
 
 
 /**
- * Composable used to display a menu command view
- * @param session game session
- * @param dataBase database
+ * Composable used to display a menu command view.
  * @param selectedCommand command to display the view
- * @param singlePlayer when true, single player mode is on
+ * @param onOpenSessionRequest callback to be executed when the user clicks to open a session
+ * @param onCancelRequest callback to be executed when the user clicks the cancel button
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -152,8 +151,8 @@ fun MenuOptionView(
 /**
  * Composable used to display a menu and other composable when the session is in logging state.
  * @param session game session
- * @param dataBase database
- * @param options app options
+ * @param onOpenSessionRequest callback to be executed when the user clicks to open a session
+ * @param windowOnCloseRequest callback to be executed when the user clicks the exit button
  */
 @Composable
 fun LoggingView(
@@ -176,5 +175,36 @@ fun LoggingView(
                 onCancelRequest = { selectedCommand.value = null })
         MenuCommand.EXIT -> windowOnCloseRequest()
         else -> {}
+    }
+}
+
+/**
+ * Opens a session using OpenCommand or JoinCommand.
+ * @param session game session
+ * @param gameName name of the session game
+ * @param selectedCommand used to check if it's an open or join command
+ * @param dataBase where the games are stored
+ * @param appOptions application options
+ */
+fun openSession(
+    gameName: String,
+    session: MutableState<Session>,
+    selectedCommand: MenuCommand?,
+    dataBase: GameStorage,
+    appOptions: AppOptions
+) {
+    if (gameName.isBlank()) return
+
+    session.value = when (selectedCommand) {
+        MenuCommand.OPEN -> {
+            val openSession = OpenCommand(dataBase).execute(gameName).getOrThrow()
+
+            if (appOptions.singlePlayer.value && openSession.isPlayable())
+                openSession.copy(state = SessionState.SINGLE_PLAYER)
+            else
+                openSession
+        }
+        MenuCommand.JOIN -> JoinCommand(dataBase).execute(gameName).getOrThrow()
+        else -> session.value
     }
 }

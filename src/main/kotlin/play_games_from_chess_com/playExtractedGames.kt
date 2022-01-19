@@ -41,7 +41,7 @@ fun PlayerExtraction.playExtractedGames() =
 
 
 fun main() {
-    val grandMasters = getPlayersFromTitle("GM").take(5)
+    val grandMasters = getPlayersFromTitle("GM").take(2)
 
     println("\n---------------Extracting games---------------\n")
 

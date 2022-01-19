@@ -13,15 +13,15 @@ import ui.compose.WINDOW_SCALE
 
 
 // Constants
-val TILE_SIZE = 88.dp * WINDOW_SCALE //TODO Scale
-private val IMAGE_DIMENSIONS = 256.dp
-private val IMAGE_CENTERING_OFFSET = 3.dp
-private val GREEN_CIRCLES_SIZE = 20.dp
+val TILE_SIZE = 88.dp * WINDOW_SCALE
+private val IMAGE_DIMENSIONS = 256.dp * WINDOW_SCALE
+private val IMAGE_CENTERING_OFFSET = 3.dp * WINDOW_SCALE
+private val GREEN_CIRCLES_SIZE = 20.dp * WINDOW_SCALE
 
 val LIGHT_TILE_COLOR = Color(0xFFEBEBD0)
 private val DARK_TILE_COLOR = Color(0xFF794839)
 
-private val TILE_SELECTED_BORDER_WIDTH = 3.dp
+private val TILE_SELECTED_BORDER_WIDTH = 3.dp * WINDOW_SCALE
 private val TILE_BORDER_COLOR = Color.Green
 
 

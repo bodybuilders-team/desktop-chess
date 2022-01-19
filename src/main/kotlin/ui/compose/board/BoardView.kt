@@ -9,20 +9,20 @@ import androidx.compose.ui.unit.*
 import domain.Session
 import domain.board.*
 import domain.board.Board.*
-import domain.game.*
 import domain.*
 import domain.move.Move
 import ui.compose.FONT_FAMILY
+import ui.compose.WINDOW_SCALE
 
 
 // Constants
 val BOARD_HEIGHT = TILE_SIZE * BOARD_SIDE_LENGTH
 val BOARD_WIDTH = BOARD_HEIGHT
 
-val ROWS_IDENTIFIER_WIDTH = 30.dp
-val COLUMNS_IDENTIFIER_HEIGHT = 34.dp
+val ROWS_IDENTIFIER_WIDTH = 30.dp * WINDOW_SCALE
+val COLUMNS_IDENTIFIER_HEIGHT = 34.dp * WINDOW_SCALE
 
-private val CHARACTER_SIZE = 24.sp
+private val CHARACTER_SIZE = 24.sp * WINDOW_SCALE
 private val ROWS_COLS_FONT_COLOR = Color.White
 
 
@@ -31,25 +31,29 @@ private val ROWS_COLS_FONT_COLOR = Color.White
  *
  * @param session game session
  * @param targetsOn when true, the available move targets are on
+ * @param move move to be made or null
+ * @param availableMoves list of available moves calculated with the current selected position
+ * @param onLoggingRequest callback to be executed when the current session is in logging state
+ * @param onClickedTile callback to be executed when a tile is clicked
  * @param onMakeMoveRequest callback to be executed when a piece is to be moved
  */
 @Composable
 fun BoardView(
     session: Session,
     targetsOn: Boolean,
-    onMakeMoveRequest: @Composable (MutableState<Move?>, MutableState<List<Move>>) -> Unit
+    move: Move?,
+    availableMoves: List<Move>,
+    onLoggingRequest: () -> Unit,
+    onClickedTile: (Position) -> Unit,
+    onMakeMoveRequest: () -> Unit
 ) {
     val selectedPosition = remember { mutableStateOf<Position?>(null) }
-    val move = remember { mutableStateOf<Move?>(null) }
-    val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
 
     if (session.isLogging()) {
         selectedPosition.value = null
-        availableMoves.value = emptyList()
+        onLoggingRequest()
     }
 
-    //println("Composed BoardView")
-    
     Column {
         ColumnsIdentifierView()
         Row {
@@ -63,16 +67,12 @@ fun BoardView(
                         Tile(
                             position = position,
                             piece = piece,
-                            isAvailable = targetsOn && position in availableMoves.value.map { it.to },
+                            isAvailable = targetsOn && position in availableMoves.map { it.to },
                             isSelected = selectedPosition.value == position && piece != null,
                             onClick = { clickedPosition ->
                                 if (session.isPlayable()) {
                                     selectedPosition.value = clickedPosition
-
-                                    move.value = availableMoves.value.find { it.to == clickedPosition }
-                                    
-                                    if (move.value == null) 
-                                        availableMoves.value = session.game.getAvailableMoves(clickedPosition)
+                                    onClickedTile(clickedPosition)
                                 }
                             }
                         )
@@ -82,13 +82,11 @@ fun BoardView(
         }
     }
 
-    if (session.isPlayable() && move.value != null) {
-        onMakeMoveRequest(move, availableMoves)
-    }
+    if (session.isPlayable() && move != null)
+        onMakeMoveRequest()
 
-    if (session.state == SessionState.ENDED) {
+    if (session.state == SessionState.ENDED)
         EndGamePopUp(session)
-    }
 }
 
 
