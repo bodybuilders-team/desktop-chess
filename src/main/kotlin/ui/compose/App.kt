@@ -11,6 +11,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import domain.*
+import domain.commands.JoinCommand
+import domain.commands.OpenCommand
 import storage.*
 import ui.compose.board.*
 import ui.compose.right_planel.*
@@ -35,8 +37,10 @@ val FONT_SIZE = 20.sp
  */
 @Composable
 @Preview
-fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions,
-        windowOnCloseRequest: () -> Unit) {
+fun App(
+    session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions,
+    windowOnCloseRequest: () -> Unit
+) {
     RefreshTimer(session, dataBase)
 
     MaterialTheme {
@@ -48,14 +52,30 @@ fun App(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOp
         ) {
             Row {
                 BoardView(
-                    session = session,
-                    targetsOn = appOptions.targetsOn,
-                    useSelectedTile = @Composable { selectedPosition, availableMoves ->
-                        UseSelectedPosition(selectedPosition.value!!, dataBase, session, availableMoves)
+                    session = session.value,
+                    targetsOn = appOptions.targetsOn.value,
+                    onMakeMoveRequest = @Composable { move, availableMoves ->
+                        MakeMoveComposable(move, availableMoves, session, dataBase)
                     }
                 )
 
-                RightPanelView(session, dataBase, appOptions, windowOnCloseRequest)
+                RightPanelView(
+                    session.value, onOpenSessionRequest = { selectedCommand, gameName ->
+                        if (gameName.isNotBlank()) {
+                            session.value =
+                                if (selectedCommand == MenuCommand.OPEN) {
+                                    val openSession = OpenCommand(dataBase).execute(gameName).getOrThrow()
+
+                                    if (appOptions.singlePlayer.value && openSession.isPlayable())
+                                        openSession.copy(state = SessionState.SINGLE_PLAYER)
+                                    else
+                                        openSession
+                                } else
+                                    JoinCommand(dataBase).execute(gameName).getOrThrow()
+                        }
+                    },
+                    windowOnCloseRequest
+                )
             }
             if (session.value.isNotLogging()) {
                 GameInfoView(session.value)

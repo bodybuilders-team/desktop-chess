@@ -1,5 +1,6 @@
 import androidx.compose.ui.window.*
 import storage.*
+import storage.mongodb.createMongoClient
 import ui.compose.*
 
 /**
@@ -11,19 +12,19 @@ import ui.compose.*
  * uses a local server instance (it must be already running)
  */
 fun main() {
-    /*val dbInfo = getDBConnectionInfo()
+    val dbInfo = getDBConnectionInfo()
     val driver = createMongoClient(if (dbInfo.mode == DbMode.REMOTE) dbInfo.connectionString else null)
 
     val dataBase = MongoDBGameStorage(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
-    */
-    val dataBase = GameStorageStub()
 
-    //driver.use {
-    application {
-        MainWindow(dataBase, onCloseRequest = {
-            println("BYE.")
-            exitApplication()
-        })
+    //val dataBase = GameStorageStub()
+
+    driver.use {
+        application {
+            MainWindow(dataBase, onCloseRequest = {
+                println("BYE.")
+                exitApplication()
+            })
+        }
     }
-    //}
 }

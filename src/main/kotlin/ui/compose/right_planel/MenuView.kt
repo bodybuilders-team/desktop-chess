@@ -104,19 +104,17 @@ enum class MenuCommand {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MenuOptionView(
-    session: MutableState<Session>,
-    dataBase: GameStorage,
-    selectedCommand: MutableState<MenuCommand?>,
-    singlePlayer: MutableState<Boolean>
+    selectedCommand: MenuCommand?,
+    onOpenSessionRequest: (String) -> Unit,
+    onCancelRequest: () -> Unit
 ) {
-    val command = selectedCommand.value
 
     AlertDialog(
         onDismissRequest = { },
-        title = { Text("${if (command == MenuCommand.OPEN) "Open" else "Join"} a game") },
+        title = { Text("${if (selectedCommand == MenuCommand.OPEN) "Open" else "Join"} a game") },
         text = {
             Text(
-                if (command == MenuCommand.OPEN)
+                if (selectedCommand == MenuCommand.OPEN)
                     "Opens or joins a game to play with the White pieces"
                 else
                     "Joins a game named to play with the Black pieces"
@@ -135,26 +133,13 @@ fun MenuOptionView(
                 )
                 Row {
                     Button(
-                        onClick = {
-                            if (textState.value.text.isNotBlank()) {
-                                session.value =
-                                    if (command == MenuCommand.OPEN) {
-                                        val openSession =
-                                            OpenCommand(dataBase).execute(textState.value.text).getOrThrow()
-                                        if (singlePlayer.value && openSession.isPlayable())
-                                            openSession.copy(state = SessionState.SINGLE_PLAYER)
-                                        else
-                                            openSession
-                                    } else
-                                        JoinCommand(dataBase).execute(textState.value.text).getOrThrow()
-                            }
-                        },
+                        onClick = { onOpenSessionRequest(textState.value.text) },
                         modifier = Modifier.padding(end = SPACE_BETWEEN_BUTTONS)
                     ) {
-                        Text(if (command == MenuCommand.OPEN) "Open" else "Join")
+                        Text(if (selectedCommand == MenuCommand.OPEN) "Open" else "Join")
                     }
 
-                    Button(onClick = { selectedCommand.value = null }) {
+                    Button(onClick = onCancelRequest) {
                         Text("Cancel")
                     }
                 }
@@ -171,9 +156,12 @@ fun MenuOptionView(
  * @param options app options
  */
 @Composable
-fun LoggingView(session: MutableState<Session>, dataBase: GameStorage, options: AppOptions,
-                windowOnCloseRequest: () -> Unit) {
-    require(session.value.isLogging()) { "The session is not in logging state." }
+fun LoggingView(
+    session: Session,
+    onOpenSessionRequest: (MenuCommand?, String) -> Unit,
+    windowOnCloseRequest: () -> Unit
+) {
+    require(session.isLogging()) { "The session is not in logging state." }
 
     val selectedCommand = remember { mutableStateOf<MenuCommand?>(null) }
 
@@ -181,7 +169,11 @@ fun LoggingView(session: MutableState<Session>, dataBase: GameStorage, options: 
 
     when (selectedCommand.value) {
         in listOf(MenuCommand.OPEN, MenuCommand.JOIN) ->
-            MenuOptionView(session, dataBase, selectedCommand, options.singlePlayer)
+            MenuOptionView(selectedCommand.value,
+                onOpenSessionRequest = { gameName ->
+                    onOpenSessionRequest(selectedCommand.value, gameName)
+                },
+                onCancelRequest = { selectedCommand.value = null })
         MenuCommand.EXIT -> windowOnCloseRequest()
         else -> {}
     }

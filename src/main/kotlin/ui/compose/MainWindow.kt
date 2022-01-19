@@ -21,8 +21,9 @@ private val MAIN_WINDOW_HEIGHT = APP_HEIGHT + APP_PADDING * 2 + MENU_BAR_HEIGHT
 
 /**
  * Application main window.
- * @param appOptions application options
  * @param dataBase database where the games are stored
+ * @param onCloseRequest callback to be executed when occurs a close window request (through closing the window directly,
+ * or through clicking the "Cancel" button on the menu)
  */
 @Composable
 fun MainWindow(dataBase: GameStorage, onCloseRequest: () -> Unit) {
@@ -44,7 +45,7 @@ fun MainWindow(dataBase: GameStorage, onCloseRequest: () -> Unit) {
         val session = remember { mutableStateOf(INITIAL_SESSION) }
 
         MenuBar(
-            session.value.state,
+            session.value,
             appOptions,
             onRefreshGameRequest =  { session.value = RefreshCommand(dataBase, session.value).execute(null).getOrThrow() },
             onCloseGameRequest =    { session.value = INITIAL_SESSION },

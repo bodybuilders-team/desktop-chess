@@ -7,7 +7,7 @@ import domain.*
 
 /**
  * Window Menu Bar.
- * @param state current session state
+ * @param session current session state
  * @param appOptions app options
  * @param onRefreshGameRequest callback to be executed when occurs a refresh game request
  * @param onCloseGameRequest callback to be executed when occurs a close game request
@@ -16,7 +16,7 @@ import domain.*
  */
 @Composable
 fun FrameWindowScope.MenuBar(
-    state: SessionState,
+    session: Session,
     appOptions: AppOptions,
     onRefreshGameRequest: () -> Unit,
     onCloseGameRequest: () -> Unit,
@@ -28,12 +28,12 @@ fun FrameWindowScope.MenuBar(
             Item(
                 text = "Refresh game",
                 onClick = onRefreshGameRequest,
-                enabled = state.isWaiting()
+                enabled = session.isWaiting()
             )
             Item(
                 text = "Close game",
                 onClick = onCloseGameRequest,
-                enabled = state.isNotLogging()
+                enabled = session.isNotLogging()
             )
         }
         Menu("Options") {
@@ -47,7 +47,7 @@ fun FrameWindowScope.MenuBar(
                 text = "Single player",
                 checked = appOptions.singlePlayer.value,
                 onCheckedChange = onSinglePlayerChange,
-                enabled = state.isLogging()
+                enabled = session.isLogging()
             )
         }
     }

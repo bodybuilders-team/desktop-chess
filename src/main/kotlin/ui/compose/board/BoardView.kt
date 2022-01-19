@@ -9,11 +9,9 @@ import androidx.compose.ui.unit.*
 import domain.Session
 import domain.board.*
 import domain.board.Board.*
-import domain.commands.PlayCommand
 import domain.game.*
 import domain.*
 import domain.move.Move
-import storage.GameStorage
 import ui.compose.FONT_FAMILY
 
 
@@ -33,22 +31,24 @@ private val ROWS_COLS_FONT_COLOR = Color.White
  *
  * @param session game session
  * @param targetsOn when true, the available move targets are on
- * @param useSelectedTile callback to be executed when a tile is selected
+ * @param onMakeMoveRequest callback to be executed when a piece is to be moved
  */
 @Composable
 fun BoardView(
-    session: MutableState<Session>,
-    targetsOn: MutableState<Boolean>,
-    useSelectedTile: @Composable (MutableState<Position?>, MutableState<List<Move>>) -> Unit
+    session: Session,
+    targetsOn: Boolean,
+    onMakeMoveRequest: @Composable (MutableState<Move?>, MutableState<List<Move>>) -> Unit
 ) {
     val selectedPosition = remember { mutableStateOf<Position?>(null) }
+    val move = remember { mutableStateOf<Move?>(null) }
     val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
 
-    if (session.value.isLogging()) {
+    if (session.isLogging()) {
         selectedPosition.value = null
         availableMoves.value = emptyList()
     }
-    println("Composed BoardView")
+
+    //println("Composed BoardView")
     
     Column {
         ColumnsIdentifierView()
@@ -58,21 +58,21 @@ fun BoardView(
                 Column {
                     repeat(BOARD_SIDE_LENGTH) { rowIdx ->
                         val position = Position(FIRST_COL + columnIdx, LAST_ROW - rowIdx)
-                        val piece = session.value.game.board.getPiece(position)
+                        val piece = session.game.board.getPiece(position)
 
                         Tile(
                             position = position,
                             piece = piece,
-                            isAvailable = targetsOn.value && position in availableMoves.value.map { it.to },
+                            isAvailable = targetsOn && position in availableMoves.value.map { it.to },
                             isSelected = selectedPosition.value == position && piece != null,
                             onClick = { clickedPosition ->
-                                if (session.value.isPlayable()) {
+                                if (session.isPlayable()) {
                                     selectedPosition.value = clickedPosition
 
-                                    val move = availableMoves.value.find { it.to == selectedPosition.value }
+                                    move.value = availableMoves.value.find { it.to == clickedPosition }
                                     
-                                    if (move == null) 
-                                        availableMoves.value = session.value.game.getAvailableMoves(selectedPosition.value!!)
+                                    if (move.value == null) 
+                                        availableMoves.value = session.game.getAvailableMoves(clickedPosition)
                                 }
                             }
                         )
@@ -82,55 +82,13 @@ fun BoardView(
         }
     }
 
-    if (session.value.isPlayable() && selectedPosition.value != null) {
-        useSelectedTile(selectedPosition, availableMoves)
+    if (session.isPlayable() && move.value != null) {
+        onMakeMoveRequest(move, availableMoves)
     }
 
-    EndGamePopUp(session)
-}
-
-
-/**
- * Use the selected position.
- * @param selectedPosition selected position
- * @param dataBase database where the games are stored
- * @param session game session
- * @param availableMoves all possible moves of the selected position
- */
-@Composable
-fun UseSelectedPosition(
-    selectedPosition: Position,
-    dataBase: GameStorage,
-    session: MutableState<Session>,
-    availableMoves: MutableState<List<Move>>
-) {
-    val move = availableMoves.value.find { it.to == selectedPosition }
-
-    when {
-        move?.promotion != null ->
-            PromotionView(session.value) { pieceSymbol ->
-                makeMove(move.copy(promotion = pieceSymbol), dataBase, session, availableMoves)
-            }
-        move != null -> makeMove(move, dataBase, session, availableMoves)
+    if (session.state == SessionState.ENDED) {
+        EndGamePopUp(session)
     }
-}
-
-
-/**
- * Makes a move in the session game, clearing the available moves.
- * @param move move to make
- * @param dataBase database where the games are stored
- * @param session game session
- * @param availableMoves all possible moves of the selected position
- */
-private fun makeMove(
-    move: Move,
-    dataBase: GameStorage,
-    session: MutableState<Session>,
-    availableMoves: MutableState<List<Move>>
-) {
-    session.value = PlayCommand(dataBase, session.value).execute(move.toString()).getOrThrow()
-    availableMoves.value = emptyList()
 }
 
 

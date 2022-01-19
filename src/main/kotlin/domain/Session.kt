@@ -61,24 +61,10 @@ fun Session.isPlayable() = state in listOf(SessionState.YOUR_TURN, SessionState.
 
 
 /**
- * Checks if a session state is logging.
- * @return true if a session state is logging.
+ * Checks if a session is waiting.
+ * @return true if a session is waiting.
  */
-fun SessionState.isLogging() = this == SessionState.LOGGING
-
-
-/**
- * Checks if a session state is not logging.
- * @return true if a session state is not logging.
- */
-fun SessionState.isNotLogging() = !this.isLogging()
-
-
-/**
- * Checks if a session state is waiting.
- * @return true if a session state is not waiting.
- */
-fun SessionState.isWaiting() = this == SessionState.WAITING_FOR_OPPONENT
+fun Session.isWaiting() = state == SessionState.WAITING_FOR_OPPONENT
 
 
 /**

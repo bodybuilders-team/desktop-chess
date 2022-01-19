@@ -16,8 +16,7 @@ private val END_GAME_POP_UP_WIDTH = 200.dp
 private val END_GAME_POP_UP_TEXT_FONT_SIZE = 20.sp
 
 
-enum class EndState {
-    NOT_ENDED,
+private enum class EndState {
     ENDED,
     ACKNOWLEDGED
 }
@@ -29,54 +28,51 @@ enum class EndState {
  */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun EndGamePopUp(session: MutableState<Session>) {
+fun EndGamePopUp(session: Session) {
 
-    val showEnd = remember { mutableStateOf(EndState.NOT_ENDED) }
+    val showEnd = remember { mutableStateOf(EndState.ENDED) }
 
-    if (session.value.state == SessionState.ENDED && showEnd.value == EndState.NOT_ENDED)
-        showEnd.value = EndState.ENDED
+    if (showEnd.value == EndState.ACKNOWLEDGED) return
 
-    if (showEnd.value == EndState.ENDED) {
-        AlertDialog(
-            onDismissRequest = { },
-            title = { Text("Game ended") },
-            modifier = Modifier.width(END_GAME_POP_UP_WIDTH),
-            text = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.width(END_GAME_POP_UP_WIDTH)
-                ) {
-                    Text(
-                        text = if (session.value.game.state == GameState.CHECKMATE) "CHECKMATE!" else "DRAW",
-                        fontSize = END_GAME_POP_UP_TEXT_FONT_SIZE,
-                        fontWeight = FontWeight.Bold
-                    )
+    AlertDialog(
+        onDismissRequest = { },
+        title = { Text("Game ended") },
+        modifier = Modifier.width(END_GAME_POP_UP_WIDTH),
+        text = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.width(END_GAME_POP_UP_WIDTH)
+            ) {
+                Text(
+                    text = if (session.game.state == GameState.CHECKMATE) "CHECKMATE!" else "DRAW",
+                    fontSize = END_GAME_POP_UP_TEXT_FONT_SIZE,
+                    fontWeight = FontWeight.Bold
+                )
 
-                    Text(
-                        text =
-                        when (session.value.game.state) {
-                            GameState.CHECKMATE         -> "${session.value.game.armyToPlay.other()} won!"
-                            GameState.STALEMATE         -> "by stalemate"
-                            GameState.FIFTY_MOVE_RULE   -> "by fifty-move-rule"
-                            GameState.THREE_FOLD        -> "by repetition"
-                            GameState.DEAD_POSITION     -> "by insufficient material"
-                            else -> ""
-                        },
-                        fontSize = END_GAME_POP_UP_TEXT_FONT_SIZE,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            },
-            buttons = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.width(END_GAME_POP_UP_WIDTH)
-                ) {
-                    Button(onClick = { showEnd.value = EndState.ACKNOWLEDGED }) {
-                        Text("OK")
-                    }
+                Text(
+                    text =
+                    when (session.game.state) {
+                        GameState.CHECKMATE -> "${session.game.armyToPlay.other()} won!"
+                        GameState.STALEMATE -> "by stalemate"
+                        GameState.FIFTY_MOVE_RULE -> "by fifty-move-rule"
+                        GameState.THREE_FOLD -> "by repetition"
+                        GameState.DEAD_POSITION -> "by insufficient material"
+                        else -> ""
+                    },
+                    fontSize = END_GAME_POP_UP_TEXT_FONT_SIZE,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        },
+        buttons = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.width(END_GAME_POP_UP_WIDTH)
+            ) {
+                Button(onClick = { showEnd.value = EndState.ACKNOWLEDGED }) {
+                    Text("OK")
                 }
             }
-        )
-    }
+        }
+    )
 }

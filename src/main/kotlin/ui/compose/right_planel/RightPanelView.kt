@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import domain.Session
-import domain.isLogging
-import storage.GameStorage
-import ui.compose.AppOptions
+import domain.*
 import ui.compose.board.*
 
 
@@ -28,17 +25,24 @@ private val RIGHT_PANEL_BACKGROUND = LIGHT_TILE_COLOR
  * @param appOptions application options
  */
 @Composable
-fun RightPanelView(session: MutableState<Session>, dataBase: GameStorage, appOptions: AppOptions,
-                   windowOnCloseRequest: () -> Unit) {
+fun RightPanelView(
+    session: Session,
+    onOpenSessionRequest: (MenuCommand?, String) -> Unit,
+    windowOnCloseRequest: () -> Unit
+) {
     Box(
         modifier = Modifier
             .padding(start = SPACE_BETWEEN_BOARD_AND_RIGHT_PANEL, top = COLUMNS_IDENTIFIER_HEIGHT)
             .size(RIGHT_PANEL_WIDTH, RIGHT_PANEL_HEIGHT)
             .background(RIGHT_PANEL_BACKGROUND)
     ) {
-        if (session.value.isLogging())
-            LoggingView(session, dataBase, appOptions, windowOnCloseRequest)
+        if (session.isLogging())
+            LoggingView(
+                session,
+                onOpenSessionRequest = onOpenSessionRequest,
+                windowOnCloseRequest = windowOnCloseRequest
+            )
         else
-            MovesView(session.value.game)
+            MovesView(session.game)
     }
 }

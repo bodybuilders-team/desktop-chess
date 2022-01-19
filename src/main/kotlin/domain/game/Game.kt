@@ -51,11 +51,11 @@ val Game.armyToPlay
 val Game.state
     get() =
         when {
-            board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK) -> GameState.CHECKMATE
-            isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK) -> GameState.STALEMATE
-            isTiedByFiftyMoveRule() -> GameState.FIFTY_MOVE_RULE
-            isTiedByThreefold() -> GameState.THREE_FOLD
-            isTiedByDeadPosition() -> GameState.DEAD_POSITION
-            board.isKingInCheck(Army.WHITE) || board.isKingInCheck(Army.BLACK) -> GameState.CHECK
-            else -> GameState.NO_CHECK
+            board.isKingInCheckMate(Army.WHITE) || board.isKingInCheckMate(Army.BLACK)  -> GameState.CHECKMATE
+            isKingInStaleMate(Army.WHITE) || isKingInStaleMate(Army.BLACK)              -> GameState.STALEMATE
+            isTiedByFiftyMoveRule()                                                     -> GameState.FIFTY_MOVE_RULE
+            isTiedByThreefold()                                                         -> GameState.THREE_FOLD
+            isTiedByDeadPosition()                                                      -> GameState.DEAD_POSITION
+            board.isKingInCheck(Army.WHITE) || board.isKingInCheck(Army.BLACK)          -> GameState.CHECK
+            else                                                                        -> GameState.NO_CHECK
         }

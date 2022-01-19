@@ -20,7 +20,7 @@ private const val REFRESH_TIME_DELAY = 100L
  */
 @Composable
 fun RefreshTimer(session: MutableState<Session>, dataBase: GameStorage) {
-    if (session.value.state.isWaiting()) {
+    if (session.value.isWaiting()) {
         val timer = remember { mutableStateOf(REFRESH_TIME) }
 
         LaunchedEffect(key1 = timer.value, key2 = session.value) {
