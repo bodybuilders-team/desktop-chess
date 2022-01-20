@@ -2,6 +2,7 @@ package storageTests
 
 import storage.GameStorageStub
 import domain.move.*
+import kotlinx.coroutines.runBlocking
 import listOfMoves
 import kotlin.test.*
 
@@ -12,102 +13,118 @@ class GameStorageTests {
 
     @Test
     fun `getAllMoves returns list of moves of the game`() {
-        val gameName = "test"
-        
-        val sut = GameStorageStub()
+        runBlocking {
+            val gameName = "test"
 
-        sut.createGame(gameName)
-        val moves = listOfMoves("Pe2e4", "Pe7e5", "Pf2f4")
+            val sut = GameStorageStub()
 
-        moves.forEach { move -> sut.postMove(gameName, move) }
+            sut.createGame(gameName)
+            val moves = listOfMoves("Pe2e4", "Pe7e5", "Pf2f4")
 
-        assertEquals(moves, sut.getAllMoves(gameName))
+            moves.forEach { move -> sut.postMove(gameName, move) }
+
+            assertEquals(moves, sut.getAllMoves(gameName))
+        }
     }
 
     @Test
     fun `getAllMoves throws IllegalArgumentException if game with that name does not exist`() {
-        val gameName = "test"
-        
-        val sut = GameStorageStub()
+        runBlocking {
+            val gameName = "test"
 
-        assertEquals(
-            "A game with the name \"$gameName\" does not exist.",
-            assertFailsWith<IllegalArgumentException> {
-                sut.getAllMoves(gameName)
-            }.message
-        )
+            val sut = GameStorageStub()
+
+            assertEquals(
+                "A game with the name \"$gameName\" does not exist.",
+                assertFailsWith<IllegalArgumentException> {
+                    sut.getAllMoves(gameName)
+                }.message
+            )
+        }
     }
     
     // postMove [✔]
 
     @Test
     fun `postMove adds a move to the list of moves`() {
-        val gameName = "test"
-        
-        val sut = GameStorageStub()
+        runBlocking {
+            val gameName = "test"
 
-        sut.createGame(gameName)
+            val sut = GameStorageStub()
 
-        val move = Move("Pe2e4")
+            sut.createGame(gameName)
 
-        sut.postMove(gameName, move)
-        assertEquals(listOf(move), sut.getAllMoves(gameName))
+            val move = Move("Pe2e4")
+
+            sut.postMove(gameName, move)
+            assertEquals(listOf(move), sut.getAllMoves(gameName))
+        }
     }
 
     @Test
     fun `postMove throws IllegalArgumentException if game with that name does not exist`() {
-        val gameName = "test"
+        runBlocking {
+            val gameName = "test"
 
-        val sut = GameStorageStub()
+            val sut = GameStorageStub()
 
-        assertEquals(
-            "A game with the name \"$gameName\" does not exist.",
-            assertFailsWith<IllegalArgumentException> {
-                sut.postMove(gameName, Move("Pe2e4"))
-            }.message
-        )
+            assertEquals(
+                "A game with the name \"$gameName\" does not exist.",
+                assertFailsWith<IllegalArgumentException> {
+                    sut.postMove(gameName, Move("Pe2e4"))
+                }.message
+            )
+        }
     }
     
     // createGame [✔]
 
     @Test
     fun `createGame creates a game with empty list of moves`() {
-        val sut = GameStorageStub()
+        runBlocking {
+            val sut = GameStorageStub()
 
-        sut.createGame("test")
-        assertEquals(listOf(), sut.getAllMoves("test"))
+            sut.createGame("test")
+            assertEquals(listOf(), sut.getAllMoves("test"))
+        }
     }
 
     @Test
     fun `createGame throws if game with that name already exists`() {
-        val gameName = "test"
-        
-        val sut = GameStorageStub()
+        runBlocking {
+            val gameName = "test"
 
-        sut.createGame(gameName)
-        
-        assertEquals(
-            "A game with the name \"$gameName\" already exists.",
-            assertFailsWith<IllegalArgumentException> {
-                sut.createGame(gameName)
-            }.message
-        )
+            val sut = GameStorageStub()
+
+            sut.createGame(gameName)
+
+            assertEquals(
+                "A game with the name \"$gameName\" already exists.",
+                assertFailsWith<IllegalArgumentException> {
+                    sut.createGame(gameName)
+                }.message
+            )
+        }
     }
     
     // gameExists [✔]
 
     @Test
     fun `gameExists returns true if the game exists`() {
-        val sut = GameStorageStub()
+        runBlocking {
+            val sut = GameStorageStub()
 
-        sut.createGame("test")
-        assertTrue(sut.gameExists("test"))
+            sut.createGame("test")
+            assertTrue(sut.gameExists("test"))
+        }
     }
 
     @Test
     fun `gameExists returns false if the game doesn't exist`() {
-        val sut = GameStorageStub()
+        runBlocking {
+            val sut = GameStorageStub()
 
-        assertFalse(sut.gameExists("test"))
+            assertFalse(sut.gameExists("test"))
+        }
     }
 }
