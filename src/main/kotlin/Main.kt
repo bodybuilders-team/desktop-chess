@@ -15,13 +15,12 @@ fun main() {
     val dbInfo = getDBConnectionInfo()
     val driver = createMongoClient(if (dbInfo.mode == DbMode.REMOTE) dbInfo.connectionString else null)
 
-    val dataBase = MongoDBGameStorage(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
-
     //val dataBase = GameStorageStub()
 
     driver.use {
+        val gameStorage = MongoDBGameStorage(driver.getDatabase(System.getenv(ENV_DB_NAME)))
         application {
-            MainWindow(dataBase, onCloseRequest = {
+            MainWindow(gameStorage, onCloseRequest = {
                 println("BYE.")
                 exitApplication()
             })

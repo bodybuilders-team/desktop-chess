@@ -63,10 +63,11 @@ fun Board.isKingProtectable(position: Position, army: Army): Boolean {
  */
 fun Board.canKingMove(position: Position, army: Army): Boolean {
     val dummyBoard = this.copy().removePiece(position)
+    val dummyKing = Pawn(army)
 
     return getAdjacentPositions(position).any { pos ->
         (!dummyBoard.isPositionOccupied(pos) || dummyBoard.getPiece(pos)?.army == army.other()) &&
-                dummyBoard.removePiece(pos).positionAttackers(pos, army.other()).isEmpty()
+                dummyBoard.placePiece(pos, dummyKing).positionAttackers(pos, army.other()).isEmpty()
     }
 }
 

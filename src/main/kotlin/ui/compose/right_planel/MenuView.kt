@@ -183,28 +183,28 @@ fun LoggingView(
  * @param session game session
  * @param gameName name of the session game
  * @param selectedCommand used to check if it's an open or join command
- * @param dataBase where the games are stored
+ * @param gameStorage where the games are stored
  * @param appOptions application options
  */
-fun openSession(
+suspend fun openSession(
     gameName: String,
     session: MutableState<Session>,
     selectedCommand: MenuCommand?,
-    dataBase: GameStorage,
+    gameStorage: GameStorage,
     appOptions: AppOptions
 ) {
     if (gameName.isBlank()) return
 
     session.value = when (selectedCommand) {
         MenuCommand.OPEN -> {
-            val openSession = OpenCommand(dataBase).execute(gameName).getOrThrow()
+            val openSession = OpenCommand(gameStorage).execute(gameName).getOrThrow()
 
             if (appOptions.singlePlayer.value && openSession.isPlayable())
                 openSession.copy(state = SessionState.SINGLE_PLAYER)
             else
                 openSession
         }
-        MenuCommand.JOIN -> JoinCommand(dataBase).execute(gameName).getOrThrow()
+        MenuCommand.JOIN -> JoinCommand(gameStorage).execute(gameName).getOrThrow()
         else -> session.value
     }
 }

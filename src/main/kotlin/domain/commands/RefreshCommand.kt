@@ -15,7 +15,7 @@ import storage.GameStorage
  */
 class RefreshCommand(private val db: GameStorage, private val session: Session) : Command {
 
-    override fun execute(parameter: String?): Result<Session> {
+    override suspend fun execute(parameter: String?): Result<Session> {
         cmdRequire(session.isNotLogging()) { "Can't refresh without a game: try open or join commands." }
         cmdRequire(session.state != SessionState.YOUR_TURN) { "It's your turn: try play." }
         cmdRequire(session.state != SessionState.ENDED) { "Game ended. There aren't any new moves." }

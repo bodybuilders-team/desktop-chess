@@ -9,7 +9,7 @@ import domain.Session
  */
 class HelpCommand(private val session: Session) : Command {
 
-    override fun execute(parameter: String?): Result<Session> {
+    override suspend fun execute(parameter: String?): Result<Session> {
         return Result.success(session)
     }
 }

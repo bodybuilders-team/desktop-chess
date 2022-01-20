@@ -15,12 +15,12 @@ fun interface Command {
      * @param parameter the commands' parameter, or null, if no parameter has been passed
      * @return result with updated session
      */
-    fun execute(parameter: String?): Result<Session>
+    suspend fun execute(parameter: String?): Result<Session>
 
     /**
      * Overload of invoke operator, for convenience.
      */
-    operator fun invoke(parameter: String? = null) = execute(parameter)
+    suspend operator fun invoke(parameter: String? = null) = execute(parameter)
 }
 
 

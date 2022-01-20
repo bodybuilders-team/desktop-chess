@@ -12,7 +12,7 @@ import storage.GameStorage
  */
 class OpenCommand(private val db: GameStorage) : Command {
 
-    override fun execute(parameter: String?): Result<Session> {
+    override suspend fun execute(parameter: String?): Result<Session> {
         cmdRequireNotNull(parameter) { "Missing game name." }
 
         val moves =

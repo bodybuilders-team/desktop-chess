@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
 import domain.INITIAL_SESSION
 import domain.commands.RefreshCommand
+import kotlinx.coroutines.launch
 import storage.GameStorage
 
 
@@ -21,12 +22,12 @@ private val MAIN_WINDOW_HEIGHT = APP_HEIGHT + APP_PADDING * 2 + MENU_BAR_HEIGHT
 
 /**
  * Application main window.
- * @param dataBase database where the games are stored
+ * @param gameStorage where the games are stored
  * @param onCloseRequest callback to be executed when occurs a close window request (through closing the window directly,
  * or through clicking the "Cancel" button on the menu)
  */
 @Composable
-fun MainWindow(dataBase: GameStorage, onCloseRequest: () -> Unit) {
+fun MainWindow(gameStorage: GameStorage, onCloseRequest: () -> Unit) {
     Window(
         title = MAIN_WINDOW_TITLE,
         state = WindowState(
@@ -37,22 +38,28 @@ fun MainWindow(dataBase: GameStorage, onCloseRequest: () -> Unit) {
         icon = painterResource(MAIN_WINDOW_ICON),
         resizable = false
     ) {
+        val session = remember { mutableStateOf(INITIAL_SESSION) }
+        
         val appOptions = AppOptions(
             singlePlayer =  remember { mutableStateOf(true) },
             targetsOn =     remember { mutableStateOf(true) }
         )
-        
-        val session = remember { mutableStateOf(INITIAL_SESSION) }
+
+        val coroutineScope = rememberCoroutineScope()
 
         MenuBar(
             session.value,
             appOptions,
-            onRefreshGameRequest =  { session.value = RefreshCommand(dataBase, session.value).execute(null).getOrThrow() },
+            onRefreshGameRequest = {
+                coroutineScope.launch {
+                    session.value = RefreshCommand(gameStorage, session.value).execute(null).getOrThrow()
+                }
+            },
             onCloseGameRequest =    { session.value = INITIAL_SESSION },
             onShowTargetsChange =   { appOptions.targetsOn.value = it },
             onSinglePlayerChange =  { appOptions.singlePlayer.value = it }
         )
 
-        App(session, dataBase, appOptions, onCloseRequest)
+        App(session, gameStorage, appOptions, onCloseRequest)
     }
 }

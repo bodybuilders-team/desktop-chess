@@ -1,7 +1,10 @@
 package storage.mongodb
 
 import com.mongodb.client.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.litote.kmongo.KMongo
+import org.litote.kmongo.replaceOne
 
 
 /**
@@ -21,8 +24,10 @@ fun createMongoClient(connectionString: String? = null): MongoClient =
  * @param   id    the collection identifier
  * @return  the corresponding [MongoCollection<T>] instance
  */
-inline fun <reified T : Any> MongoDatabase.getCollectionWithId(id: String): MongoCollection<T> =
-    this.getCollection(id, T::class.java)
+suspend inline fun <reified T : Any> MongoDatabase.getCollectionWithId(id: String): MongoCollection<T> =
+    withContext(Dispatchers.IO) {
+        this@getCollectionWithId.getCollection(id, T::class.java)
+    }
 
 
 /**
@@ -33,8 +38,10 @@ inline fun <reified T : Any> MongoDatabase.getCollectionWithId(id: String): Mong
  * @param   document            the object bearing the document data
  * @return  a boolean value indicating if the creation was successful (true), or not (false)
  */
-inline fun <reified T : Any> MongoDatabase.createDocument(parentCollectionId: String, document: T): Boolean =
-    getCollectionWithId<T>(parentCollectionId).insertOne(document).wasAcknowledged()
+suspend inline fun <reified T : Any> MongoDatabase.createDocument(parentCollectionId: String, document: T): Boolean =
+    withContext(Dispatchers.IO) {
+        getCollectionWithId<T>(parentCollectionId).insertOne(document).wasAcknowledged()
+    }
 
 
 /**
@@ -42,7 +49,10 @@ inline fun <reified T : Any> MongoDatabase.createDocument(parentCollectionId: St
  *
  * @return  the names of the root collections
  */
-fun MongoDatabase.getRootCollectionsIds(): Iterable<String> = this.listCollectionNames()
+suspend fun MongoDatabase.getRootCollectionsIds(): Iterable<String> =
+    withContext(Dispatchers.IO) {
+        this@getRootCollectionsIds.listCollectionNames()
+    }
 
 
 /**
@@ -52,7 +62,10 @@ fun MongoDatabase.getRootCollectionsIds(): Iterable<String> = this.listCollectio
  * @param document the object bearing the document data
  * @return  a boolean value indicating if the creation was successful (true), or not (false)
  */
-fun <T> MongoCollection<T>.createDocument(document: T): Boolean = this.insertOne(document).wasAcknowledged()
+suspend fun <T> MongoCollection<T>.createDocument(document: T): Boolean =
+    withContext(Dispatchers.IO) {
+        this@createDocument.insertOne(document).wasAcknowledged()
+    }
 
 
 /**
@@ -61,7 +74,10 @@ fun <T> MongoCollection<T>.createDocument(document: T): Boolean = this.insertOne
  *
  * @return  the documents in the collection
  */
-fun <T> MongoCollection<T>.getAll(): Iterable<T> = this.find()
+suspend fun <T> MongoCollection<T>.getAll(): Iterable<T> =
+    withContext(Dispatchers.IO) {
+        this@getAll.find()
+    }
 
 
 /**
@@ -69,5 +85,19 @@ fun <T> MongoCollection<T>.getAll(): Iterable<T> = this.find()
  * @param id collection id
  * @return the documents in the collection
  */
-inline fun <reified T : Any> MongoDatabase.getAllDocuments(id: String): Iterable<T> =
-    getCollectionWithId<T>(id).getAll()
+suspend inline fun <reified T : Any> MongoDatabase.getAllDocuments(id: String): Iterable<T> =
+    withContext(Dispatchers.IO) {
+        getCollectionWithId<T>(id).getAll()
+    }
+
+/**
+ * Extension function of [MongoDatabase] that replaces a document from a collection.
+ * @param id collection id
+ * @param filter the query filter to apply to the replace operation
+ * @param replacement the replacement document
+ * @return the documents in the collection
+ */
+suspend inline fun <reified T : Any> MongoDatabase.replaceDocument(id: String, filter: String, replacement: T) =
+    withContext(Dispatchers.IO) {
+        getCollectionWithId<T>(id).replaceOne(filter, replacement)
+    }

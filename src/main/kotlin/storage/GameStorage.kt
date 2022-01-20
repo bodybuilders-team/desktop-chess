@@ -13,7 +13,7 @@ interface GameStorage {
      * @param gameName game name
      * @return list of moves in string
      */
-    fun getAllMoves(gameName: String): List<Move>
+    suspend fun getAllMoves(gameName: String): List<Move>
 
     /**
      * Post a move in the game [gameName]
@@ -21,18 +21,18 @@ interface GameStorage {
      * @param move move in string to post
      * @return true if the operation was successful
      */
-    fun postMove(gameName: String, move: Move): Boolean
+    suspend fun postMove(gameName: String, move: Move)
 
     /**
      * Creates a game
      * @param gameName game name
      */
-    fun createGame(gameName: String)
+    suspend fun createGame(gameName: String)
 
     /**
      * Checks if the game with the specified name exists
      * @param gameName game name
      * @return true if the game exists
      */
-    fun gameExists(gameName: String): Boolean
+    suspend fun gameExists(gameName: String): Boolean
 }

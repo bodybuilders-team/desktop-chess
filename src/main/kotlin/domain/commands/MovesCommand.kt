@@ -12,7 +12,7 @@ import storage.GameStorage
  */
 class MovesCommand(private val db: GameStorage, private val session: Session) : Command {
 
-    override fun execute(parameter: String?): Result<Session> {
+    override suspend fun execute(parameter: String?): Result<Session> {
         cmdRequire(session.isNotLogging()) { "No game, no moves: try open or join commands." }
 
         return Result.success(session)

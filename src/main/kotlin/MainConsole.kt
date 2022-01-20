@@ -23,18 +23,18 @@ import ui.console.*
  * - MONGO_DB_CONNECTION, bearing the connection string to the database server. If absent, the application
  * uses a local server instance (it must be already running)
  */
-fun main() {
+suspend fun main() {
     val dbInfo = getDBConnectionInfo()
     val driver = createMongoClient(if (dbInfo.mode == DbMode.REMOTE) dbInfo.connectionString else null)
 
     driver.use {
         try {
             var session = INITIAL_SESSION
-            val dataBase = MongoDBGameStorage(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
+            val gameStorage = MongoDBGameStorage(tryDataBaseAccess { driver.getDatabase(System.getenv(ENV_DB_NAME)) })
 
             while (true) {
                 try {
-                    val dispatcher = buildCommandsHandler(session, dataBase)
+                    val dispatcher = buildCommandsHandler(session, gameStorage)
                     val (command, parameter) = readCommand(getPrompt(session))
 
                     val handler = dispatcher[command]

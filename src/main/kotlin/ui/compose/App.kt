@@ -13,13 +13,14 @@ import domain.*
 import domain.commands.*
 import domain.game.getAvailableMoves
 import domain.move.Move
+import kotlinx.coroutines.launch
 import storage.*
 import ui.compose.board.*
 import ui.compose.right_planel.*
 
 
 // Constants
-const val WINDOW_SCALE = 0.8f
+const val WINDOW_SCALE = 1f
 
 val APP_WIDTH = ROWS_IDENTIFIER_WIDTH + BOARD_WIDTH + SPACE_BETWEEN_BOARD_AND_RIGHT_PANEL + RIGHT_PANEL_WIDTH
 val APP_HEIGHT = COLUMNS_IDENTIFIER_HEIGHT + BOARD_HEIGHT + SPACE_BETWEEN_BOARD_AND_GAME_INFO + GAME_INFO_HEIGHT
@@ -33,7 +34,7 @@ val FONT_SIZE = 20.sp * WINDOW_SCALE
 /**
  * Main Composable used to display the chess app.
  * @param session app session
- * @param dataBase database where the games are stored
+ * @param gameStorage where the games are stored
  * @param appOptions app options
  * @param windowOnCloseRequest callback to be executed when the user clicks the exit button
  */
@@ -41,12 +42,22 @@ val FONT_SIZE = 20.sp * WINDOW_SCALE
 @Preview
 fun App(
     session: MutableState<Session>,
-    dataBase: GameStorage,
+    gameStorage: GameStorage,
     appOptions: AppOptions,
     windowOnCloseRequest: () -> Unit
 ) {
+    val moveTakingPlace = remember { mutableStateOf<Move?>(null) }
+    val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
+    val showPromotionView = remember { mutableStateOf(false) }
+    
+    val coroutineScope = rememberCoroutineScope()
+
     if (session.value.isWaiting())
-        RefreshTimer { session.value = RefreshCommand(dataBase, session.value).execute(null).getOrThrow() }
+        RefreshTimer {
+            coroutineScope.launch {
+                session.value = RefreshCommand(gameStorage, session.value).execute(null).getOrThrow()
+            }
+        }
 
     MaterialTheme {
         Column(
@@ -56,38 +67,47 @@ fun App(
                 .size(APP_WIDTH, APP_HEIGHT)
         ) {
             Row {
-                val move = remember { mutableStateOf<Move?>(null) }
-                val availableMoves = remember { mutableStateOf<List<Move>>(emptyList()) }
-                val showPromotionView = remember { mutableStateOf(false) }
-
                 BoardView(
                     session = session.value,
                     targetsOn = appOptions.targetsOn.value,
-                    move = move.value,
+                    moveTakingPlace = moveTakingPlace.value,
                     availableMoves = availableMoves.value,
                     onLoggingRequest = { availableMoves.value = emptyList() },
                     onClickedTile = { clickedPosition ->
-                        move.value = availableMoves.value.find { it.to == clickedPosition }
-                        if (move.value == null)
-                            availableMoves.value = session.value.game.getAvailableMoves(clickedPosition)
+                        if (moveTakingPlace.value == null) {
+                            moveTakingPlace.value = availableMoves.value.find { it.to == clickedPosition }
+
+                            if (moveTakingPlace.value == null)
+                                availableMoves.value = session.value.game.getAvailableMoves(clickedPosition)
+                        }
                     },
                     onMakeMoveRequest = {
                         when {
-                            move.value?.promotion != null -> showPromotionView.value = true
-                            else -> makeMove(move, availableMoves, session, dataBase)
+                            moveTakingPlace.value?.promotion != null -> showPromotionView.value = true
+                            else -> coroutineScope.launch {
+                                makeMove(moveTakingPlace, availableMoves, session, gameStorage)
+                            }
                         }
                     }
                 )
 
                 if (showPromotionView.value) {
-                    ShowPromotionView(session, move, availableMoves, dataBase)
+                    PromotionView(session.value, onPieceTypeSelected = { pieceSymbol ->
+                        moveTakingPlace.value = moveTakingPlace.value!!.copy(promotion = pieceSymbol)
+
+                        coroutineScope.launch {
+                            makeMove(moveTakingPlace, availableMoves, session, gameStorage)
+                        }
+                    })
                     showPromotionView.value = false
                 }
 
                 RightPanelView(
                     session = session.value,
                     onOpenSessionRequest = { selectedCommand, gameName ->
-                        openSession(gameName, session, selectedCommand, dataBase, appOptions)
+                        coroutineScope.launch {
+                            openSession(gameName, session, selectedCommand, gameStorage, appOptions)
+                        }
                     },
                     windowOnCloseRequest = windowOnCloseRequest
                 )

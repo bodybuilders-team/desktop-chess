@@ -13,7 +13,7 @@ import storage.GameStorage
  */
 class JoinCommand(private val db: GameStorage) : Command {
 
-    override fun execute(parameter: String?): Result<Session> {
+    override suspend fun execute(parameter: String?): Result<Session> {
         cmdRequireNotNull(parameter) { "Missing game name." }
         cmdRequire(db.gameExists(parameter)) { "A game with the name \"$parameter\" does not exist: try open command." }
 

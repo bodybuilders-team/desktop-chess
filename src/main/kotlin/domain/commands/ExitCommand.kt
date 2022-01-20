@@ -8,7 +8,7 @@ import domain.Session
  */
 class ExitCommand : Command {
 
-    override fun execute(parameter: String?): Result<Session> {
+    override suspend fun execute(parameter: String?): Result<Session> {
         return Result.failure(Throwable("Exiting Game."))
     }
 }

@@ -31,7 +31,7 @@ private val ROWS_COLS_FONT_COLOR = Color.White
  *
  * @param session game session
  * @param targetsOn when true, the available move targets are on
- * @param move move to be made or null
+ * @param moveTakingPlace move to be made or null
  * @param availableMoves list of available moves calculated with the current selected position
  * @param onLoggingRequest callback to be executed when the current session is in logging state
  * @param onClickedTile callback to be executed when a tile is clicked
@@ -41,7 +41,7 @@ private val ROWS_COLS_FONT_COLOR = Color.White
 fun BoardView(
     session: Session,
     targetsOn: Boolean,
-    move: Move?,
+    moveTakingPlace: Move?,
     availableMoves: List<Move>,
     onLoggingRequest: () -> Unit,
     onClickedTile: (Position) -> Unit,
@@ -70,7 +70,7 @@ fun BoardView(
                             isAvailable = targetsOn && position in availableMoves.map { it.to },
                             isSelected = selectedPosition.value == position && piece != null,
                             onClick = { clickedPosition ->
-                                if (session.isPlayable()) {
+                                if (session.isPlayable() && moveTakingPlace == null) {
                                     selectedPosition.value = clickedPosition
                                     onClickedTile(clickedPosition)
                                 }
@@ -82,7 +82,7 @@ fun BoardView(
         }
     }
 
-    if (session.isPlayable() && move != null)
+    if (session.isPlayable() && moveTakingPlace != null)
         onMakeMoveRequest()
 
     if (session.state == SessionState.ENDED)

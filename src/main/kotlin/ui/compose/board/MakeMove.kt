@@ -13,15 +13,15 @@ import storage.GameStorage
  * @param move move to make
  * @param availableMoves all possible moves of the selected position
  * @param session game session
- * @param dataBase database where the games are stored
+ * @param gameStorage where the games are stored
  */
-fun makeMove(
+suspend fun makeMove(
     move: MutableState<Move?>,
     availableMoves: MutableState<List<Move>>,
     session: MutableState<Session>,
-    dataBase: GameStorage
+    gameStorage: GameStorage
 ) {
-    session.value = PlayCommand(dataBase, session.value).execute(move.value.toString()).getOrThrow()
+    session.value = PlayCommand(gameStorage, session.value).execute(move.value.toString()).getOrThrow()
     availableMoves.value = emptyList()
     move.value = null
 }
