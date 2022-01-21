@@ -1,6 +1,7 @@
 package play_games_from_chess_com
 
 import domain.game.*
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.PrintWriter
 
@@ -29,9 +30,7 @@ data class MonthExtraction(val player: String, val month: Month, val location: L
 
 data class PlayerExtraction(val player: String, val location: Location, val log: Boolean, val storeGames: Boolean) {
     val monthExtractions: List<MonthExtraction> = extractAllGamesFromPlayer(player, location, log, storeGames)
-    val totalGameCount = monthExtractions.sumOf { monthExtraction ->
-        monthExtraction.games.size
-    }
+    val totalGameCount = monthExtractions.sumOf { it.games.size }
 }
 
 
@@ -56,15 +55,27 @@ fun extractAllGamesFromPlayer(
 
     val logger = if (log) File("$CHESS_EXTRACTED_FOLDER_LOCATION/log/${player}.txt").printWriter() else null
 
-    val monthExtractions =
-        months.mapNotNull {
-            try {
-                MonthExtraction(player = player, month = it, location = location, logger = logger)
-            } catch (exception: Exception) {
-                println("Couldn't get that month's games!")
-                null
-            }
+    val initTime = System.currentTimeMillis()
+    
+    print("Extracting all games from $player...")
+
+    val monthExtractions = runBlocking(Dispatchers.Default) {
+        coroutineScope {
+            months.map {
+                async {
+                    try {
+                        MonthExtraction(player = player, month = it, location = location, logger = logger)
+                    } catch (exception: Exception) {
+                        null
+                    }
+                }
+            }.awaitAll().filterNotNull()
         }
+    }
+    
+    val endTime = System.currentTimeMillis()
+
+    println(" - Extracted ${monthExtractions.sumOf { it.games.size }} games in ${endTime - initTime}ms")
 
     logger?.close()
 

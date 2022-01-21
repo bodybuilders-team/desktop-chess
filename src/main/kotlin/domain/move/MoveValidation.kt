@@ -94,10 +94,8 @@ fun Move.isValidCastle(piece: Piece, game: Game) =
  * @return true if the last move is valid
  */
 fun Move.isEnPassantPossible(piece: Piece, previousMoves: List<Move>) =
-    previousMoves.isNotEmpty() && previousMoves.last().toString() in listOf(
-        "P${from.col - 1}${from.row + 2 * if (piece.isWhite()) 1 else -1}${from.col - 1}${from.row}",
-        "P${from.col + 1}${from.row + 2 * if (piece.isWhite()) 1 else -1}${from.col + 1}${from.row}"
-    )
+    previousMoves.isNotEmpty() && previousMoves.last().toString() ==
+            "P${to.col}${from.row + 2 * if (piece.isWhite()) 1 else -1}${to.col}${from.row}"
 
 
 /**

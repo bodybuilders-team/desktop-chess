@@ -43,19 +43,12 @@ fun extractGames(player: String, month: Month, location: Location, logger: Print
 
     if (location != Location.API)
         require(file.exists()) { "File $fileName does not exist. Check the player and month or download the file." }
-
-    val extractingMessage =
-        "Extracting games from $player in ${month.toString(monthFirst = true, separatingString = "/")}..."
-    print(extractingMessage)
-    logger?.println(extractingMessage)
-
+    
     val games = when (location) {
         Location.API -> extractGamesFromPGN(getMonthPGNList(player, month), logger)
         Location.JSON -> extractGamesFromJSON(file.readLines(), logger)
         Location.PGN -> TODO("") //extractGamesFromJSON(file.readLines(), logger) //extractGamesFromPGN(file.readLines(), logger)
     }
-
-    println(" - Extracted ${games.size} games")
 
     return games
 }

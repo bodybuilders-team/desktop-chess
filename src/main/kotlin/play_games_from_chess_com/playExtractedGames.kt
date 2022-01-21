@@ -2,6 +2,10 @@ package play_games_from_chess_com
 
 import domain.game.makeMoves
 import domain.move.IllegalMoveException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 
 
 /**
@@ -22,7 +26,7 @@ fun MonthExtraction.playExtractedGames(): Float {
 
             successfullyPlayedGames++
         } catch (err: IllegalMoveException) {
-            println("Month $month - Move \"${err.move}\" in game ${gameNum + 1} considered illegal: ${err.message}")
+            println("\nMonth $month - Move \"${err.move}\" in game ${gameNum + 1} considered illegal: ${err.message}")
         }
     }
 
@@ -33,15 +37,23 @@ fun MonthExtraction.playExtractedGames(): Float {
 
 /**
  * Plays extracted games.
+ * 
+ * Uses multi-threading to play multiple games at once.
  *
  * @return percentage of successfully played games
  */
 fun PlayerExtraction.playExtractedGames() =
-    monthExtractions.map { it.playExtractedGames() }.average()
+    runBlocking(Dispatchers.Default) {
+        monthExtractions.map {
+            async {
+                it.playExtractedGames()
+            }
+        }.awaitAll().average()
+    }
 
 
 fun main() {
-    val grandMasters = getPlayersFromTitle("GM").take(2)
+    val grandMasters = getPlayersFromTitle("GM").take(4)
 
     println("\n---------------Extracting games---------------\n")
 
@@ -51,13 +63,12 @@ fun main() {
     println("\n----------------Playing games----------------\n")
 
     playerExtractions.forEach { playerExtraction ->
-        println("Playing ${playerExtraction.totalGameCount} games from player ${playerExtraction.player}...")
+        print("Playing ${playerExtraction.totalGameCount} games from player ${playerExtraction.player}... ")
 
         val initialTime = System.currentTimeMillis()
         val percentage = playerExtraction.playExtractedGames()
         val endTime = System.currentTimeMillis()
 
-        println("Successfully played $percentage% of games from this player")
-        println("Time elapsed: ${endTime - initialTime}")
+        println("($percentage% successfully in ${endTime - initialTime}ms)")
     }
 }
