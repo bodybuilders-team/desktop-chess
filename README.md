@@ -4,7 +4,7 @@
 > using [Compose for Desktop](https://www.jetbrains.com/lp/compose-mpp/).
 
 <p>
-  <img align="center" width="800px" src="./docs/images/main_image.png" alt="Popular Games Gif"/>
+  <img align="center" width="800px" src="./docs/images/main_image.png" alt="Main Image"/>
 </p>
 
 ---
