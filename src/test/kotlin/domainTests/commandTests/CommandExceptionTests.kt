@@ -1,8 +1,12 @@
 package domainTests.commandTests
 
-import domain.commands.*
-import kotlin.test.*
-
+import domain.commands.CommandException
+import domain.commands.cmdRequire
+import domain.commands.cmdRequireNotNull
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class CommandExceptionTests { // [✔]
 
@@ -67,7 +71,7 @@ class CommandExceptionTests { // [✔]
     @Test
     fun `cmdRequireNotNull successfully smart casts value to non-nullable type`() {
         var value: Int? = 42; assertTrue(value in listOf(null, 42))
-        
+
         value = 42
         cmdRequireNotNull(value) { "Value is null!" }
         value > 2

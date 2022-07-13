@@ -1,11 +1,21 @@
 package domainTests.moveTests
 
-import domain.board.*
-import domain.board.Board.*
-import domain.move.*
+import domain.board.Board.Position
+import domain.board.FIRST_COL
+import domain.board.FIRST_ROW
+import domain.move.DEFAULT_CASTLE_TO_ROW
+import domain.move.INITIAL_KING_COL
+import domain.move.IllegalMoveException
+import domain.move.LONG_CASTLE_KING_COL
+import domain.move.Move
+import domain.move.MoveExtraction
+import domain.move.MoveType
+import domain.move.SHORT_CASTLE_KING_COL
+import domain.move.extractMoveInfo
 import domain.pieces.PieceType
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class MoveExtractionTests { // [✔]
 
@@ -25,7 +35,7 @@ class MoveExtractionTests { // [✔]
     fun `toString works for move with optional from row`() {
         assertEquals("Pee4", Move.extractMoveInfo("Pee4").toString())
     }
-    
+
     @Test
     fun `toString works for move with optional from position`() {
         assertEquals("Pe4", Move.extractMoveInfo("Pe4").toString())
@@ -55,7 +65,7 @@ class MoveExtractionTests { // [✔]
 
     @Test
     fun `extractMoveInfo throws IllegalMoveException with wrongly formatted move`() {
-        assertFailsWith<IllegalMoveException> { 
+        assertFailsWith<IllegalMoveException> {
             Move.extractMoveInfo("P29222eee")
         }
     }

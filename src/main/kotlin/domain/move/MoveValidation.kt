@@ -1,10 +1,17 @@
 package domain.move
 
-import domain.game.*
-import domain.board.*
-import domain.board.Board.*
-import domain.pieces.*
-
+import domain.board.BLACK_FIRST_ROW
+import domain.board.Board
+import domain.board.Board.Position
+import domain.board.FIRST_COL
+import domain.board.LAST_COL
+import domain.board.WHITE_FIRST_ROW
+import domain.game.Game
+import domain.game.isKingInCheck
+import domain.pieces.King
+import domain.pieces.Pawn
+import domain.pieces.Piece
+import domain.pieces.isWhite
 
 const val INITIAL_KING_COL = 'e'
 const val INITIAL_ROOK_COL_FURTHER_FROM_KING = FIRST_COL
@@ -14,7 +21,6 @@ const val SHORT_CASTLE_ROOK_COL = 'f'
 const val LONG_CASTLE_KING_COL = 'c'
 const val SHORT_CASTLE_KING_COL = 'g'
 
-
 /**
  * Gets a validated move, with information of its move type and capture, or null if the move isn't valid.
  * @param piece piece of the move's from position
@@ -23,9 +29,9 @@ const val SHORT_CASTLE_KING_COL = 'g'
  */
 fun Move.getValidatedMove(piece: Piece, game: Game): Move? {
     val validMove = when {
-        isValidEnPassant(piece, game)     -> copy(type = MoveType.EN_PASSANT, capture = true)
-        isValidCastle(piece, game)        -> copy(type = MoveType.CASTLE)
-        isValidNormal(piece, game.board)  -> copy(type = MoveType.NORMAL, capture = game.board.isPositionOccupied(to))
+        isValidEnPassant(piece, game) -> copy(type = MoveType.EN_PASSANT, capture = true)
+        isValidCastle(piece, game) -> copy(type = MoveType.CASTLE)
+        isValidNormal(piece, game.board) -> copy(type = MoveType.NORMAL, capture = game.board.isPositionOccupied(to))
         else -> return null
     }
 
@@ -33,7 +39,6 @@ fun Move.getValidatedMove(piece: Piece, game: Game): Move? {
 
     return validMove
 }
-
 
 /**
  * Checks if the move is a valid normal move.
@@ -43,7 +48,6 @@ fun Move.getValidatedMove(piece: Piece, game: Game): Move? {
  */
 fun Move.isValidNormal(piece: Piece, board: Board): Boolean =
     piece.isValidMove(board, this) && isValidCapture(piece, board)
-
 
 /**
  * Checks if the capture in the normal move is valid.
@@ -64,7 +68,6 @@ fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
     return piece.army != capturedPiece.army && isValidPromotion
 }
 
-
 /**
  * Checks if the move is a valid en passant.
  * @param piece piece to check if the move is a valid en passant
@@ -73,8 +76,7 @@ fun Move.isValidCapture(piece: Piece, board: Board): Boolean {
  */
 fun Move.isValidEnPassant(piece: Piece, game: Game) =
     piece is Pawn && promotion == null && piece.isValidEnPassant(game.board, this) &&
-            isEnPassantPossible(piece, game.moves)
-
+        isEnPassantPossible(piece, game.moves)
 
 /**
  * Checks if the move is a valid castle.
@@ -84,8 +86,7 @@ fun Move.isValidEnPassant(piece: Piece, game: Game) =
  */
 fun Move.isValidCastle(piece: Piece, game: Game) =
     piece is King && promotion == null && !game.board.isKingInCheck(piece.army) &&
-            piece.isValidCastle(game.board, this) && isCastlePossible(piece, game.moves)
-
+        piece.isValidCastle(game.board, this) && isCastlePossible(piece, game.moves)
 
 /**
  * Checks if the last move is valid to do en passant move immediately next.
@@ -95,8 +96,7 @@ fun Move.isValidCastle(piece: Piece, game: Game) =
  */
 fun Move.isEnPassantPossible(piece: Piece, previousMoves: List<Move>) =
     previousMoves.isNotEmpty() && previousMoves.last().toString() ==
-            "P${to.col}${from.row + 2 * if (piece.isWhite()) 1 else -1}${to.col}${from.row}"
-
+        "P${to.col}${from.row + 2 * if (piece.isWhite()) 1 else -1}${to.col}${from.row}"
 
 /**
  * Checks if a castle move is possible.
@@ -109,15 +109,15 @@ fun Move.isCastlePossible(piece: Piece, previousMoves: List<Move>) =
         move.from in listOf(
             Position(INITIAL_KING_COL, if (piece.isWhite()) WHITE_FIRST_ROW else BLACK_FIRST_ROW),
             Position(
-                if (to.col == LONG_CASTLE_KING_COL)
+                if (to.col == LONG_CASTLE_KING_COL) {
                     INITIAL_ROOK_COL_FURTHER_FROM_KING
-                else
-                    INITIAL_ROOK_COL_CLOSER_TO_KING,
+                } else {
+                    INITIAL_ROOK_COL_CLOSER_TO_KING
+                },
                 if (piece.isWhite()) WHITE_FIRST_ROW else BLACK_FIRST_ROW
             )
         )
     }
-
 
 /**
  * Gets the position of the captured pawn in an en passant move.
@@ -131,10 +131,9 @@ fun getEnPassantCapturedPawnPosition(attackerToPos: Position, attackingPiece: Pi
         row = attackerToPos.row + if (attackingPiece.isWhite()) -1 else 1
     )
 
-
 object Castle {
     /**
-     * Gets the from position of the rook in a castle move.
+     * Gets the "from" position of the rook in a castle move.
      * @param kingToPos king position after the castle move
      * @return position of the rook
      */

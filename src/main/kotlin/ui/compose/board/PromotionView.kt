@@ -1,9 +1,20 @@
+@file:Suppress("FunctionName")
+
 package ui.compose.board
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -12,12 +23,10 @@ import domain.game.armyToPlay
 import domain.pieces.PieceType
 import ui.compose.WINDOW_SCALE
 
-
 // Constants
 private val PROMOTION_BUTTON_PADDING = 10.dp * WINDOW_SCALE
 private val PROMOTION_BUTTON_SIZE = 160.dp * WINDOW_SCALE
 private val promotionPieces = listOf(PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK)
-
 
 /**
  * Composable used to display a dialog with the promotion pieces.
@@ -49,7 +58,7 @@ fun PromotionView(session: Session, onPieceTypeSelected: (Char) -> Unit) {
                             Image(
                                 painter = painterResource(
                                     "${session.game.armyToPlay.toString().first().lowercase()}_${
-                                        piece.toString().lowercase()
+                                    piece.toString().lowercase()
                                     }.png"
                                 ),
                                 contentDescription = null

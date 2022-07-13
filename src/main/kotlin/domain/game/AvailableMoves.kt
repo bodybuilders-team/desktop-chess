@@ -1,9 +1,9 @@
 package domain.game
 
-import domain.board.*
-import domain.pieces.Army
 import domain.board.Board.Position
-
+import domain.board.COLS_RANGE
+import domain.board.ROWS_RANGE
+import domain.pieces.Army
 
 /**
  * Gets a given position's available moves in the game.
@@ -12,7 +12,6 @@ import domain.board.Board.Position
  */
 fun Game.getAvailableMoves(position: Position) =
     board.getPiece(position)?.getAvailableMoves(this, position) ?: emptyList()
-
 
 /**
  * Checks if a given army has any available valid moves to make.

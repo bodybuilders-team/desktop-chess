@@ -5,7 +5,6 @@ import domain.board.FIRST_COL
 import domain.board.FIRST_ROW
 import domain.pieces.PieceType
 
-
 const val CAPTURE_CHAR = 'x'
 const val PROMOTION_CHAR = '='
 const val SHORT_CASTLE_STRING = "O-O"
@@ -14,7 +13,6 @@ const val DEFAULT_CASTLE_TO_ROW = FIRST_ROW
 private const val MIN_STRING_LEN = 1
 private const val TWO_STRING_LEN = 2
 private const val THREE_STRING_LEN = 3
-
 
 /**
  * Move extraction
@@ -29,14 +27,13 @@ data class MoveExtraction(val move: Move, val optionalFromCol: Boolean, val opti
      * @return string representation of the move extraction
      */
     override fun toString() =
-        if (move.type != MoveType.CASTLE)
+        if (move.type != MoveType.CASTLE) {
             move.toString().replaceRange(
                 1..2,
                 "${if (!optionalFromCol) move.from.col else ""}${if (!optionalFromRow) move.from.row else ""}"
             )
-        else move.toString()
+        } else move.toString()
 }
-
 
 /**
  * Extracts move information from a string.
@@ -49,11 +46,12 @@ data class MoveExtraction(val move: Move, val optionalFromCol: Boolean, val opti
  * @throws IllegalMoveException if move string is not well formatted
  */
 fun Move.Companion.extractMoveInfo(moveInString: String): MoveExtraction {
-    if (!isCorrectlyFormatted(moveInString))
+    if (!isCorrectlyFormatted(moveInString)) {
         throw IllegalMoveException(
             moveInString,
             "Unrecognized Play. Use format: [<piece>][<from>][x][<to>][=<piece>], [$SHORT_CASTLE_STRING] or [$LONG_CASTLE_STRING]"
         )
+    }
 
     if (moveInString in listOf(SHORT_CASTLE_STRING, LONG_CASTLE_STRING)) {
         return MoveExtraction(
@@ -86,7 +84,6 @@ fun Move.Companion.extractMoveInfo(moveInString: String): MoveExtraction {
     var pieceSymbol = PieceType.PAWN.symbol
     var fromRow: Int? = null
     var fromCol: Char? = null
-
 
     when (str.length) {
         MIN_STRING_LEN ->

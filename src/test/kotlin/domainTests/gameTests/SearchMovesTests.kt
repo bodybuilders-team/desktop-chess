@@ -2,11 +2,13 @@ package domainTests.gameTests
 
 import domain.board.Board
 import domain.board.COLS_RANGE
-import domain.game.*
-import domain.move.*
+import domain.game.Game
+import domain.game.searchMoves
+import domain.move.Move
+import domain.move.extractMoveInfo
 import listOfMoves
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class SearchMovesTests { // [✔]
 
@@ -67,13 +69,13 @@ class SearchMovesTests { // [✔]
         val game = Game(
             Board(
                 "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "R   K   "
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K   "
             ),
             emptyList()
         )
@@ -89,13 +91,13 @@ class SearchMovesTests { // [✔]
         val game = Game(
             Board(
                 "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "    K  R"
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "    K  R"
             ),
             emptyList()
         )
@@ -111,13 +113,13 @@ class SearchMovesTests { // [✔]
         val game = Game(
             Board(
                 "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "R   K   "
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K   "
             ),
             emptyList()
         )
@@ -133,13 +135,13 @@ class SearchMovesTests { // [✔]
         val game = Game(
             Board(
                 "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "    K  R"
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "    K  R"
             ),
             emptyList()
         )
@@ -155,13 +157,13 @@ class SearchMovesTests { // [✔]
         val game = Game(
             Board(
                 "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "R   K  R"
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K  R"
             ),
             emptyList()
         )
@@ -177,13 +179,13 @@ class SearchMovesTests { // [✔]
         val game = Game(
             Board(
                 "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "        " +
-                        "R   K  R"
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K  R"
             ),
             emptyList()
         )
@@ -210,6 +212,7 @@ class SearchMovesTests { // [✔]
 
         assertEquals(
             (COLS_RANGE.map { Move("P${it}2${it}3") } + COLS_RANGE.map { Move("P${it}2${it}4") }).toSet(),
-            game.searchMoves(Move.extractMoveInfo("Pe4"), optionalToPos = true).toSet())
+            game.searchMoves(Move.extractMoveInfo("Pe4"), optionalToPos = true).toSet()
+        )
     }
 }

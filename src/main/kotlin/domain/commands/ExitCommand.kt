@@ -2,7 +2,6 @@ package domain.commands
 
 import domain.Session
 
-
 /**
  * Terminates the application
  */

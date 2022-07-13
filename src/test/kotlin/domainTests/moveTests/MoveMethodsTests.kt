@@ -1,11 +1,16 @@
 package domainTests.moveTests
 
-import domain.game.*
-import domain.board.*
-import domain.board.Board.*
-import domain.move.*
-import kotlin.test.*
-
+import domain.board.Board
+import domain.board.Board.Position
+import domain.game.Game
+import domain.move.IllegalMoveException
+import domain.move.Move
+import domain.move.MoveType
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class MoveMethodsTests { // [✔]
 
@@ -61,20 +66,20 @@ class MoveMethodsTests { // [✔]
     fun `validated throws IllegalMoveException if multiple valid moves are found`() {
         val sut = Board(
             "rnbqkbnr" +
-            "ppppp pp" +
-            "        " +
-            "     p  " +
-            "    P P " +
-            "        " +
-            "PPPP PPP" +
-            "RNBQKBNR"
+                "ppppp pp" +
+                "        " +
+                "     p  " +
+                "    P P " +
+                "        " +
+                "PPPP PPP" +
+                "RNBQKBNR"
         )
 
         assertFailsWith<IllegalMoveException> {
             Move.validated("Pf5", Game(sut, emptyList()))
         }
     }
-    
+
     // Move to same place [✔]
 
     @Test
@@ -84,7 +89,7 @@ class MoveMethodsTests { // [✔]
         assertFalse(Move("e2e2").isStraight())
         assertFalse(Move("e2e2").isDiagonal())
     }
-    
+
     // isVertical [✔]
 
     @Test
@@ -101,7 +106,6 @@ class MoveMethodsTests { // [✔]
     fun `isVertical with diagonal move doesn't work`() {
         assertFalse(Move("e2g4").isVertical())
     }
-    
 
     // isHorizontal [✔]
 

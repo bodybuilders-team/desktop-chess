@@ -1,9 +1,9 @@
 package domain.commands
 
-import domain.*
+import domain.Session
+import domain.getOpeningBoardSession
 import domain.pieces.Army
 import storage.GameStorage
-
 
 /**
  * Opens a game with the received name or creates a new game if it doesn't exist

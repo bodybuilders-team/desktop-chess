@@ -1,20 +1,42 @@
-package ui.compose.right_planel
+@file:Suppress("FunctionName")
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+package ui.compose.rightPanel
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.*
-import domain.*
-import domain.commands.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import domain.Session
+import domain.SessionState
+import domain.commands.JoinCommand
+import domain.commands.OpenCommand
+import domain.isLogging
+import domain.isPlayable
 import storage.GameStorage
-import ui.compose.*
-
+import ui.compose.AppOptions
+import ui.compose.WINDOW_SCALE
+import kotlin.collections.contains
+import kotlin.collections.listOf
 
 // Constants
 private val MENU_TITLE_SIZE = 40.sp * WINDOW_SCALE
@@ -28,7 +50,6 @@ private val MENU_OPTION_VIEW_WIDTH = 400.dp
 private val MENU_OPTION_VIEW_HEIGHT = 200.dp
 
 private const val MENU_IMAGE = "menu_image.png"
-
 
 /**
  * Composable used to display a column with the menu.
@@ -83,7 +104,6 @@ fun MenuView(onCommandSelected: (MenuCommand?) -> Unit) {
     }
 }
 
-
 /**
  * Represents a menu command.
  */
@@ -92,7 +112,6 @@ enum class MenuCommand {
     JOIN,
     EXIT
 }
-
 
 /**
  * Composable used to display a menu command view.
@@ -107,16 +126,16 @@ fun MenuOptionView(
     onOpenSessionRequest: (String) -> Unit,
     onCancelRequest: () -> Unit
 ) {
-
     AlertDialog(
         onDismissRequest = { },
         title = { Text("${if (selectedCommand == MenuCommand.OPEN) "Open" else "Join"} a game") },
         text = {
             Text(
-                if (selectedCommand == MenuCommand.OPEN)
+                if (selectedCommand == MenuCommand.OPEN) {
                     "Opens or joins a game to play with the White pieces"
-                else
+                } else {
                     "Joins a game named to play with the Black pieces"
+                }
             )
         },
         modifier = Modifier.size(MENU_OPTION_VIEW_WIDTH, MENU_OPTION_VIEW_HEIGHT),
@@ -147,7 +166,6 @@ fun MenuOptionView(
     )
 }
 
-
 /**
  * Composable used to display a menu and other composable when the session is in logging state.
  * @param session game session
@@ -168,11 +186,13 @@ fun LoggingView(
 
     when (selectedCommand.value) {
         in listOf(MenuCommand.OPEN, MenuCommand.JOIN) ->
-            MenuOptionView(selectedCommand.value,
+            MenuOptionView(
+                selectedCommand.value,
                 onOpenSessionRequest = { gameName ->
                     onOpenSessionRequest(selectedCommand.value, gameName)
                 },
-                onCancelRequest = { selectedCommand.value = null })
+                onCancelRequest = { selectedCommand.value = null }
+            )
         MenuCommand.EXIT -> windowOnCloseRequest()
         else -> {}
     }
@@ -199,10 +219,11 @@ suspend fun openSession(
         MenuCommand.OPEN -> {
             val openSession = OpenCommand(gameStorage).execute(gameName).getOrThrow()
 
-            if (appOptions.singlePlayer.value && openSession.isPlayable())
+            if (appOptions.singlePlayer.value && openSession.isPlayable()) {
                 openSession.copy(state = SessionState.SINGLE_PLAYER)
-            else
+            } else {
                 openSession
+            }
         }
         MenuCommand.JOIN -> JoinCommand(gameStorage).execute(gameName).getOrThrow()
         else -> session.value

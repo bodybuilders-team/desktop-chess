@@ -1,9 +1,12 @@
 package domain
 
-import domain.game.*
-import domain.move.*
+import domain.game.Game
+import domain.game.INITIAL_GAME
+import domain.game.armyToPlay
+import domain.game.ended
+import domain.game.gameFromMoves
+import domain.move.Move
 import domain.pieces.Army
-
 
 /**
  * A game session.
@@ -17,7 +20,6 @@ data class Session(
     val game: Game
 )
 
-
 // Session Constants
 const val NO_NAME = ""
 val INITIAL_SESSION = Session(
@@ -25,7 +27,6 @@ val INITIAL_SESSION = Session(
     state = SessionState.LOGGING,
     game = INITIAL_GAME
 )
-
 
 /**
  * Different states the session can be in.
@@ -38,13 +39,11 @@ enum class SessionState {
     SINGLE_PLAYER
 }
 
-
 /**
  * Checks if a session is in logging state.
  * @return true if a session is in logging state.
  */
 fun Session.isLogging() = state == SessionState.LOGGING
-
 
 /**
  * Checks if a session is not in logging state.
@@ -52,20 +51,17 @@ fun Session.isLogging() = state == SessionState.LOGGING
  */
 fun Session.isNotLogging() = state != SessionState.LOGGING
 
-
 /**
  * Checks if a session is playable.
  * @return true if a session is playable.
  */
 fun Session.isPlayable() = state in listOf(SessionState.YOUR_TURN, SessionState.SINGLE_PLAYER)
 
-
 /**
  * Checks if a session is waiting.
  * @return true if a session is waiting.
  */
 fun Session.isWaiting() = state == SessionState.WAITING_FOR_OPPONENT
-
 
 /**
  * Returns the state of a session, given its game and army.
@@ -79,7 +75,6 @@ fun getSessionState(game: Game, army: Army) =
         game.armyToPlay == army -> SessionState.YOUR_TURN
         else -> SessionState.WAITING_FOR_OPPONENT
     }
-
 
 /**
  * Gets a session of an opening game.

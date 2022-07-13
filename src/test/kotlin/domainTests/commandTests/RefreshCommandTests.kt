@@ -1,13 +1,21 @@
 package domainTests.commandTests
 
-import storage.GameStorageStub
-import domain.*
-import domain.game.*
-import domain.board.*
-import domain.commands.*
-import domain.move.*
+import domain.Session
+import domain.SessionState
+import domain.board.Board
+import domain.commands.CommandException
+import domain.commands.RefreshCommand
+import domain.game.Game
+import domain.game.GameState
+import domain.game.gameFromMoves
+import domain.game.state
+import domain.move.Move
 import kotlinx.coroutines.runBlocking
-import kotlin.test.*
+import storage.GameStorageStub
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class RefreshCommandTests { // [✔]
     @Test

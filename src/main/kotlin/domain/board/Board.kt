@@ -1,15 +1,15 @@
 package domain.board
 
-import domain.move.*
-import domain.pieces.*
-
+import domain.move.Move
+import domain.pieces.Piece
+import domain.pieces.getPieceFromSymbol
 
 /**
  * Represents the game board with the pieces.
  * @property matrix list of pieces representing the board matrix with the pieces
  */
 data class Board(private val matrix: List<Piece?>) {
-    
+
     constructor(stringBoard: String = STRING_DEFAULT_BOARD) : this(getPiecesFromString(stringBoard))
 
     /**
@@ -32,14 +32,12 @@ data class Board(private val matrix: List<Piece?>) {
      */
     private fun Position.toIndex() = (BOARD_SIDE_LENGTH - row) * BOARD_SIDE_LENGTH + (col - FIRST_COL)
 
-
     /**
      * Returns the piece in [position].
      * @param position position to get piece of
      * @return piece in [position]
      */
     fun getPiece(position: Position) = matrix[position.toIndex()]
-
 
     /**
      * Place [piece] in [position], returning new board.
@@ -50,7 +48,6 @@ data class Board(private val matrix: List<Piece?>) {
     fun placePiece(position: Position, piece: Piece) =
         Board(matrix.replace(position.toIndex(), piece))
 
-
     /**
      * Removes piece from [position], returning new board.
      * @param position position to remove the piece of
@@ -59,14 +56,12 @@ data class Board(private val matrix: List<Piece?>) {
     fun removePiece(position: Position) =
         Board(matrix.replace(position.toIndex(), null))
 
-
     /**
      * Checks if a position is occupied by a piece.
      * @param position position to check
      * @return true if there's a piece in [position]
      */
     fun isPositionOccupied(position: Position) = getPiece(position) != null
-
 
     /**
      * Makes a move in the board. Expects the move to already be validated.
@@ -81,7 +76,6 @@ data class Board(private val matrix: List<Piece?>) {
             .placePiece(move.to, if (move.promotion == null) piece else getPieceFromSymbol(move.promotion, piece.army))
             .placePieceFromSpecialMoves(move, piece)
     }
-
 
     /**
      * String representation of the game board.

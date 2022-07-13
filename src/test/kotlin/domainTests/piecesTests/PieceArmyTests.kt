@@ -1,8 +1,12 @@
 package domainTests.piecesTests
 
-import domain.pieces.*
-import kotlin.test.*
-
+import domain.pieces.Army
+import domain.pieces.Pawn
+import domain.pieces.isWhite
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class PieceArmyTests { // [✔]
     @Test

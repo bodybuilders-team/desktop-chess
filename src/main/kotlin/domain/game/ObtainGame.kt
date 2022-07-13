@@ -3,7 +3,6 @@ package domain.game
 import domain.board.Board
 import domain.move.Move
 
-
 // Constants
 val INITIAL_GAME = gameFromMoves()
 
@@ -17,7 +16,6 @@ fun Game.makeMoves(movesInString: List<String>): Game =
         newGame.makeMove(Move.validated(moveInString, newGame))
     }
 
-
 /**
  * Returns a new game with the moves [movesInString] consecutively made and validated in the game.
  * @param movesInString moves to make
@@ -25,7 +23,6 @@ fun Game.makeMoves(movesInString: List<String>): Game =
  */
 fun gameFromMoves(movesInString: List<String>): Game =
     Game(Board(), emptyList()).makeMoves(movesInString)
-
 
 /**
  * Returns a new game with the [moves] consecutively made and validated in the game.
@@ -36,7 +33,6 @@ fun gameFromMoves(movesInString: List<String>): Game =
 fun gameFromMoves(moves: List<Move>): Game =
     gameFromMoves(moves.map { it.toString() })
 
-
 /**
  * Returns a new game with the moves [movesInString] consecutively made and validated in the game.
  * @param movesInString moves to make in string
@@ -44,7 +40,6 @@ fun gameFromMoves(moves: List<Move>): Game =
  */
 fun gameFromMoves(vararg movesInString: String): Game =
     gameFromMoves(movesInString.toList())
-
 
 /**
  * Returns a game obtained from a FEN string (Forsyth-Edwards Notation).
@@ -60,8 +55,10 @@ fun gameFromFEN(fen: String): Game {
         .map { if (it in '1'..'8') " ".repeat(it.digitToInt()) else it.toString() }
         .joinToString(separator = "")
 
-    val (armyToPlay, castlesAvailable,
-        enPassantTarget, movesSinceCapture, totalMoves) = fen.substringAfter(" ").split(" ")
+    val (
+        armyToPlay, castlesAvailable,
+        enPassantTarget, movesSinceCapture, totalMoves
+    ) = fen.substringAfter(" ").split(" ")
 
     val moves = mutableListOf<String>()
 
@@ -77,8 +74,9 @@ fun gameFromFEN(fen: String): Game {
             "P$enPassantCol${if (enPassantRow == '6') "7" else "2"}$enPassantCol${if (enPassantRow == '6') "5" else "4"}"
         )
     }
-    if ((moves.size % 2 == 0) != (armyToPlay == "w"))
+    if ((moves.size % 2 == 0) != (armyToPlay == "w")) {
         moves.add(0, "Pe2e4")
+    }
 
     return Game(Board(boardInString), moves.map { Move(it) })
 }

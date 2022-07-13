@@ -1,10 +1,18 @@
 package domainTests.moveTests
 
 import domain.board.Board
-import domain.move.*
-import domain.board.Board.*
-import kotlin.test.*
-
+import domain.board.Board.Position
+import domain.move.Move
+import domain.move.anyPositionInDiagonalPath
+import domain.move.anyPositionInStraightPath
+import domain.move.isDiagonalPathOccupied
+import domain.move.isStraightPathOccupied
+import domain.move.isValidDiagonalMove
+import domain.move.isValidStraightMove
+import kotlin.test.Test
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class PathUtilsTests { // [✔]
 
@@ -14,54 +22,66 @@ class PathUtilsTests { // [✔]
     fun `anyPositionInStraightPath returns true if any position in the straight path matches predicate`() {
         val move = Move("Re2e6")
         assertTrue(move.isStraight())
-        assertTrue(anyPositionInStraightPath(move, includeFromPos = false) { pos ->
-            pos == Position('e', 3)
-        })
+        assertTrue(
+            anyPositionInStraightPath(move, includeFromPos = false) { pos ->
+                pos == Position('e', 3)
+            }
+        )
     }
 
     @Test
     fun `anyPositionInStraightPath returns true if multiple positions in the straight path match predicate`() {
         val move = Move("Re2e6")
         assertTrue(move.isStraight())
-        assertTrue(anyPositionInStraightPath(move, includeFromPos = false) { pos ->
-            pos.col == 'e'
-        })
+        assertTrue(
+            anyPositionInStraightPath(move, includeFromPos = false) { pos ->
+                pos.col == 'e'
+            }
+        )
     }
 
     @Test
     fun `anyPositionInStraightPath returns false if no position in the straight path matches predicate`() {
         val move = Move("Re2e6")
         assertTrue(move.isStraight())
-        assertFalse(anyPositionInStraightPath(move, includeFromPos = false) { pos ->
-            pos.col == 'g'
-        })
+        assertFalse(
+            anyPositionInStraightPath(move, includeFromPos = false) { pos ->
+                pos.col == 'g'
+            }
+        )
     }
 
     @Test
     fun `anyPositionInStraightPath returns false if only toPos in the straight path matches predicate`() {
         val move = Move("Re2e6")
         assertTrue(move.isStraight())
-        assertFalse(anyPositionInStraightPath(move, includeFromPos = false) { pos ->
-            pos == Position('e', 6)
-        })
+        assertFalse(
+            anyPositionInStraightPath(move, includeFromPos = false) { pos ->
+                pos == Position('e', 6)
+            }
+        )
     }
 
     @Test
     fun `anyPositionInStraightPath returns true if only fromPos in the straight path matches predicate and it's included`() {
         val move = Move("Re2e6")
         assertTrue(move.isStraight())
-        assertTrue(anyPositionInStraightPath(move, includeFromPos = true) { pos ->
-            pos == Position('e', 2)
-        })
+        assertTrue(
+            anyPositionInStraightPath(move, includeFromPos = true) { pos ->
+                pos == Position('e', 2)
+            }
+        )
     }
 
     @Test
     fun `anyPositionInStraightPath returns false if only fromPos in the straight path matches predicate but it's not included`() {
         val move = Move("Re2e6")
         assertTrue(move.isStraight())
-        assertFalse(anyPositionInStraightPath(move, includeFromPos = false) { pos ->
-            pos == Position('e', 2)
-        })
+        assertFalse(
+            anyPositionInStraightPath(move, includeFromPos = false) { pos ->
+                pos == Position('e', 2)
+            }
+        )
     }
 
     @Test
@@ -80,54 +100,66 @@ class PathUtilsTests { // [✔]
     fun `anyPositionInDiagonalPath returns true if any position in the diagonal path matches predicate`() {
         val move = Move("Be2h5")
         assertTrue(move.isDiagonal())
-        assertTrue(anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
-            pos == Position('f', 3)
-        })
+        assertTrue(
+            anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
+                pos == Position('f', 3)
+            }
+        )
     }
 
     @Test
     fun `anyPositionInDiagonalPath returns true if multiple positions in the diagonal path match predicate`() {
         val move = Move("Be2h5")
         assertTrue(move.isDiagonal())
-        assertTrue(anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
-            pos.col in listOf('f', 'g')
-        })
+        assertTrue(
+            anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
+                pos.col in listOf('f', 'g')
+            }
+        )
     }
 
     @Test
     fun `anyPositionInDiagonalPath returns false if no position in the diagonal path matches predicate`() {
         val move = Move("Be2h5")
         assertTrue(move.isDiagonal())
-        assertFalse(anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
-            pos.col == 'c'
-        })
+        assertFalse(
+            anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
+                pos.col == 'c'
+            }
+        )
     }
 
     @Test
     fun `anyPositionInDiagonalPath returns false if only toPos in the diagonal path matches predicate`() {
         val move = Move("Be2h5")
         assertTrue(move.isDiagonal())
-        assertFalse(anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
-            pos == Position('h', 5)
-        })
+        assertFalse(
+            anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
+                pos == Position('h', 5)
+            }
+        )
     }
 
     @Test
     fun `anyPositionInDiagonalPath returns true if only fromPos in the diagonal path matches predicate and it's included`() {
         val move = Move("Be2h5")
         assertTrue(move.isDiagonal())
-        assertTrue(anyPositionInDiagonalPath(move, includeFromPos = true) { pos ->
-            pos == Position('e', 2)
-        })
+        assertTrue(
+            anyPositionInDiagonalPath(move, includeFromPos = true) { pos ->
+                pos == Position('e', 2)
+            }
+        )
     }
 
     @Test
     fun `anyPositionInDiagonalPath returns false if only fromPos in the diagonal path matches predicate but it's not included`() {
         val move = Move("Be2h5")
         assertTrue(move.isDiagonal())
-        assertFalse(anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
-            pos == Position('e', 2)
-        })
+        assertFalse(
+            anyPositionInDiagonalPath(move, includeFromPos = false) { pos ->
+                pos == Position('e', 2)
+            }
+        )
     }
 
     @Test
@@ -146,13 +178,13 @@ class PathUtilsTests { // [✔]
     fun `isStraightPathOccupied returns true if the straight path is occupied`() {
         val sut = Board(
             "        " +
-            "        " +
-            "        " +
-            "    b   " +
-            "    N   " +
-            "        " +
-            "    R   " +
-            "        "
+                "        " +
+                "        " +
+                "    b   " +
+                "    N   " +
+                "        " +
+                "    R   " +
+                "        "
         )
 
         val move = Move("Re2e5")
@@ -164,13 +196,13 @@ class PathUtilsTests { // [✔]
     fun `isStraightPathOccupied returns false if the straight path isn't occupied`() {
         val sut = Board(
             "        " +
-            "        " +
-            "        " +
-            "    b   " +
-            "        " +
-            "        " +
-            "    R   " +
-            "        "
+                "        " +
+                "        " +
+                "    b   " +
+                "        " +
+                "        " +
+                "    R   " +
+                "        "
         )
 
         val move = Move("Re2e5")
@@ -183,7 +215,7 @@ class PathUtilsTests { // [✔]
     @Test
     fun `isDiagonalPathOccupied returns true if the diagonal path is occupied`() {
         val sut = Board(
-                "        " +
+            "        " +
                 "     r  " +
                 "        " +
                 "   N    " +
@@ -201,7 +233,7 @@ class PathUtilsTests { // [✔]
     @Test
     fun `isDiagonalPathOccupied returns false if the diagonal path isn't occupied`() {
         val sut = Board(
-                "        " +
+            "        " +
                 "     r  " +
                 "        " +
                 "        " +
@@ -221,7 +253,7 @@ class PathUtilsTests { // [✔]
     @Test
     fun `isValidStraightMove returns true if the move is a valid straight move`() {
         val sut = Board(
-                "        " +
+            "        " +
                 "        " +
                 "        " +
                 "    b   " +
@@ -238,7 +270,7 @@ class PathUtilsTests { // [✔]
     @Test
     fun `isValidStraightMove returns false if the move is not a valid straight move`() {
         val sut = Board(
-                "        " +
+            "        " +
                 "        " +
                 "        " +
                 "    b   " +
@@ -257,7 +289,7 @@ class PathUtilsTests { // [✔]
     @Test
     fun `isValidDiagonalMove returns true if the move is a valid diagonal move`() {
         val sut = Board(
-                "        " +
+            "        " +
                 "     r  " +
                 "        " +
                 "        " +
@@ -274,7 +306,7 @@ class PathUtilsTests { // [✔]
     @Test
     fun `isValidDiagonalMove returns false if the move is not a valid diagonal move`() {
         val sut = Board(
-                "        " +
+            "        " +
                 "     r  " +
                 "        " +
                 "   N    " +

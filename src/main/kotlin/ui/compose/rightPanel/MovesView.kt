@@ -1,7 +1,10 @@
-package ui.compose.right_planel
+@file:Suppress("FunctionName")
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+package ui.compose.rightPanel
+
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import domain.game.Game
@@ -11,7 +14,6 @@ import ui.compose.FONT_SIZE
 // Constants
 const val MAX_MOVE_STRING_LENGTH = 8
 const val MAX_ROUND_STRING_LENGTH = 4
-
 
 /**
  * Composable used to display a column with the moves already made in a chess game.
@@ -27,7 +29,7 @@ fun MovesView(game: Game) {
                         val round = idx / 2
                         Text(
                             text = " ${"$round.".padStart(MAX_ROUND_STRING_LENGTH)} " +
-                                    "$move".padEnd(MAX_MOVE_STRING_LENGTH),
+                                "$move".padEnd(MAX_MOVE_STRING_LENGTH),
                             fontFamily = FONT_FAMILY,
                             fontSize = FONT_SIZE
                         )

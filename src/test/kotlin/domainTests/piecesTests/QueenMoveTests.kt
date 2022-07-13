@@ -1,20 +1,21 @@
 package domainTests.piecesTests
 
-import domain.board.*
-import kotlin.test.*
+import domain.board.Board
 import isValidMove
-
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class QueenMoveTests { // [✔]
     private val sut = Board(
         "        " +
-        "        " +
-        "        " +
-        " p      " +
-        "        " +
-        "        " +
-        " Q      " +
-        "       K"
+            "        " +
+            "        " +
+            " p      " +
+            "        " +
+            "        " +
+            " Q      " +
+            "       K"
     )
 
     @Test

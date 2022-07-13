@@ -1,9 +1,9 @@
 package domain.move
 
-import kotlin.math.abs
 import domain.board.Board.Position
-import domain.game.*
-
+import domain.game.Game
+import domain.game.searchMoves
+import kotlin.math.abs
 
 /**
  * Type of the move.
@@ -13,7 +13,6 @@ enum class MoveType {
     CASTLE,
     EN_PASSANT
 }
-
 
 /**
  * Chess move.
@@ -40,10 +39,9 @@ data class Move(
         private val normalMoveRegexRequiredFromPosition =
             "[PKQNBR]?([a-h][1-8])x?([a-h][1-8])(=[QNBR])?".toRegex().toString()
 
-
         /**
          * Constructs a move, extracting it from a String.
-         * 
+         *
          * This is the recommended way to create a move object since it saves the hassle of inserting the properties individually.
          *
          * This move is unvalidated in the context of a game. For that reason, it doesn't accept optional from position.
@@ -61,7 +59,6 @@ data class Move(
             return extractMoveInfo(moveInString).move
         }
 
-
         /**
          * Returns a move already validated in the context of a game.
          *
@@ -78,14 +75,14 @@ data class Move(
             extractedMove.apply {
                 if (validMoves.size != 1) throw IllegalMoveException(
                     toString(),
-                    if (optionalFromCol || optionalFromRow)
-                        "Try with origin column and row." else "Illegal move."
+                    if (optionalFromCol || optionalFromRow) {
+                        "Try with origin column and row."
+                    } else "Illegal move."
                 )
             }
 
             return validMoves.first()
         }
-
 
         /**
          * Checks if a move in String is correctly formatted.
@@ -94,7 +91,6 @@ data class Move(
          */
         fun isCorrectlyFormatted(moveInString: String) = moveRegex.containsMatchIn(moveInString)
     }
-
 
     /**
      * Return true if the movement is vertical
@@ -120,7 +116,6 @@ data class Move(
      */
     fun isDiagonal() = rowsAbsoluteDistance() == colsAbsoluteDistance() && rowsDistance() != 0
 
-
     /**
      * Calculates the distance between the rows from the move
      * @return distance between the rows
@@ -145,12 +140,11 @@ data class Move(
      */
     fun colsAbsoluteDistance(): Int = abs(colsDistance())
 
-
     override fun toString() =
-        if (type != MoveType.CASTLE)
+        if (type != MoveType.CASTLE) {
             "$symbol$from" +
-                    (if (capture) CAPTURE_CHAR else "") +
-                    "$to" +
-                    (if (promotion != null) "$PROMOTION_CHAR$promotion" else "") // ( ͡° ͜ʖ ͡°)
-        else if (to.col == SHORT_CASTLE_KING_COL) SHORT_CASTLE_STRING else LONG_CASTLE_STRING
+                (if (capture) CAPTURE_CHAR else "") +
+                "$to" +
+                (if (promotion != null) "$PROMOTION_CHAR$promotion" else "") // ( ͡° ͜ʖ ͡°)
+        } else if (to.col == SHORT_CASTLE_KING_COL) SHORT_CASTLE_STRING else LONG_CASTLE_STRING
 }

@@ -1,8 +1,7 @@
 package ui.console
 
-import domain.*
+import domain.Session
 import domain.game.armyToPlay
-
 
 /**
  * Returns the prompt indicating the game´s turn to the user
@@ -15,7 +14,6 @@ fun getPrompt(session: Session): String {
     return "${session.name}:${turn.first() + turn.substring(1).lowercase()}"
 }
 
-
 /**
  * Reads the command entered by the user
  * @return Pair of command and its arguments
@@ -27,7 +25,6 @@ fun readCommand(questString: String): Pair<String, String?> {
     val argument = if (' ' in input) input.substringAfterLast(' ') else null
     return Pair(command, argument)
 }
-
 
 /**
  * Let's use this while we don't get to Kotlin v1.6

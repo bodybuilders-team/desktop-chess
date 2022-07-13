@@ -1,10 +1,15 @@
 package domain.pieces
 
-import domain.board.*
+import domain.board.BLACK_FIRST_ROW
+import domain.board.Board
+import domain.board.Board.Position
+import domain.board.WHITE_FIRST_ROW
+import domain.move.Castle
+import domain.move.INITIAL_KING_COL
+import domain.move.LONG_CASTLE_KING_COL
+import domain.move.Move
+import domain.move.SHORT_CASTLE_KING_COL
 import domain.move.isStraightPathOccupied
-import domain.board.Board.*
-import domain.move.*
-
 
 /**
  * King piece with [type] 'K'.
@@ -20,9 +25,8 @@ data class King(override val army: Army) : Piece {
 
     override fun isValidMove(board: Board, move: Move) =
         move.rowsAbsoluteDistance() in NO_MOVE..ONE_MOVE &&
-                move.colsAbsoluteDistance() in NO_MOVE..ONE_MOVE &&
-                !(move.colsAbsoluteDistance() == NO_MOVE && move.rowsAbsoluteDistance() == NO_MOVE)
-
+            move.colsAbsoluteDistance() in NO_MOVE..ONE_MOVE &&
+            !(move.colsAbsoluteDistance() == NO_MOVE && move.rowsAbsoluteDistance() == NO_MOVE)
 
     /**
      * Checks if the castle move is valid.
@@ -35,8 +39,8 @@ data class King(override val army: Army) : Piece {
         val validKingToColsForCastle = listOf(LONG_CASTLE_KING_COL, SHORT_CASTLE_KING_COL)
 
         return move.isHorizontal() && move.from == validKingPositionForCastle &&
-                move.to.col in validKingToColsForCastle &&
-                board.getPiece(Castle.getRookPosition(move.to)) == Rook(army) &&
-                !isStraightPathOccupied(board, move.copy(to = Castle.getRookPosition(move.to)))
+            move.to.col in validKingToColsForCastle &&
+            board.getPiece(Castle.getRookPosition(move.to)) == Rook(army) &&
+            !isStraightPathOccupied(board, move.copy(to = Castle.getRookPosition(move.to)))
     }
 }

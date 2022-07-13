@@ -1,10 +1,11 @@
 package storage
 
 import com.mongodb.MongoException
-import domain.move.Move
 import com.mongodb.client.MongoDatabase
-import storage.mongodb.*
-
+import domain.move.Move
+import storage.mongodb.createDocument
+import storage.mongodb.getAllDocuments
+import storage.mongodb.replaceDocument
 
 /**
  * Tries to execute a code block. If a MongoException is caught, throws a GameStateAccessException.
@@ -17,9 +18,7 @@ suspend fun <T> tryDataBaseAccess(codeBlock: suspend () -> T) =
         throw GameStorageAccessException(err.message ?: "")
     }
 
-
 private const val GAMES_COLLECTION_ID = "games"
-
 
 /**
  * Storage game with name and played moves.
@@ -27,7 +26,6 @@ private const val GAMES_COLLECTION_ID = "games"
  * @property moves previously played moves
  */
 private data class StoredGame(val name: String, val moves: List<String>)
-
 
 /**
  * Implementation of GameState with MongoDB.
@@ -51,7 +49,8 @@ class MongoDBGameStorage(private val db: MongoDatabase) : GameStorage {
 
             db.replaceDocument(
                 GAMES_COLLECTION_ID,
-                "{name: \"$gameName\"}", oldStoredGame.copy(moves = oldStoredGame.moves + move.toString())
+                "{name: \"$gameName\"}",
+                oldStoredGame.copy(moves = oldStoredGame.moves + move.toString())
             )
         }
     }

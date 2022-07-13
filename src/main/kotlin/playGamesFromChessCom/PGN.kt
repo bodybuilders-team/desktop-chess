@@ -1,4 +1,4 @@
-package play_games_from_chess_com
+package playGamesFromChessCom
 
 import org.bson.json.JsonObject
 
@@ -32,14 +32,12 @@ data class PGN(val pgnInList: List<String>) {
     }
 }
 
-
 /**
  * From a json string, gets a list of PGN objects.
  * @param jsonString json in string
  * @return list of PGN objects
  */
 fun getPGNListFromJSON(jsonString: String) = getPGNListFromJSON(JsonObject(jsonString))
-
 
 /**
  * From a json object, gets a list of PGN objects.

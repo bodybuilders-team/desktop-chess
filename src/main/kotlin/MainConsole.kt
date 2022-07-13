@@ -1,10 +1,15 @@
+import domain.INITIAL_SESSION // ktlint-disable filename
 import domain.commands.CommandException
-import domain.INITIAL_SESSION
 import domain.move.IllegalMoveException
-import storage.*
+import storage.DbMode
+import storage.ENV_DB_NAME
+import storage.GameStorageAccessException
+import storage.MongoDBGameStorage
+import storage.getDBConnectionInfo
 import storage.mongodb.createMongoClient
-import ui.console.*
-
+import storage.tryDataBaseAccess
+import ui.console.getPrompt
+import ui.console.readCommand
 
 /**
  * The application entry point.
@@ -38,9 +43,9 @@ suspend fun main() {
                     val (command, parameter) = readCommand(getPrompt(session))
 
                     val handler = dispatcher[command]
-                    if (handler == null)
+                    if (handler == null) {
                         println("Invalid command")
-                    else {
+                    } else {
                         val result = handler.action(parameter)
                         if (result.isSuccess) {
                             session = result.getOrThrow()
@@ -57,12 +62,11 @@ suspend fun main() {
                     )
                 }
             }
-
         } catch (err: GameStorageAccessException) {
             println(
                 "An unknown error occurred while trying to reach the database. " +
-                        if (dbInfo.mode == DbMode.REMOTE) "Check your network connection."
-                        else "Is your local database started?"
+                    if (dbInfo.mode == DbMode.REMOTE) "Check your network connection."
+                    else "Is your local database started?"
             )
         } finally {
             println("BYE.")

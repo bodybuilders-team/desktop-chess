@@ -1,8 +1,8 @@
 package domain.pieces
 
-import domain.board.*
-import domain.move.*
-
+import domain.board.Board
+import domain.move.Move
+import domain.move.isValidStraightMove
 
 /**
  * Rook piece with [type] 'R'.

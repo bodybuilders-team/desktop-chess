@@ -1,12 +1,10 @@
 package storage
 
-
 /**
  * Environment variables
  */
 const val ENV_DB_NAME = "MONGO_DB_NAME"
 const val ENV_DB_CONNECTION = "MONGO_DB_CONNECTION"
-
 
 /**
  * Represents the supported execution modes:
@@ -14,7 +12,6 @@ const val ENV_DB_CONNECTION = "MONGO_DB_CONNECTION"
  *  @property REMOTE The database server is running remotely
  */
 enum class DbMode { LOCAL, REMOTE }
-
 
 /**
  * Represents the information required to connect to the database.
@@ -26,9 +23,8 @@ enum class DbMode { LOCAL, REMOTE }
 data class DBConnectionInfo(
     val mode: DbMode,
     val dbName: String,
-    val connectionString: String? = null,
+    val connectionString: String? = null
 )
-
 
 /**
  * Gets the information to connect to the database.

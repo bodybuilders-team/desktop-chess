@@ -1,8 +1,9 @@
 package domain.pieces
 
 import domain.board.Board
-import domain.move.*
-
+import domain.move.Move
+import domain.move.isValidDiagonalMove
+import domain.move.isValidStraightMove
 
 /**
  * Queen piece with [type] 'Q'.

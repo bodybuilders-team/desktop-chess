@@ -1,8 +1,9 @@
 package domainTests.boardTests
 
 import domain.board.Board
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class BoardPositionTests { // [✔]
 
@@ -24,7 +25,6 @@ class BoardPositionTests { // [✔]
     fun `Position with column and row inside bounds works`() {
         Board.Position(col = 'a', row = 5)
     }
-
 
     @Test
     fun `Position toString works`() {

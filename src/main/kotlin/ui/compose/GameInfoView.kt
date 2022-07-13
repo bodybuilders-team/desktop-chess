@@ -1,16 +1,26 @@
+@file:Suppress("FunctionName")
+
 package ui.compose
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.*
-import domain.*
-import domain.game.*
-import ui.compose.board.*
-
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import domain.NO_NAME
+import domain.Session
+import domain.game.GameState
+import domain.game.armyToPlay
+import domain.game.endedInDraw
+import domain.game.state
+import ui.compose.board.BOARD_WIDTH
+import ui.compose.board.LIGHT_TILE_COLOR
+import ui.compose.board.ROWS_IDENTIFIER_WIDTH
 
 // Constants
 val GAME_INFO_HEIGHT = 72.dp * WINDOW_SCALE
@@ -22,7 +32,6 @@ private val GAME_INFO_FONT_COLOR = Color.Black
 private val GAME_INFO_CHECK_FONT_COLOR = Color(0xFFFF4500)
 private val GAME_INFO_CHECKMATE_FONT_COLOR = Color.Red
 private val GAME_INFO_TIE_FONT_COLOR = Color.Blue
-
 
 /**
  * Composable used to display additional information related to the game.
@@ -50,29 +59,29 @@ fun GameInfoView(session: Session) {
         )
         Text(
             text = "Info: " +
-                    if (session.game.endedInDraw()) {
-                        "Draw " +
-                                when (session.game.state) {
-                                    GameState.STALEMATE         -> "by stalemate"
-                                    GameState.FIFTY_MOVE_RULE   -> "by fifty-move-rule"
-                                    GameState.THREE_FOLD        -> "by repetition"
-                                    GameState.DEAD_POSITION     -> "by insufficient material"
-                                    else -> ""
-                                }
-                    } else {
-                        session.game.state.toString()
-                            .replace("_", " ")
-                            .lowercase()
-                            .replaceFirstChar { it.uppercaseChar() }
-                    },
+                if (session.game.endedInDraw()) {
+                    "Draw " +
+                        when (session.game.state) {
+                            GameState.STALEMATE -> "by stalemate"
+                            GameState.FIFTY_MOVE_RULE -> "by fifty-move-rule"
+                            GameState.THREE_FOLD -> "by repetition"
+                            GameState.DEAD_POSITION -> "by insufficient material"
+                            else -> ""
+                        }
+                } else {
+                    session.game.state.toString()
+                        .replace("_", " ")
+                        .lowercase()
+                        .replaceFirstChar { it.uppercaseChar() }
+                },
             color = when (session.game.state) {
-                GameState.CHECK             -> GAME_INFO_CHECK_FONT_COLOR
-                GameState.CHECKMATE         -> GAME_INFO_CHECKMATE_FONT_COLOR
-                GameState.STALEMATE         -> GAME_INFO_TIE_FONT_COLOR
-                GameState.FIFTY_MOVE_RULE   -> GAME_INFO_TIE_FONT_COLOR
-                GameState.THREE_FOLD        -> GAME_INFO_TIE_FONT_COLOR
-                GameState.DEAD_POSITION     -> GAME_INFO_TIE_FONT_COLOR
-                else                        -> GAME_INFO_FONT_COLOR
+                GameState.CHECK -> GAME_INFO_CHECK_FONT_COLOR
+                GameState.CHECKMATE -> GAME_INFO_CHECKMATE_FONT_COLOR
+                GameState.STALEMATE -> GAME_INFO_TIE_FONT_COLOR
+                GameState.FIFTY_MOVE_RULE -> GAME_INFO_TIE_FONT_COLOR
+                GameState.THREE_FOLD -> GAME_INFO_TIE_FONT_COLOR
+                GameState.DEAD_POSITION -> GAME_INFO_TIE_FONT_COLOR
+                else -> GAME_INFO_FONT_COLOR
             },
             fontFamily = FONT_FAMILY,
             fontSize = GAME_INFO_FONT_SIZE

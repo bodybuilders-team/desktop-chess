@@ -1,4 +1,4 @@
-package play_games_from_chess_com
+package playGamesFromChessCom
 
 import domain.game.makeMoves
 import domain.move.IllegalMoveException
@@ -6,7 +6,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-
 
 /**
  * Plays extracted games, catching [IllegalMoveException]s.
@@ -21,8 +20,9 @@ fun MonthExtraction.playExtractedGames(): Float {
 
     games.forEachIndexed { gameNum, extractedGame ->
         try {
-            if (extractedGame.movesToMake.isNotEmpty())
+            if (extractedGame.movesToMake.isNotEmpty()) {
                 extractedGame.game.makeMoves(extractedGame.movesToMake.split(" "))
+            }
 
             successfullyPlayedGames++
         } catch (err: IllegalMoveException) {
@@ -37,7 +37,7 @@ fun MonthExtraction.playExtractedGames(): Float {
 
 /**
  * Plays extracted games.
- * 
+ *
  * Uses multi-threading to play multiple games at once.
  *
  * @return percentage of successfully played games
@@ -50,7 +50,6 @@ fun PlayerExtraction.playExtractedGames() =
             }
         }.awaitAll().average()
     }
-
 
 fun main() {
     val grandMasters = getPlayersFromTitle("GM").take(4)

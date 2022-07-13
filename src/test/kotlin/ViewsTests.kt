@@ -1,130 +1,216 @@
-import domain.game.*
 import domain.Session
 import domain.SessionState
-import ui.console.*
-
+import domain.game.gameFromMoves
+import ui.console.View
+import ui.console.helpView
+import ui.console.joinView
+import ui.console.movesView
+import ui.console.openView
+import ui.console.playView
+import ui.console.refreshView
 
 object ViewsTests { // []
     data class ViewTest(val view: View, val name: String, val session: Session)
 
     private val defaultSession = Session(name = "test", SessionState.YOUR_TURN, gameFromMoves())
-    
-    fun openViewTests(){
-        testViews(listOf(
-            ViewTest(::openView, "Open game without check",
-                defaultSession.copy(state = SessionState.YOUR_TURN, game = gameFromMoves())),
 
-            ViewTest(::openView, "Open game with enemy in check",
-                defaultSession.copy(state = SessionState.WAITING_FOR_OPPONENT, game = defaultGameResultingInBlackCheck)),
+    fun openViewTests() {
+        testViews(
+            listOf(
+                ViewTest(
+                    ::openView,
+                    "Open game without check",
+                    defaultSession.copy(state = SessionState.YOUR_TURN, game = gameFromMoves())
+                ),
 
-            ViewTest(::openView, "Open game with your army in check",
-                defaultSession.copy(state = SessionState.YOUR_TURN, game = defaultGameResultingInWhiteCheck)),
+                ViewTest(
+                    ::openView,
+                    "Open game with enemy in check",
+                    defaultSession.copy(
+                        state = SessionState.WAITING_FOR_OPPONENT,
+                        game = defaultGameResultingInBlackCheck
+                    )
+                ),
 
-            ViewTest(::openView, "Open game with checkmate",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInCheckMate)),
+                ViewTest(
+                    ::openView,
+                    "Open game with your army in check",
+                    defaultSession.copy(state = SessionState.YOUR_TURN, game = defaultGameResultingInWhiteCheck)
+                ),
 
-            ViewTest(::openView, "Open game with stalemate",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInStaleMate))
+                ViewTest(
+                    ::openView,
+                    "Open game with checkmate",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInCheckMate)
+                ),
 
-            /*
-            TODO Ties
-            ViewTest(::openView, "Open game with dead position",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInDeadPosition)),
-            
-            ViewTest(::openView, "Open game with three-fold repetition",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInThreeFoldRepetition))
-            */
-        ))
+                ViewTest(
+                    ::openView,
+                    "Open game with stalemate",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInStaleMate)
+                )
+
+                /*
+                TODO Ties
+                ViewTest(::openView, "Open game with dead position",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInDeadPosition)),
+
+                ViewTest(::openView, "Open game with three-fold repetition",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInThreeFoldRepetition))
+                */
+            )
+        )
     }
 
-    fun joinViewTests(){
-        testViews(listOf(
-            ViewTest(::joinView, "Join game without check",
-                defaultSession.copy(state = SessionState.YOUR_TURN, game = gameFromMoves())),
+    fun joinViewTests() {
+        testViews(
+            listOf(
+                ViewTest(
+                    ::joinView,
+                    "Join game without check",
+                    defaultSession.copy(state = SessionState.YOUR_TURN, game = gameFromMoves())
+                ),
 
-            ViewTest(::joinView, "Join game with your army  in check",
-                defaultSession.copy(state = SessionState.YOUR_TURN, game = defaultGameResultingInBlackCheck)),
+                ViewTest(
+                    ::joinView,
+                    "Join game with your army  in check",
+                    defaultSession.copy(state = SessionState.YOUR_TURN, game = defaultGameResultingInBlackCheck)
+                ),
 
-            ViewTest(::joinView, "Join game with enemy in check",
-                defaultSession.copy(state = SessionState.WAITING_FOR_OPPONENT, game = defaultGameResultingInWhiteCheck)),
+                ViewTest(
+                    ::joinView,
+                    "Join game with enemy in check",
+                    defaultSession.copy(
+                        state = SessionState.WAITING_FOR_OPPONENT,
+                        game = defaultGameResultingInWhiteCheck
+                    )
+                ),
 
-            ViewTest(::joinView, "Join game with checkmate",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInCheckMate)),
+                ViewTest(
+                    ::joinView,
+                    "Join game with checkmate",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInCheckMate)
+                ),
 
-            ViewTest(::joinView, "Join game with stalemate",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInStaleMate)),
+                ViewTest(
+                    ::joinView,
+                    "Join game with stalemate",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInStaleMate)
+                )
 
-            /*
-            TODO Ties
-            ViewTest(::joinView, "Join game with dead position",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInDeadPosition)),
-            
-            ViewTest(::joinView, "Join game with three-fold repetition",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInThreeFoldRepetition))
-            */
-        ))
+                /*
+                TODO Ties
+                ViewTest(::joinView, "Join game with dead position",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInDeadPosition)),
+
+                ViewTest(::joinView, "Join game with three-fold repetition",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInThreeFoldRepetition))
+                */
+            )
+        )
     }
 
-    fun playViewTests(){
-        testViews(listOf(
-            ViewTest(::playView, "Play didn't originate check",
-                defaultSession.copy(state = SessionState.WAITING_FOR_OPPONENT, game = gameFromMoves("Pe2e4"))),
+    fun playViewTests() {
+        testViews(
+            listOf(
+                ViewTest(
+                    ::playView,
+                    "Play didn't originate check",
+                    defaultSession.copy(state = SessionState.WAITING_FOR_OPPONENT, game = gameFromMoves("Pe2e4"))
+                ),
 
-            ViewTest(::playView, "Play originated a check",
-                defaultSession.copy(state = SessionState.WAITING_FOR_OPPONENT, game = defaultGameResultingInBlackCheck)),
+                ViewTest(
+                    ::playView,
+                    "Play originated a check",
+                    defaultSession.copy(
+                        state = SessionState.WAITING_FOR_OPPONENT,
+                        game = defaultGameResultingInBlackCheck
+                    )
+                ),
 
-            ViewTest(::playView, "Play originated a checkmate",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInCheckMate)),
+                ViewTest(
+                    ::playView,
+                    "Play originated a checkmate",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInCheckMate)
+                ),
 
-            ViewTest(::playView, "Play originated a stalemate",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInStaleMate))
-        
-            /*
-            TODO Ties
-            ViewTest(::playView, "Play originated a dead position",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInDeadPosition)),
-            ViewTest(::playView, "Play originated a three-fold repetition",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInThreeFoldRepetition))
-            */
-        ))
+                ViewTest(
+                    ::playView,
+                    "Play originated a stalemate",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInStaleMate)
+                )
+
+                /*
+                TODO Ties
+                ViewTest(::playView, "Play originated a dead position",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInDeadPosition)),
+                ViewTest(::playView, "Play originated a three-fold repetition",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInThreeFoldRepetition))
+                */
+            )
+        )
     }
 
-    fun refreshViewTests(){
-        testViews(listOf(
-            ViewTest(::refreshView, "Refresh game without check and it's your turn",
-                defaultSession.copy(state = SessionState.YOUR_TURN, game = gameFromMoves("Pe2e4"))),
+    fun refreshViewTests() {
+        testViews(
+            listOf(
+                ViewTest(
+                    ::refreshView,
+                    "Refresh game without check and it's your turn",
+                    defaultSession.copy(state = SessionState.YOUR_TURN, game = gameFromMoves("Pe2e4"))
+                ),
 
-            ViewTest(::refreshView, "Refresh game with check",
-                defaultSession.copy(state = SessionState.YOUR_TURN, game = defaultGameResultingInBlackCheck)),
+                ViewTest(
+                    ::refreshView,
+                    "Refresh game with check",
+                    defaultSession.copy(state = SessionState.YOUR_TURN, game = defaultGameResultingInBlackCheck)
+                ),
 
-            ViewTest(::refreshView, "Refresh game with checkmate",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInCheckMate)),
+                ViewTest(
+                    ::refreshView,
+                    "Refresh game with checkmate",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInCheckMate)
+                ),
 
-            ViewTest(::refreshView, "Refresh game with stalemate",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInStaleMate))
+                ViewTest(
+                    ::refreshView,
+                    "Refresh game with stalemate",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInStaleMate)
+                )
 
-            /*
-            TODO Ties
-            ViewTest(::refreshView, "Refresh game with dead position",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInDeadPosition)),
-            ViewTest(::refreshView, "Refresh with a three-fold repetition",
-                defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInThreeFoldRepetition))
-            */
-        ))
+                /*
+                TODO Ties
+                ViewTest(::refreshView, "Refresh game with dead position",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInDeadPosition)),
+                ViewTest(::refreshView, "Refresh with a three-fold repetition",
+                    defaultSession.copy(state = SessionState.ENDED, game = defaultGameResultingInThreeFoldRepetition))
+                */
+            )
+        )
     }
-    
-    fun movesViewTests(){
-        testViews(listOf(
-            ViewTest(::movesView, "Moves",
-                defaultSession.copy(game = defaultGameResultingInCheckMate))
-        ))
+
+    fun movesViewTests() {
+        testViews(
+            listOf(
+                ViewTest(
+                    ::movesView,
+                    "Moves",
+                    defaultSession.copy(game = defaultGameResultingInCheckMate)
+                )
+            )
+        )
     }
 
-    fun helpViewTests(){
-        testViews(listOf(
-            ViewTest(::helpView, "Help",
-                defaultSession)
-        ))
+    fun helpViewTests() {
+        testViews(
+            listOf(
+                ViewTest(
+                    ::helpView,
+                    "Help",
+                    defaultSession
+                )
+            )
+        )
     }
 
     private fun testViews(views: List<ViewTest>) {
@@ -139,7 +225,7 @@ object ViewsTests { // []
     }
 }
 
-fun main(){
+fun main() {
     ViewsTests.openViewTests()
     ViewsTests.joinViewTests()
     ViewsTests.playViewTests()

@@ -1,8 +1,13 @@
 package domain.board
 
-import domain.move.*
-import domain.pieces.*
-
+import domain.move.Castle
+import domain.move.IllegalMoveException
+import domain.move.Move
+import domain.move.MoveType
+import domain.move.getEnPassantCapturedPawnPosition
+import domain.pieces.Army
+import domain.pieces.Piece
+import domain.pieces.getPieceFromSymbol
 
 // Board properties constants
 const val BOARD_SIDE_LENGTH = 8
@@ -19,14 +24,13 @@ val ROWS_RANGE = FIRST_ROW..LAST_ROW
 
 const val STRING_DEFAULT_BOARD =
     "rnbqkbnr" +
-    "pppppppp" +
-    "        " +
-    "        " +
-    "        " +
-    "        " +
-    "PPPPPPPP" +
-    "RNBQKBNR"
-
+        "pppppppp" +
+        "        " +
+        "        " +
+        "        " +
+        "        " +
+        "PPPPPPPP" +
+        "RNBQKBNR"
 
 /**
  * Returns list of pieces from received string board.
@@ -42,7 +46,6 @@ fun getPiecesFromString(stringBoard: String): List<Piece?> {
         else getPieceFromSymbol(char.uppercaseChar(), if (char.isUpperCase()) Army.WHITE else Army.BLACK)
     }
 }
-
 
 /**
  * Places/Removes the other piece from a special move.
@@ -66,7 +69,6 @@ fun Board.placePieceFromSpecialMoves(move: Move, piece: Piece) =
         MoveType.EN_PASSANT -> removePiece(getEnPassantCapturedPawnPosition(move.to, piece))
         MoveType.NORMAL -> this
     }
-
 
 /**
  * Returns a new list with element at index [at] replaced by [new].

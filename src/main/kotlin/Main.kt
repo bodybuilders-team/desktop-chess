@@ -1,7 +1,10 @@
-import androidx.compose.ui.window.*
-import storage.*
+import androidx.compose.ui.window.application
+import storage.DbMode
+import storage.ENV_DB_NAME
+import storage.MongoDBGameStorage
+import storage.getDBConnectionInfo
 import storage.mongodb.createMongoClient
-import ui.compose.*
+import ui.compose.MainWindow
 
 /**
  * The application entry point.
@@ -15,7 +18,7 @@ fun main() {
     val dbInfo = getDBConnectionInfo()
     val driver = createMongoClient(if (dbInfo.mode == DbMode.REMOTE) dbInfo.connectionString else null)
 
-    //val gameStorage = GameStorageStub()
+    // val gameStorage = GameStorageStub()
 
     driver.use {
         val gameStorage = MongoDBGameStorage(driver.getDatabase(System.getenv(ENV_DB_NAME)))

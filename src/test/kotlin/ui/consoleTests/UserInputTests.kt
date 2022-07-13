@@ -1,11 +1,13 @@
 package ui.consoleTests
 
-import domain.*
-import domain.game.*
-import domain.board.*
+import domain.Session
+import domain.SessionState
+import domain.board.Board
+import domain.game.Game
+import domain.game.gameFromMoves
 import ui.console.getPrompt
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class UserInputTests { // [✔]
 

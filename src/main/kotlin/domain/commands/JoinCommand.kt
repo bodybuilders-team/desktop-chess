@@ -1,9 +1,9 @@
 package domain.commands
 
-import domain.*
+import domain.Session
+import domain.getOpeningBoardSession
 import domain.pieces.Army
 import storage.GameStorage
-
 
 /**
  * Used by a second user to open the game with the received name.
@@ -18,7 +18,7 @@ class JoinCommand(private val db: GameStorage) : Command {
         cmdRequire(db.gameExists(parameter)) { "A game with the name \"$parameter\" does not exist: try open command." }
 
         val moves = db.getAllMoves(parameter)
-        
+
         return Result.success(getOpeningBoardSession(gameName = parameter, moves, Army.BLACK))
     }
 }

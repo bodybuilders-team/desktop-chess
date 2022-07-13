@@ -1,9 +1,8 @@
 package domain.commands
 
-import domain.*
+import domain.Session
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-
 
 /**
  * Representation of command
@@ -23,13 +22,11 @@ fun interface Command {
     suspend operator fun invoke(parameter: String? = null) = execute(parameter)
 }
 
-
 /**
  * Exception thrown when an error occurs while executing a command.
  * @param message cause of the error
  */
 class CommandException(override val message: String?) : Exception(message)
-
 
 /**
  * Throws an [CommandException] with the result of calling [lazyMessage] if the [value] is false.
@@ -37,7 +34,6 @@ class CommandException(override val message: String?) : Exception(message)
 fun cmdRequire(value: Boolean, lazyMessage: () -> Any) {
     if (!value) throw CommandException(lazyMessage().toString())
 }
-
 
 /**
  * Throws an [CommandException] with the result of calling lazyMessage if the value is null.

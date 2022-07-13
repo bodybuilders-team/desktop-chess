@@ -2,7 +2,6 @@ package storage
 
 import domain.move.Move
 
-
 /**
  * [GameStorage] implementation for testing.
  */

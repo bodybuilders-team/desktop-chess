@@ -1,19 +1,32 @@
+@file:Suppress("FunctionName")
+
 package ui.compose.board
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import domain.Session
-import domain.board.*
-import domain.board.Board.*
-import domain.*
+import domain.SessionState
+import domain.board.BOARD_SIDE_LENGTH
+import domain.board.Board.Position
+import domain.board.FIRST_COL
+import domain.board.LAST_ROW
+import domain.isLogging
+import domain.isPlayable
 import domain.move.Move
 import ui.compose.FONT_FAMILY
 import ui.compose.WINDOW_SCALE
-
 
 // Constants
 val BOARD_HEIGHT = TILE_SIZE * BOARD_SIDE_LENGTH
@@ -24,7 +37,6 @@ val COLUMNS_IDENTIFIER_HEIGHT = 34.dp * WINDOW_SCALE
 
 private val CHARACTER_SIZE = 24.sp * WINDOW_SCALE
 private val ROWS_COLS_FONT_COLOR = Color.White
-
 
 /**
  * Composable used to display a Chess Board.
@@ -82,13 +94,14 @@ fun BoardView(
         }
     }
 
-    if (session.isPlayable() && moveTakingPlace != null)
+    if (session.isPlayable() && moveTakingPlace != null) {
         onMakeMoveRequest()
+    }
 
-    if (session.state == SessionState.ENDED)
+    if (session.state == SessionState.ENDED) {
         EndGamePopUp(session)
+    }
 }
-
 
 /**
  * Composable used to display chess board column letters.
@@ -111,7 +124,6 @@ fun ColumnsIdentifierView() {
         }
     }
 }
-
 
 /**
  * Composable used to display chess board row numbers.

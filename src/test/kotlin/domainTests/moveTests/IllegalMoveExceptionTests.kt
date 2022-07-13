@@ -1,8 +1,9 @@
 package domainTests.moveTests
 
 import domain.move.IllegalMoveException
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class IllegalMoveExceptionTests { // [✔]
 

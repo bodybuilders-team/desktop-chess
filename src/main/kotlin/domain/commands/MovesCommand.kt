@@ -1,8 +1,8 @@
 package domain.commands
 
-import domain.*
+import domain.Session
+import domain.isNotLogging
 import storage.GameStorage
-
 
 /**
  * Gets all moves made since the beginning of the game

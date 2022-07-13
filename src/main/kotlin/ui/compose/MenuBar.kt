@@ -1,9 +1,14 @@
+@file:Suppress("FunctionName")
+
 package ui.compose
 
-import androidx.compose.runtime.*
-import androidx.compose.ui.window.*
-import domain.*
-
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.window.FrameWindowScope
+import androidx.compose.ui.window.MenuBar
+import domain.Session
+import domain.isLogging
+import domain.isNotLogging
+import domain.isWaiting
 
 /**
  * Window Menu Bar.

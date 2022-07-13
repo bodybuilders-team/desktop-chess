@@ -1,11 +1,14 @@
 package storageTests
 
-import storage.GameStorageStub
-import domain.move.*
+import domain.move.Move
 import kotlinx.coroutines.runBlocking
 import listOfMoves
-import kotlin.test.*
-
+import storage.GameStorageStub
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class GameStorageTests {
 
@@ -42,7 +45,7 @@ class GameStorageTests {
             )
         }
     }
-    
+
     // postMove [✔]
 
     @Test
@@ -76,7 +79,7 @@ class GameStorageTests {
             )
         }
     }
-    
+
     // createGame [✔]
 
     @Test
@@ -106,7 +109,7 @@ class GameStorageTests {
             )
         }
     }
-    
+
     // gameExists [✔]
 
     @Test

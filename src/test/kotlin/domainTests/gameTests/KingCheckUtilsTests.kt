@@ -1,10 +1,17 @@
 package domainTests.gameTests
 
 import domain.board.Board
-import domain.game.*
+import domain.game.canKingMove
+import domain.game.getAdjacentPositions
+import domain.game.getKingPosition
+import domain.game.isKingProtectable
+import domain.game.positionAttackers
 import domain.pieces.Army
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class KingCheckUtilsTests { // [✔]
 
@@ -14,13 +21,13 @@ class KingCheckUtilsTests { // [✔]
     fun `isKingProtectable returns true if king is protectable and the attacking move is vertical`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "    P   " +
-                    "        " +
-                    "    q   " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNBQKBNR"
+                "pppppppp" +
+                "    P   " +
+                "        " +
+                "    q   " +
+                "        " +
+                "PPPP PPP" +
+                "RNBQKBNR"
         )
 
         assertTrue(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
@@ -30,13 +37,13 @@ class KingCheckUtilsTests { // [✔]
     fun `isKingProtectable returns false if king isn't protectable and the attacking move is vertical`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "    P   " +
-                    "    q   " +
-                    "    K   " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNBQ BNR"
+                "pppppppp" +
+                "    P   " +
+                "    q   " +
+                "    K   " +
+                "        " +
+                "PPPP PPP" +
+                "RNBQ BNR"
         )
 
         assertFalse(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
@@ -46,13 +53,13 @@ class KingCheckUtilsTests { // [✔]
     fun `isKingProtectable returns true if king is protectable and the attacking move is horizontal`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "    P   " +
-                    "        " +
-                    "        " +
-                    "    K  r" +
-                    "PPPP PPP" +
-                    "RNBQ BNR"
+                "pppppppp" +
+                "    P   " +
+                "        " +
+                "        " +
+                "    K  r" +
+                "PPPP PPP" +
+                "RNBQ BNR"
         )
 
         assertTrue(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
@@ -62,13 +69,13 @@ class KingCheckUtilsTests { // [✔]
     fun `isKingProtectable returns false if king isn't protectable and the attacking move is horizontal`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "        " +
-                    "    K  r" +
-                    "        " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNB QBNR"
+                "pppppppp" +
+                "        " +
+                "    K  r" +
+                "        " +
+                "        " +
+                "PPPP PPP" +
+                "RNB QBNR"
         )
 
         assertFalse(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
@@ -78,13 +85,13 @@ class KingCheckUtilsTests { // [✔]
     fun `isKingProtectable returns true if king is protectable and the attacking move is diagonal`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "    P   " +
-                    "      b " +
-                    "        " +
-                    "    K   " +
-                    "PPPP PPP" +
-                    "RNBQ BNR"
+                "pppppppp" +
+                "    P   " +
+                "      b " +
+                "        " +
+                "    K   " +
+                "PPPP PPP" +
+                "RNBQ BNR"
         )
 
         assertTrue(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
@@ -94,13 +101,13 @@ class KingCheckUtilsTests { // [✔]
     fun `isKingProtectable returns false if king isn't protectable and the attacking move is diagonal`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "    P   " +
-                    "      b " +
-                    "        " +
-                    "    K   " +
-                    "PPPP  PP" +
-                    "RNBQ BNR"
+                "pppppppp" +
+                "    P   " +
+                "      b " +
+                "        " +
+                "    K   " +
+                "PPPP  PP" +
+                "RNBQ BNR"
         )
 
         assertFalse(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
@@ -110,13 +117,13 @@ class KingCheckUtilsTests { // [✔]
     fun `isKingProtectable returns true if king is protectable and the attacking move is from a horse`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "    P   " +
-            "        " +
-            "      n " +
-            "    K  P" +
-            "PPPP PPP" +
-            "RNBQ BNR"
+                "pppppppp" +
+                "    P   " +
+                "        " +
+                "      n " +
+                "    K  P" +
+                "PPPP PPP" +
+                "RNBQ BNR"
         )
 
         assertTrue(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
@@ -126,13 +133,13 @@ class KingCheckUtilsTests { // [✔]
     fun `isKingProtectable returns false if king isn't protectable and the attacking move is from a horse`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "    P   " +
-            "        " +
-            "      n " +
-            "    K   " +
-            "PPPPPPPP" +
-            "RNBQ BNR"
+                "pppppppp" +
+                "    P   " +
+                "        " +
+                "      n " +
+                "    K   " +
+                "PPPPPPPP" +
+                "RNBQ BNR"
         )
 
         assertFalse(sut.isKingProtectable(sut.getKingPosition(army = Army.WHITE), army = Army.WHITE))
@@ -144,13 +151,13 @@ class KingCheckUtilsTests { // [✔]
     fun `canKingMove returns true if all adjacent pieces are empty and not attacked`() {
         val sut = Board(
             "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "   K    " +
-                    "        " +
-                    "        " +
-                    "        "
+                "        " +
+                "        " +
+                "        " +
+                "   K    " +
+                "        " +
+                "        " +
+                "        "
         )
 
         assertTrue(sut.canKingMove(sut.getKingPosition(Army.WHITE), Army.WHITE))
@@ -160,13 +167,13 @@ class KingCheckUtilsTests { // [✔]
     fun `canKingMove returns false if all adjacent pieces are of the same army`() {
         val sut = Board(
             "        " +
-                    "        " +
-                    "        " +
-                    "  PPP   " +
-                    "  PKP   " +
-                    "  PPP   " +
-                    "        " +
-                    "        "
+                "        " +
+                "        " +
+                "  PPP   " +
+                "  PKP   " +
+                "  PPP   " +
+                "        " +
+                "        "
         )
 
         assertFalse(sut.canKingMove(sut.getKingPosition(Army.WHITE), Army.WHITE))
@@ -176,13 +183,13 @@ class KingCheckUtilsTests { // [✔]
     fun `canKingMove returns true if at least one adjacent piece is of the other army and not attacked`() {
         val sut = Board(
             "        " +
-                    "        " +
-                    "        " +
-                    "  PPP   " +
-                    "  rKP   " +
-                    "  PPP   " +
-                    "        " +
-                    "        "
+                "        " +
+                "        " +
+                "  PPP   " +
+                "  rKP   " +
+                "  PPP   " +
+                "        " +
+                "        "
         )
 
         assertTrue(sut.canKingMove(sut.getKingPosition(Army.WHITE), Army.WHITE))
@@ -192,13 +199,13 @@ class KingCheckUtilsTests { // [✔]
     fun `canKingMove returns false if the only adjacent position unoccupied by pieces of the same army is attacked`() {
         val sut = Board(
             "        " +
-                    "        " +
-                    "        " +
-                    "  PPP   " +
-                    "   KP   " +
-                    "  PPP   " +
-                    "b       " +
-                    "        "
+                "        " +
+                "        " +
+                "  PPP   " +
+                "   KP   " +
+                "  PPP   " +
+                "b       " +
+                "        "
         )
 
         assertFalse(sut.canKingMove(sut.getKingPosition(Army.WHITE), Army.WHITE))
@@ -208,13 +215,13 @@ class KingCheckUtilsTests { // [✔]
     fun `canKingMove returns false if all adjacent positions are attacked`() {
         val sut = Board(
             "        " +
-                    "        " +
-                    "  q r   " +
-                    "        " +
-                    "   K    " +
-                    "       r" +
-                    "   N    " +
-                    "        "
+                "        " +
+                "  q r   " +
+                "        " +
+                "   K    " +
+                "       r" +
+                "   N    " +
+                "        "
         )
 
         assertFalse(sut.canKingMove(sut.getKingPosition(Army.WHITE), Army.WHITE))
@@ -224,13 +231,13 @@ class KingCheckUtilsTests { // [✔]
     fun `canKingMove returns false if an adjacent piece is of the other army but the position is attacked`() {
         val sut = Board(
             "        " +
-            "        " +
-            "   br   " +
-            "  q     " +
-            "   K    " +
-            "       r" +
-            "   N    " +
-            "        "
+                "        " +
+                "   br   " +
+                "  q     " +
+                "   K    " +
+                "       r" +
+                "   N    " +
+                "        "
         )
 
         assertFalse(sut.canKingMove(sut.getKingPosition(Army.WHITE), Army.WHITE))
@@ -240,40 +247,40 @@ class KingCheckUtilsTests { // [✔]
     fun `canKingMove with king in corner doesn't throw`() {
         val sut = listOf(
             "       K" +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "   q    " +
-                    "        ",
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "   q    " +
+                "        ",
 
             "K       " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "   q    " +
-                    "        ",
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "   q    " +
+                "        ",
 
             "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "   q    " +
-                    "K       ",
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "   q    " +
+                "K       ",
 
             "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "   q    " +
-                    "       K"
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "   q    " +
+                "       K"
         ).map { stringBoard -> Board(stringBoard) }
 
         sut.forEach { board ->
@@ -287,13 +294,13 @@ class KingCheckUtilsTests { // [✔]
     fun `positionAttackers size is 2 if two enemy pieces attack the occupied position`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "    P   " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNBQKBNR"
+                "pppppppp" +
+                "    P   " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPP PPP" +
+                "RNBQKBNR"
         )
 
         val position = Board.Position('e', 6)
@@ -306,13 +313,13 @@ class KingCheckUtilsTests { // [✔]
     fun `positionAttackers is empty if no piece attacks the occupied position`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "    P   " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNBQKBNR"
+                "pppppppp" +
+                "    P   " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPP PPP" +
+                "RNBQKBNR"
         )
 
         val position = Board.Position('e', 4)
@@ -325,13 +332,13 @@ class KingCheckUtilsTests { // [✔]
     fun `positionAttackers size is 1 if one enemy piece attacks the empty position`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppp ppp" +
-                    "        " +
-                    "    p   " +
-                    "        " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNBQKBNR"
+                "pppp ppp" +
+                "        " +
+                "    p   " +
+                "        " +
+                "        " +
+                "PPPP PPP" +
+                "RNBQKBNR"
         )
 
         val position = Board.Position('e', 4)
@@ -344,13 +351,13 @@ class KingCheckUtilsTests { // [✔]
     fun `positionAttackers is empty if no piece attacks the empty position`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "PPPP PPP" +
-                    "RNBQKBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPP PPP" +
+                "RNBQKBNR"
         )
 
         val position = Board.Position('e', 4)
@@ -365,13 +372,13 @@ class KingCheckUtilsTests { // [✔]
     fun `getKingPosition returns position of king of specified army`() {
         val sut = Board(
             "        " +
-                    "        " +
-                    "        " +
-                    "  q     " +
-                    "        " +
-                    "   K    " +
-                    "    N   " +
-                    "        "
+                "        " +
+                "        " +
+                "  q     " +
+                "        " +
+                "   K    " +
+                "    N   " +
+                "        "
         )
 
         assertEquals(Board.Position('d', 3), sut.getKingPosition(army = Army.WHITE))
@@ -381,13 +388,13 @@ class KingCheckUtilsTests { // [✔]
     fun `getKingPosition throws if king of specified army isn't found`() {
         val sut = Board(
             "        " +
-                    "        " +
-                    "        " +
-                    "  q     " +
-                    "        " +
-                    "        " +
-                    "    N   " +
-                    "        "
+                "        " +
+                "        " +
+                "  q     " +
+                "        " +
+                "        " +
+                "    N   " +
+                "        "
         )
 
         assertFailsWith<IllegalArgumentException> {
@@ -411,7 +418,11 @@ class KingCheckUtilsTests { // [✔]
         */
 
         assertEquals(
-            setOf(Board.Position(col = 'g', row = 8), Board.Position(col = 'g', row = 7), Board.Position(col = 'h', row = 7)),
+            setOf(
+                Board.Position(col = 'g', row = 8),
+                Board.Position(col = 'g', row = 7),
+                Board.Position(col = 'h', row = 7)
+            ),
             getAdjacentPositions(Board.Position(col = 'h', row = 8)).toSet()
         )
     }
@@ -431,8 +442,11 @@ class KingCheckUtilsTests { // [✔]
 
         assertEquals(
             setOf(
-                Board.Position(col = 'b', row = 8), Board.Position(col = 'd', row = 8), Board.Position(col = 'c', row = 7),
-                Board.Position(col = 'b', row = 7), Board.Position(col = 'd', row = 7)
+                Board.Position(col = 'b', row = 8),
+                Board.Position(col = 'd', row = 8),
+                Board.Position(col = 'c', row = 7),
+                Board.Position(col = 'b', row = 7),
+                Board.Position(col = 'd', row = 7)
             ),
             getAdjacentPositions(Board.Position(col = 'c', row = 8)).toSet()
         )
@@ -453,9 +467,14 @@ class KingCheckUtilsTests { // [✔]
 
         assertEquals(
             setOf(
-                Board.Position(col = 'd', row = 5), Board.Position(col = 'f', row = 5), Board.Position(col = 'e', row = 4),
-                Board.Position(col = 'e', row = 6), Board.Position(col = 'd', row = 4), Board.Position(col = 'd', row = 6),
-                Board.Position(col = 'f', row = 4), Board.Position(col = 'f', row = 6)
+                Board.Position(col = 'd', row = 5),
+                Board.Position(col = 'f', row = 5),
+                Board.Position(col = 'e', row = 4),
+                Board.Position(col = 'e', row = 6),
+                Board.Position(col = 'd', row = 4),
+                Board.Position(col = 'd', row = 6),
+                Board.Position(col = 'f', row = 4),
+                Board.Position(col = 'f', row = 6)
             ),
             getAdjacentPositions(Board.Position(col = 'e', row = 5)).toSet()
         )

@@ -2,7 +2,9 @@ package storageTests
 
 import com.mongodb.MongoException
 import storage.GameStorageAccessException
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class GameStorageAccessExceptionTests { // [✔]
     @Test

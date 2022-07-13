@@ -1,10 +1,12 @@
 package domain.pieces
 
-import domain.board.*
+import domain.board.Board
 import domain.game.Game
 import domain.game.searchMoves
-import domain.move.*
-
+import domain.move.Move
+import domain.move.extractMoveInfo
+import domain.move.getEnPassantCapturedPawnPosition
+import domain.move.isStraightPathOccupied
 
 /**
  * Pawn piece with [type] 'P'.
@@ -20,14 +22,14 @@ data class Pawn(override val army: Army) : Piece {
 
     override fun isValidMove(board: Board, move: Move) =
         move.isVertical() && isValidPawnVerticalMove(board, move) ||
-                move.isDiagonal() && isValidPawnDiagonalMove(board, move)
+            move.isDiagonal() && isValidPawnDiagonalMove(board, move)
 
     override fun getAvailableMoves(game: Game, position: Board.Position): List<Move> =
         super.getAvailableMoves(game, position) +
-                game.searchMoves(
-                    Move.extractMoveInfo("${type.symbol}${position}$DEFAULT_TO_POSITION=Q"),
-                    optionalToPos = true
-                )
+            game.searchMoves(
+                Move.extractMoveInfo("${type.symbol}${position}$DEFAULT_TO_POSITION=Q"),
+                optionalToPos = true
+            )
 
     /**
      * Checks if the vertical pawn move is possible.
@@ -40,11 +42,10 @@ data class Pawn(override val army: Army) : Piece {
         val defaultMove = move.rowDistanceIsOne()
         val isInInitialRow = move.from.row == if (isWhite()) WHITE_PAWN_INITIAL_ROW else BLACK_PAWN_INITIAL_ROW
         val doubleMove = isInInitialRow && move.rowsDistance() == (if (isWhite()) DOUBLE_MOVE else -DOUBLE_MOVE) &&
-                !isStraightPathOccupied(board, move)
+            !isStraightPathOccupied(board, move)
 
         return (defaultMove || doubleMove) && !board.isPositionOccupied(move.to)
     }
-
 
     /**
      * Checks if the diagonal pawn move is possible.
@@ -54,7 +55,6 @@ data class Pawn(override val army: Army) : Piece {
      */
     private fun isValidPawnDiagonalMove(board: Board, move: Move) =
         move.rowDistanceIsOne() && board.isPositionOccupied(move.to)
-
 
     /**
      * Checks if the en passant move is valid.

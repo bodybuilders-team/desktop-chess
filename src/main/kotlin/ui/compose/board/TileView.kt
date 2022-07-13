@@ -1,16 +1,26 @@
+@file:Suppress("FunctionName")
+
 package ui.compose.board
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import domain.board.*
-import domain.pieces.*
+import domain.board.Board
+import domain.board.FIRST_COL
+import domain.pieces.Piece
+import domain.pieces.isWhite
 import ui.compose.WINDOW_SCALE
-
 
 // Constants
 val TILE_SIZE = 88.dp * WINDOW_SCALE
@@ -23,7 +33,6 @@ private val DARK_TILE_COLOR = Color(0xFF794839)
 
 private val TILE_SELECTED_BORDER_WIDTH = 3.dp * WINDOW_SCALE
 private val TILE_BORDER_COLOR = Color.Green
-
 
 /**
  * Composable used to display a Chess Tile
@@ -47,8 +56,7 @@ fun Tile(
             .clickable(true) { onClick(position) }
             .background(if ((position.col - FIRST_COL + position.row) % 2 == 0) LIGHT_TILE_COLOR else DARK_TILE_COLOR)
             .border(if (isSelected) TILE_SELECTED_BORDER_WIDTH else (-1).dp, TILE_BORDER_COLOR)
-    )
-    {
+    ) {
         if (piece != null) {
             Image(
                 painter = painterResource(

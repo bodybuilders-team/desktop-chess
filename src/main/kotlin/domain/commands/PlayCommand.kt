@@ -1,10 +1,12 @@
 package domain.commands
 
-import domain.*
-import domain.game.*
-import domain.move.*
+import domain.Session
+import domain.SessionState
+import domain.game.ended
+import domain.game.makeMove
+import domain.isNotLogging
+import domain.move.Move
 import storage.GameStorage
-
 
 /**
  * Executes a move command if it corresponds to the rules
@@ -34,9 +36,9 @@ class PlayCommand(private val db: GameStorage, private val session: Session) : C
             session.copy(
                 state =
                 when {
-                    game.ended()                                -> SessionState.ENDED
+                    game.ended() -> SessionState.ENDED
                     session.state == SessionState.SINGLE_PLAYER -> SessionState.SINGLE_PLAYER
-                    else                                        -> SessionState.WAITING_FOR_OPPONENT
+                    else -> SessionState.WAITING_FOR_OPPONENT
                 },
                 game = game
             )

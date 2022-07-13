@@ -1,16 +1,21 @@
 package domain.game
 
-import domain.board.*
+import domain.board.BLACK_FIRST_ROW
 import domain.board.Board.Position
-import domain.move.*
+import domain.board.COLS_RANGE
+import domain.board.ROWS_RANGE
+import domain.board.WHITE_FIRST_ROW
+import domain.move.Move
+import domain.move.MoveExtraction
+import domain.move.MoveType
+import domain.move.getValidatedMove
 import domain.pieces.Army
-
 
 /**
  * Searches for valid moves given a move extraction and if the search is in a specific to position.
  *
  * During the search, a move is a candidate for validation only if:
- * - There's a piece in the from position.
+ * - There's a piece in the "from" position.
  * - The type of the moving piece is the one specified in the move.
  * - The moving piece's army is the one playing in the current turn.
  *
@@ -42,21 +47,21 @@ fun Game.searchMoves(moveExtraction: MoveExtraction, optionalToPos: Boolean): Li
     return foundMoves
 }
 
-
 /**
  * Search Ranges to be used in [searchMoves].
  */
 private data class SearchRanges(
-    val fromCol: Iterable<Char>, val fromRow: Iterable<Int>,
-    val toCol: Iterable<Char>, val toRow: Iterable<Int>
+    val fromCol: Iterable<Char>,
+    val fromRow: Iterable<Int>,
+    val toCol: Iterable<Char>,
+    val toRow: Iterable<Int>
 )
-
 
 /**
  * Obtains the search ranges to be used in [searchMoves].
- * 
+ *
  * If optionalFromCol or optionalFromRow from [moveExtraction] are true, all columns or rows are searched for (respectively).
- * 
+ *
  * @param moveExtraction extraction of the move to search for (containing information on optional from column and row)
  * @param optionalToPos if the search isn't in a specific to position
  */

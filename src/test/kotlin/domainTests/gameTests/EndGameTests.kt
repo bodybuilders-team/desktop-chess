@@ -5,30 +5,39 @@ import defaultGameResultingInCheckMate
 import defaultGameResultingInStaleMate
 import defaultGameResultingInTie
 import defaultGameResultingInWhiteCheck
-import domain.game.*
-import domain.board.*
-import domain.move.*
+import domain.board.Board
+import domain.game.Game
+import domain.game.ended
+import domain.game.gameFromMoves
+import domain.game.isKingInCheck
+import domain.game.isKingInCheckMate
+import domain.game.isKingInStaleMate
+import domain.game.isTiedByFiftyMoveRule
+import domain.game.isTiedByThreefold
+import domain.game.makeMove
+import domain.move.Move
 import domain.pieces.Army
 import listOfMoves
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class EndGameTests { // [✔]
-    
+
     // Game.ended [✔]
-    
+
     @Test
-    fun `Game is ended when there's a checkmate in game`(){
+    fun `Game is ended when there's a checkmate in game`() {
         assertTrue(defaultGameResultingInCheckMate.ended())
     }
 
     @Test
-    fun `Game is ended when there's a stalemate in game`(){
+    fun `Game is ended when there's a stalemate in game`() {
         assertTrue(defaultGameResultingInStaleMate.ended())
     }
 
     @Test
-    fun `Game is ended when there's a tie in game`(){
+    fun `Game is ended when there's a tie in game`() {
         assertTrue(defaultGameResultingInTie.ended())
     }
 
@@ -38,13 +47,13 @@ class EndGameTests { // [✔]
     fun `isKingInCheck returns true if king is in check`() {
         val sut = Board(
             "        " +
-            "        " +
-            "        " +
-            "   q    " +
-            "        " +
-            "   K    " +
-            "        " +
-            "        "
+                "        " +
+                "        " +
+                "   q    " +
+                "        " +
+                "   K    " +
+                "        " +
+                "        "
         )
 
         val army = Army.WHITE
@@ -55,13 +64,13 @@ class EndGameTests { // [✔]
     fun `isKingInCheck returns false if king isn't in check`() {
         val sut = Board(
             "        " +
-            "        " +
-            "        " +
-            "   q    " +
-            "        " +
-            "    K   " +
-            "        " +
-            "        "
+                "        " +
+                "        " +
+                "   q    " +
+                "        " +
+                "    K   " +
+                "        " +
+                "        "
         )
 
         val army = Army.WHITE
@@ -74,13 +83,13 @@ class EndGameTests { // [✔]
     fun `isKingInCheckMate returns true if king is in checkmate`() {
         val sut = Board(
             "        " +
-            "    Kq  " +
-            "      b " +
-            "   r    " +
-            "        " +
-            "        " +
-            "        " +
-            "        "
+                "    Kq  " +
+                "      b " +
+                "   r    " +
+                "        " +
+                "        " +
+                "        " +
+                "        "
         )
 
         assertTrue(sut.isKingInCheckMate(Army.WHITE))
@@ -90,13 +99,13 @@ class EndGameTests { // [✔]
     fun `isKingInCheckMate returns false if king isn't in checkmate`() {
         val sut = Board(
             "        " +
-            "    K   " +
-            "      b " +
-            "   r    " +
-            "        " +
-            "        " +
-            "        " +
-            "        "
+                "    K   " +
+                "      b " +
+                "   r    " +
+                "        " +
+                "        " +
+                "        " +
+                "        "
         )
 
         assertFalse(sut.isKingInCheckMate(Army.WHITE))
@@ -108,13 +117,13 @@ class EndGameTests { // [✔]
     fun `isKingInStaleMate returns true if white king is in stalemate`() {
         val sut = Board(
             "       K" +
-            "     qr " +
-            "      b " +
-            "   r    " +
-            "        " +
-            "        " +
-            "        " +
-            "        "
+                "     qr " +
+                "      b " +
+                "   r    " +
+                "        " +
+                "        " +
+                "        " +
+                "        "
         )
         assertTrue(Game(sut, emptyList()).isKingInStaleMate(Army.WHITE))
     }
@@ -123,13 +132,13 @@ class EndGameTests { // [✔]
     fun `isKingInStaleMate returns false if white king can't move and isn't in check but it's not its turn to play`() {
         val sut = Board(
             "       K" +
-            "     qr " +
-            "      b " +
-            "   r    " +
-            "        " +
-            "        " +
-            "        " +
-            "        "
+                "     qr " +
+                "      b " +
+                "   r    " +
+                "        " +
+                "        " +
+                "        " +
+                "        "
         )
         assertFalse(Game(sut, listOfMoves("Pe2e4")).isKingInStaleMate(Army.WHITE))
     }
@@ -138,13 +147,13 @@ class EndGameTests { // [✔]
     fun `isKingInStaleMate returns true if black king is in stalemate`() {
         val sut = Board(
             "    K   " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            " Q      " +
-            " R      " +
-            "k       "
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                " Q      " +
+                " R      " +
+                "k       "
         )
         assertTrue(Game(sut, listOfMoves("Pe2e4")).isKingInStaleMate(Army.BLACK))
     }
@@ -153,13 +162,13 @@ class EndGameTests { // [✔]
     fun `isKingInStaleMate returns false if black king can't move and isn't in check but it's not its turn to play`() {
         val sut = Board(
             "    K   " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            " Q      " +
-            " R      " +
-            "k       "
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                " Q      " +
+                " R      " +
+                "k       "
         )
         assertFalse(Game(sut, emptyList()).isKingInStaleMate(Army.BLACK))
     }
@@ -168,13 +177,13 @@ class EndGameTests { // [✔]
     fun `isKingInStaleMate returns false if white king isn't in stalemate`() {
         val sut = Board(
             "        " +
-            "    K   " +
-            "      b " +
-            "   r    " +
-            "        " +
-            "        " +
-            "        " +
-            "        "
+                "    K   " +
+                "      b " +
+                "   r    " +
+                "        " +
+                "        " +
+                "        " +
+                "        "
         )
 
         assertFalse(Game(sut, emptyList()).isKingInStaleMate(Army.WHITE))
@@ -184,13 +193,13 @@ class EndGameTests { // [✔]
     fun `isKingInStaleMate returns false if black king isn't in stalemate`() {
         val sut = Board(
             "        " +
-            "        " +
-            "      B " +
-            "   R    " +
-            "        " +
-            "        " +
-            "     k  " +
-            "        "
+                "        " +
+                "      B " +
+                "   R    " +
+                "        " +
+                "        " +
+                "     k  " +
+                "        "
         )
 
         assertFalse(Game(sut, listOfMoves("Pe2e4")).isKingInStaleMate(Army.BLACK))

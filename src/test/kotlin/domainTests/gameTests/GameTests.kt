@@ -4,13 +4,24 @@ import defaultGameResultingInBlackCheck
 import defaultGameResultingInCheckMate
 import defaultGameResultingInStaleMate
 import defaultGameResultingInWhiteCheck
-import domain.board.*
-import domain.game.*
-import domain.move.*
+import domain.board.Board
+import domain.game.Game
+import domain.game.GameState
+import domain.game.armyToPlay
+import domain.game.gameFromMoves
+import domain.game.isKingInCheck
+import domain.game.makeMove
+import domain.game.makeMoves
+import domain.game.state
+import domain.move.IllegalMoveException
+import domain.move.Move
+import domain.move.MoveType
 import domain.pieces.Army
 import listOfMoves
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class GameTests { // [✔]
 
@@ -28,128 +39,147 @@ class GameTests { // [✔]
 
         assertEquals(
             "rnbqkbnr" +
-                    "pppp ppp" +
-                    "        " +
-                    "    p   " +
-                    "    P   " +
-                    "  N     " +
-                    "PPPP PPP" +
-                    "R BQKBNR", game.board.toString()
+                "pppp ppp" +
+                "        " +
+                "    p   " +
+                "    P   " +
+                "  N     " +
+                "PPPP PPP" +
+                "R BQKBNR",
+            game.board.toString()
         )
         assertEquals(listOfMoves("Pe2e4", "Pe7e5", "Nb1c3"), game.moves)
     }
 
     @Test
     fun `makeMove in the game with a capture move works correctly`() {
-        var game = Game(Board(
-            "rnbqkbnr" +
-            "pppp ppp" +
-            "        " +
-            "        " +
-            "    p   " +
-            "     P  " +
-            "PPPPP PP" +
-            "RNBQKBNR"
-        ), emptyList())
+        var game = Game(
+            Board(
+                "rnbqkbnr" +
+                    "pppp ppp" +
+                    "        " +
+                    "        " +
+                    "    p   " +
+                    "     P  " +
+                    "PPPPP PP" +
+                    "RNBQKBNR"
+            ),
+            emptyList()
+        )
 
         game = game.makeMove(Move.validated("Pf3e4", game))
 
         assertEquals(
             "rnbqkbnr" +
-            "pppp ppp" +
-            "        " +
-            "        " +
-            "    P   " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQKBNR", game.board.toString()
+                "pppp ppp" +
+                "        " +
+                "        " +
+                "    P   " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR",
+            game.board.toString()
         )
         assertEquals(listOf(Move("Pf3xe4")), game.moves)
     }
 
     @Test
     fun `makeMove in the game with a long castle move works correctly`() {
-        var game = Game(Board(
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "R   K  R"
-        ), emptyList())
+        var game = Game(
+            Board(
+                "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K  R"
+            ),
+            emptyList()
+        )
 
         game = game.makeMove(Move.validated("O-O-O", game))
 
         assertEquals(
             "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "  KR   R", game.board.toString()
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "  KR   R",
+            game.board.toString()
         )
         assertEquals(listOf(Move("O-O-O")), game.moves)
     }
 
     @Test
     fun `makeMove in the game with a short castle move works correctly`() {
-        var game = Game(Board(
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "R   K  R"
-        ), emptyList())
+        var game = Game(
+            Board(
+                "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "        " +
+                    "R   K  R"
+            ),
+            emptyList()
+        )
 
         game = game.makeMove(Move.validated("O-O", game))
 
         assertEquals(
             "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "R    RK ", game.board.toString()
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "R    RK ",
+            game.board.toString()
         )
         assertEquals(listOf(Move("O-O")), game.moves)
     }
 
     @Test
     fun `makeMove in the game with an en passant move works correctly`() {
-        var game = Game(Board(
-            "rnbqkbnr" +
-            " ppp ppp" +
-            "        " +
-            "p   pP  " +
-            "        " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQKBNR"
-        ), listOfMoves("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5"))
-        
+        var game = Game(
+            Board(
+                "rnbqkbnr" +
+                    " ppp ppp" +
+                    "        " +
+                    "p   pP  " +
+                    "        " +
+                    "        " +
+                    "PPPPP PP" +
+                    "RNBQKBNR"
+            ),
+            listOfMoves("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5")
+        )
+
         game = game.makeMove(Move.validated("Pf5e6", game))
 
         assertEquals(
             "rnbqkbnr" +
-            " ppp ppp" +
-            "    P   " +
-            "p       " +
-            "        " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQKBNR", game.board.toString()
+                " ppp ppp" +
+                "    P   " +
+                "p       " +
+                "        " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR",
+            game.board.toString()
         )
-        assertEquals(listOfMoves("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5") + Move("Pf5xe6").copy(type = MoveType.EN_PASSANT),
-            game.moves)
+        assertEquals(
+            listOfMoves("Pf2f4", "Pa7a5", "Pf4f5", "Pe7e5") + Move("Pf5xe6").copy(type = MoveType.EN_PASSANT),
+            game.moves
+        )
     }
 
     @Test
@@ -164,13 +194,14 @@ class GameTests { // [✔]
 
         assertEquals(
             "rnbqkbQr" +
-                    "p  ppp p" +
-                    "     n  " +
-                    " pp     " +
-                    "        " +
-                    "        " +
-                    "PPPPP PP" +
-                    "RNBQKBNR", game.board.toString()
+                "p  ppp p" +
+                "     n  " +
+                " pp     " +
+                "        " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR",
+            game.board.toString()
         )
     }
 
@@ -178,13 +209,13 @@ class GameTests { // [✔]
     fun `Removing piece previously protecting king leaves king in a check and throws IllegalMoveException`() {
         val sut = Board(
             "        " +
-            "    q   " +
-            "        " +
-            "    B   " +
-            "        " +
-            "    K   " +
-            "        " +
-            "        "
+                "    q   " +
+                "        " +
+                "    B   " +
+                "        " +
+                "    K   " +
+                "        " +
+                "        "
         )
 
         val game = Game(sut, emptyList())
@@ -198,13 +229,13 @@ class GameTests { // [✔]
     fun `King moving into check throws`() {
         val sut = Board(
             "        " +
-            "    q   " +
-            "        " +
-            "        " +
-            "        " +
-            "     K  " +
-            "        " +
-            "        "
+                "    q   " +
+                "        " +
+                "        " +
+                "        " +
+                "     K  " +
+                "        " +
+                "        "
         )
 
         val game = Game(sut, emptyList())
@@ -218,13 +249,13 @@ class GameTests { // [✔]
     fun `A king cannot castle to get out of check`() {
         val sut = Board(
             "        " +
-            "        " +
-            "        " +
-            "    q   " +
-            "        " +
-            "        " +
-            "        " +
-            "R   K  R"
+                "        " +
+                "        " +
+                "    q   " +
+                "        " +
+                "        " +
+                "        " +
+                "R   K  R"
         )
 
         val game = Game(sut, emptyList())
@@ -251,27 +282,27 @@ class GameTests { // [✔]
     fun `armyToPlay returns Black when number of moves is odd`() {
         assertEquals(Army.BLACK, gameFromMoves("Pe2e4").armyToPlay)
     }
-    
-    //state [✔]
+
+    // state [✔]
 
     @Test
-    fun `Game state is NO_CHECK when there's no check, checkmate, stalemate or tie in game`(){
+    fun `Game state is NO_CHECK when there's no check, checkmate, stalemate or tie in game`() {
         assertEquals(GameState.NO_CHECK, gameFromMoves("Pe2e4").state)
     }
 
     @Test
-    fun `Game state is CHECK when there's a check in game`(){
+    fun `Game state is CHECK when there's a check in game`() {
         assertEquals(GameState.CHECK, defaultGameResultingInBlackCheck.state)
         assertEquals(GameState.CHECK, defaultGameResultingInWhiteCheck.state)
     }
 
     @Test
-    fun `Game state is CHECKMATE when there's a checkmate in game`(){
+    fun `Game state is CHECKMATE when there's a checkmate in game`() {
         assertEquals(GameState.CHECKMATE, defaultGameResultingInCheckMate.state)
     }
 
     @Test
-    fun `Game state is STALEMATE when there's a stalemate in game`(){
+    fun `Game state is STALEMATE when there's a stalemate in game`() {
         assertEquals(GameState.STALEMATE, defaultGameResultingInStaleMate.state)
     }
 
@@ -288,13 +319,14 @@ class GameTests { // [✔]
 
         assertEquals(
             "rnbqkbnr" +
-                    "pppp ppp" +
-                    "        " +
-                    "    p   " +
-                    "    P   " +
-                    "  N     " +
-                    "PPPP PPP" +
-                    "R BQKBNR", game.board.toString()
+                "pppp ppp" +
+                "        " +
+                "    p   " +
+                "    P   " +
+                "  N     " +
+                "PPPP PPP" +
+                "R BQKBNR",
+            game.board.toString()
         )
         assertEquals(listOfMoves("Pe2e4", "Pe7e5", "Nb1c3"), game.moves)
     }
@@ -310,13 +342,13 @@ class GameTests { // [✔]
     fun `gameFromMoves returns new game with the board with moves made`() {
         val board = Board(
             "rnbqkbnr" +
-            "p pppppp" +
-            "        " +
-            " p      " +
-            "    P   " +
-            "  N     " +
-            "PPPP PPP" +
-            "R BQKBNR"
+                "p pppppp" +
+                "        " +
+                " p      " +
+                "    P   " +
+                "  N     " +
+                "PPPP PPP" +
+                "R BQKBNR"
         )
 
         assertEquals(board.toString(), gameFromMoves("Pe2e4", "Pb7b5", "Nb1c3").board.toString())
@@ -329,14 +361,14 @@ class GameTests { // [✔]
 
     @Test
     fun `gameFromMoves throws IllegalMoveException if at least one of the moves is invalid`() {
-        assertFailsWith<IllegalMoveException>{
+        assertFailsWith<IllegalMoveException> {
             gameFromMoves("Pe4", "Pb5", "Ne3")
         }
     }
 
     @Test
     fun `gameFromMoves throws IllegalMoveException if multiple moves are invalid`() {
-        assertFailsWith<IllegalMoveException>{
+        assertFailsWith<IllegalMoveException> {
             gameFromMoves("Pe4", "Pa2a5", "Ne3", "Ke9")
         }
     }

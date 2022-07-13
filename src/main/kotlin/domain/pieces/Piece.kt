@@ -1,10 +1,10 @@
 package domain.pieces
 
-import domain.game.*
 import domain.board.Board
+import domain.game.Game
+import domain.game.searchMoves
 import domain.move.Move
 import domain.move.extractMoveInfo
-
 
 // Constants.
 const val WHITE_PAWN_INITIAL_ROW = 2
@@ -15,7 +15,6 @@ const val NO_MOVE = 0
 
 val DEFAULT_TO_POSITION = Board.Position('a', 1)
 
-
 /**
  * Chess piece.
  * @property type piece type
@@ -24,7 +23,6 @@ val DEFAULT_TO_POSITION = Board.Position('a', 1)
 interface Piece {
     val army: Army
     val type: PieceType
-
 
     /**
      * Returns character representation of the piece as seen in game
@@ -51,7 +49,6 @@ interface Piece {
         game.searchMoves(Move.extractMoveInfo("${type.symbol}${position}$DEFAULT_TO_POSITION"), optionalToPos = true)
 }
 
-
 /**
  * Piece army.
  */
@@ -64,7 +61,6 @@ enum class Army {
      */
     fun other() = if (this == WHITE) BLACK else WHITE
 }
-
 
 /**
  * Returns a Piece from its representative [symbol]
@@ -82,7 +78,6 @@ fun getPieceFromSymbol(symbol: Char, army: Army): Piece {
         PieceType.QUEEN -> Queen(army)
     }
 }
-
 
 /**
  * All valid piece types.
@@ -107,7 +102,6 @@ enum class PieceType(val symbol: Char) {
             requireNotNull(values().find { it.symbol == symbol }) { "No PieceType with the symbol \'$symbol\'" }
     }
 }
-
 
 /**
  * Checks if the piece army is White.

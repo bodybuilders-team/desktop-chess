@@ -2,7 +2,6 @@ package domain.commands
 
 import domain.Session
 
-
 /**
  * Prints all the commands of the application.
  * @param session current session

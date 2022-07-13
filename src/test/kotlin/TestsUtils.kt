@@ -1,7 +1,8 @@
-import domain.game.*
 import domain.board.Board
-import domain.move.*
-
+import domain.game.Game
+import domain.game.gameFromMoves
+import domain.move.IllegalMoveException
+import domain.move.Move
 
 val defaultGameResultingInBlackCheck = gameFromMoves("c3", "d6", "a3", "e6", "Qa4")
 val defaultGameResultingInWhiteCheck = gameFromMoves("d3", "c6", "a3", "Qa5")
@@ -33,7 +34,6 @@ fun Board.isValidMove(moveInString: String): Boolean {
     }
     return true
 }
-
 
 /**
  * Returns a list of moves from moves [movesInString].

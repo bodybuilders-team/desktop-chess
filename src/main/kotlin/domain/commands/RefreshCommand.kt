@@ -1,9 +1,11 @@
 package domain.commands
 
-import domain.*
-import domain.game.*
+import domain.Session
+import domain.SessionState
+import domain.game.ended
+import domain.game.makeMove
+import domain.isNotLogging
 import storage.GameStorage
-
 
 /**
  * Updates the state of the game.
@@ -22,17 +24,17 @@ class RefreshCommand(private val db: GameStorage, private val session: Session) 
 
         val moves = db.getAllMoves(session.name)
         val yourTurn = session.game.moves.size < moves.size
-        
+
         val game = if (yourTurn) session.game.makeMove(moves.last())
-                   else session.game
+        else session.game
 
         return Result.success(
             session.copy(
                 state =
                 when {
-                    game.ended()    -> SessionState.ENDED
-                    yourTurn        -> SessionState.YOUR_TURN
-                    else            -> SessionState.WAITING_FOR_OPPONENT
+                    game.ended() -> SessionState.ENDED
+                    yourTurn -> SessionState.YOUR_TURN
+                    else -> SessionState.WAITING_FOR_OPPONENT
                 },
                 game = game
             )

@@ -1,14 +1,20 @@
 package domainTests.commandTests
 
-import storage.GameStorageStub
 import defaultGameResultingInBlackCheck
 import defaultGameResultingInCheckMate
-import domain.*
-import domain.game.*
-import domain.commands.*
-import domain.move.*
+import domain.SessionState
+import domain.commands.CommandException
+import domain.commands.JoinCommand
+import domain.game.GameState
+import domain.game.gameFromMoves
+import domain.game.state
+import domain.move.Move
 import kotlinx.coroutines.runBlocking
-import kotlin.test.*
+import storage.GameStorageStub
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class JoinCommandTests { // [✔]
     @Test
@@ -38,7 +44,7 @@ class JoinCommandTests { // [✔]
             )
         }
     }
-    
+
     @Test
     fun `Join command joins the player to an existing game if it exists`() {
         runBlocking {

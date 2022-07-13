@@ -1,25 +1,27 @@
 package domainTests.piecesTests
 
-import domain.game.*
-import domain.board.*
+import domain.board.Board
+import domain.game.Game
 import domain.move.Move
 import domain.move.MoveType
 import domain.pieces.Army
 import domain.pieces.King
-import kotlin.test.*
 import isValidMove
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class KingMoveTests { // [✔]
     private val sut = Board(
         "        " +
-        "        " +
-        "        " +
-        "        " +
-        "        " +
-        "   p    " +
-        "    K   " +
-        "        "
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "   p    " +
+            "    K   " +
+            "        "
     )
 
     @Test
@@ -71,18 +73,18 @@ class KingMoveTests { // [✔]
     fun `King move to same place is not valid`() {
         assertFalse(sut.isValidMove("Ke2e2"))
     }
-    
+
     // isValidCastle [✔]
 
     private val sutCastle = Board(
         "        " +
-        "        " +
-        "        " +
-        "        " +
-        "        " +
-        "        " +
-        "        " +
-        "R   K  R"
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "        " +
+            "R   K  R"
     )
 
     @Test
@@ -99,13 +101,13 @@ class KingMoveTests { // [✔]
     fun `isValidCastle returns false if long castle move is invalid (not a rook piece)`() {
         val sutCastle2 = Board(
             "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "N   K  R"
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "N   K  R"
         )
         assertFalse(King(Army.WHITE).isValidCastle(sutCastle2, Move("Ke1c1")))
     }
@@ -114,13 +116,13 @@ class KingMoveTests { // [✔]
     fun `isValidCastle returns false if short castle move is invalid (not a rook piece)`() {
         val sutCastle2 = Board(
             "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "R   K  P"
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "R   K  P"
         )
         assertFalse(King(Army.WHITE).isValidCastle(sutCastle2, Move("Ke1g1")))
     }

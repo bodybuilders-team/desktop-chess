@@ -1,11 +1,15 @@
-package play_games_from_chess_com
+package playGamesFromChessCom
 
-import domain.game.*
-import kotlinx.coroutines.*
+import domain.game.Game
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.PrintWriter
 
-//TODO - Allow different game variants (PGN header "Variant")
+// TODO - Allow different game variants (PGN header "Variant")
 
 const val NUMBER_OF_CHARS_MONTH_YEAR = 7
 
@@ -13,7 +17,6 @@ const val NUMBER_OF_CHARS_MONTH_YEAR = 7
  * Extracted game, containing the initial board and the moves to make.
  */
 data class ExtractedGame(val movesToMake: String, val game: Game)
-
 
 /**
  * Data class containing player, month, and games of the player in that month.
@@ -25,14 +28,13 @@ data class ExtractedGame(val movesToMake: String, val game: Game)
 data class MonthExtraction(val player: String, val month: Month, val location: Location, val logger: PrintWriter?) {
     val games: List<ExtractedGame> = extractGames(player, month, location, logger)
 
-    override fun toString() = "${player}/${month}/${location}"
+    override fun toString() = "$player/$month/$location"
 }
 
 data class PlayerExtraction(val player: String, val location: Location, val log: Boolean, val storeGames: Boolean) {
     val monthExtractions: List<MonthExtraction> = extractAllGamesFromPlayer(player, location, log, storeGames)
     val totalGameCount = monthExtractions.sumOf { it.games.size }
 }
-
 
 /**
  * Extracts all games from player.
@@ -53,10 +55,10 @@ fun extractAllGamesFromPlayer(
             Month(month, year)
         }
 
-    val logger = if (log) File("$CHESS_EXTRACTED_FOLDER_LOCATION/log/${player}.txt").printWriter() else null
+    val logger = if (log) File("$CHESS_EXTRACTED_FOLDER_LOCATION/log/$player.txt").printWriter() else null
 
     val initTime = System.currentTimeMillis()
-    
+
     print("Extracting all games from $player...")
 
     val monthExtractions = runBlocking(Dispatchers.Default) {
@@ -72,7 +74,7 @@ fun extractAllGamesFromPlayer(
             }.awaitAll().filterNotNull()
         }
     }
-    
+
     val endTime = System.currentTimeMillis()
 
     println(" - Extracted ${monthExtractions.sumOf { it.games.size }} games in ${endTime - initTime}ms")
@@ -83,7 +85,6 @@ fun extractAllGamesFromPlayer(
 
     return monthExtractions
 }
-
 
 /**
  * Writes the all [monthExtractions] to a file.

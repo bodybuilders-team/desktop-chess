@@ -1,14 +1,20 @@
 package domain.game
 
-import domain.board.*
-import domain.pieces.*
-import domain.board.Board.*
-import domain.move.*
-
+import domain.board.Board
+import domain.board.Board.Position
+import domain.board.COLS_RANGE
+import domain.board.ROWS_RANGE
+import domain.move.Move
+import domain.move.anyPositionInDiagonalPath
+import domain.move.anyPositionInStraightPath
+import domain.move.isValidNormal
+import domain.pieces.Army
+import domain.pieces.King
+import domain.pieces.Pawn
+import domain.pieces.PieceType
 
 // King Check Constants
 const val DOUBLE_CHECK = 2
-
 
 /**
  * Checks if the king of the [army] is in check, knowing the king's [position].
@@ -18,12 +24,11 @@ const val DOUBLE_CHECK = 2
  */
 fun Board.isKingInCheck(position: Position, army: Army) = positionAttackers(position, army.other()).isNotEmpty()
 
-
 /**
  * Checks if the king of the [army] can be protected from a check by an ally piece.
- * 
+ *
  * The king can't be protected by an ally in a double check (king must move).
- * 
+ *
  * The king is protectable when:
  * - an ally piece can be placed between the king and the attacking piece.
  * - an ally piece can capture the attacking piece.
@@ -52,10 +57,9 @@ fun Board.isKingProtectable(position: Position, army: Army): Boolean {
     }
 }
 
-
 /**
  * Checks if the [army] king can move to one of its adjacent positions.
- * 
+ *
  * The king can only move to an adjacent position if it is not occupied by an ally piece and not attacked by an enemy piece.
  * @param position position of the king
  * @param army army of the king to move
@@ -67,10 +71,9 @@ fun Board.canKingMove(position: Position, army: Army): Boolean {
 
     return getAdjacentPositions(position).any { pos ->
         (!dummyBoard.isPositionOccupied(pos) || dummyBoard.getPiece(pos)?.army == army.other()) &&
-                dummyBoard.placePiece(pos, dummyKing).positionAttackers(pos, army.other()).isEmpty()
+            dummyBoard.placePiece(pos, dummyKing).positionAttackers(pos, army.other()).isEmpty()
     }
 }
-
 
 /**
  * Returns list of moves attacking the [position].
@@ -88,14 +91,14 @@ fun Board.positionAttackers(position: Position, armyThatAttacks: Army): List<Mov
             if (piece.army != armyThatAttacks) continue
 
             val move = Move("${piece.type.symbol}$fromPos$position")
-            if (move.isValidNormal(piece, this) || move.copy(promotion = 'Q').isValidNormal(piece, this))
+            if (move.isValidNormal(piece, this) || move.copy(promotion = 'Q').isValidNormal(piece, this)) {
                 attackingMoves += move
+            }
         }
     }
 
     return attackingMoves
 }
-
 
 /**
  * Returns the position of the king of the [army]
@@ -109,13 +112,13 @@ fun Board.getKingPosition(army: Army): Position {
             val position = Position(col, row)
             val piece = this.getPiece(position) ?: continue
 
-            if (piece is King && piece.army == army)
+            if (piece is King && piece.army == army) {
                 return position
+            }
         }
     }
     throw IllegalArgumentException("King was not found.")
 }
-
 
 /**
  * Returns the adjacent positions of [position].
@@ -136,6 +139,6 @@ fun getAdjacentPositions(position: Position): List<Position> {
             adjacentPositions.add(Position(col, row))
         }
     }
-    
+
     return adjacentPositions
 }

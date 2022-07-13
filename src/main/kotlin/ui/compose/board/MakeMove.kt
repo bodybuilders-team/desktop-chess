@@ -6,7 +6,6 @@ import domain.commands.PlayCommand
 import domain.move.Move
 import storage.GameStorage
 
-
 /**
  * Makes a move in the session game, clearing the available moves.
  *

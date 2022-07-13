@@ -1,6 +1,6 @@
 # Desktop Chess ♟
 
-> Desktop chess, is, as the name implies, a desktop chess application, build in Kotlin 
+> Desktop chess, is, as the name implies, a desktop chess application, build in Kotlin
 > using [Compose for Desktop](https://www.jetbrains.com/lp/compose-mpp/).
 
 <p>
@@ -12,6 +12,7 @@
 # Description
 
 Desktop Chess allows the user to play chess in the following modes:
+
 - Single-player: where you can challenge yourself, learn new moves or play with someone else on the same computer
 - 1v1: where you can play with your friends and see which one of you is the Chess Master!
 
@@ -20,14 +21,15 @@ Desktop Chess allows the user to play chess in the following modes:
 # Project Structure
 
 The project is organized in 4 packages:
+
 - domain: implements the application behavior/logic
 - storage: implements the application storage, in memory or using a MongoDB database
 - ui:
-  - console: implements the console application methods
-  - compose: implements the application ui, using Compose for Desktop
+    - console: implements the console application methods
+    - compose: implements the application ui, using Compose for Desktop
 - play_games_from_chess_com: where It's possible to play games from the Chess.com API
 
-There's also the test directory, composed of more than 400 unit tests, 
+There's also the test directory, composed of more than 400 unit tests,
 to make sure that the code is all working correctly👌.
 
 ---

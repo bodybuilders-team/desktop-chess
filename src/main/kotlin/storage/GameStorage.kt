@@ -2,7 +2,6 @@ package storage
 
 import domain.move.Move
 
-
 /**
  * The GameState contract
  */

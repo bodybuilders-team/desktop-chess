@@ -1,28 +1,51 @@
 package domainTests.moveTests
 
-import domain.game.*
-import domain.board.*
-import domain.move.*
-import domain.pieces.*
+import domain.board.Board
+import domain.board.WHITE_FIRST_ROW
+import domain.game.Game
+import domain.game.isKingInCheck
+import domain.move.Castle
+import domain.move.INITIAL_ROOK_COL_CLOSER_TO_KING
+import domain.move.INITIAL_ROOK_COL_FURTHER_FROM_KING
+import domain.move.LONG_CASTLE_KING_COL
+import domain.move.LONG_CASTLE_ROOK_COL
+import domain.move.Move
+import domain.move.MoveType
+import domain.move.SHORT_CASTLE_KING_COL
+import domain.move.SHORT_CASTLE_ROOK_COL
+import domain.move.getEnPassantCapturedPawnPosition
+import domain.move.getValidatedMove
+import domain.move.isCastlePossible
+import domain.move.isEnPassantPossible
+import domain.move.isValidCapture
+import domain.move.isValidCastle
+import domain.move.isValidEnPassant
+import domain.pieces.Army
+import domain.pieces.King
+import domain.pieces.Pawn
 import listOfMoves
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class MoveValidationTests { // [✔]
-    
+
     // getValidatedMove [✔]
 
     @Test
     fun `getValidatedMove returns validated move with the correct move type information if it should be normal`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppppppp" +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "PPPPPPPP" +
-                    "RNBQKBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pe2e4").copy(type = MoveType.CASTLE)
@@ -36,13 +59,13 @@ class MoveValidationTests { // [✔]
     fun `getValidatedMove returns validated move with the correct move type information if it should be castle`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQK  R"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQK  R"
         )
 
         val move = Move("Ke1g1")
@@ -57,13 +80,13 @@ class MoveValidationTests { // [✔]
     fun `getValidatedMove returns validated move with the correct move type information if it should be en passant`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppp ppp" +
-            "        " +
-            "    pP  " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR"
+                "pppp ppp" +
+                "        " +
+                "    pP  " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pf5e6")
@@ -79,13 +102,13 @@ class MoveValidationTests { // [✔]
     fun `getValidatedMove returns validated move with the correct capture information if it should be a capture`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppp ppp" +
-                    "        " +
-                    "        " +
-                    "    p   " +
-                    "     P  " +
-                    "PPPPP PP" +
-                    "RNBQKBNR"
+                "pppp ppp" +
+                "        " +
+                "        " +
+                "    p   " +
+                "     P  " +
+                "PPPPP PP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pf3e4")
@@ -99,13 +122,13 @@ class MoveValidationTests { // [✔]
     fun `getValidatedMove returns null with invalid move`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppp ppp" +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "PPPPPPPP" +
-                    "RNBQKBNR"
+                "pppp ppp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pe2e6")
@@ -119,13 +142,13 @@ class MoveValidationTests { // [✔]
     fun `getValidatedMove returns null with move that leaves king in check`() {
         val sut = Board(
             "rnb kbnr" +
-            "pppp ppp" +
-            "        " +
-            "        " +
-            "    q   " +
-            "        " +
-            "PPPPBPPP" +
-            "RNBQK NR"
+                "pppp ppp" +
+                "        " +
+                "        " +
+                "    q   " +
+                "        " +
+                "PPPPBPPP" +
+                "RNBQK NR"
         )
 
         val move = Move("Be2f3")
@@ -134,7 +157,7 @@ class MoveValidationTests { // [✔]
         assertNotNull(piece)
         assertNull(move.getValidatedMove(piece, Game(sut, emptyList())))
     }
-    
+
     // isValidNormal [✔]
     // Calls isValidCapture and the individual isValidMove of the moving piece.
     // Guarantee testing of both.
@@ -143,13 +166,13 @@ class MoveValidationTests { // [✔]
     fun `isValidNormal returns true if the move is a valid normal move`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pe2e4")
@@ -165,13 +188,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCapture returns true with valid capture to empty square`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "ppppp pp" +
-                    "        " +
-                    "     p  " +
-                    "        " +
-                    "        " +
-                    "PPPPPPPP" +
-                    "RNBQKBNR"
+                "ppppp pp" +
+                "        " +
+                "     p  " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Ng1f3")
@@ -185,13 +208,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCapture returns true with valid capture to occupied square`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "pppp ppp" +
-                    "        " +
-                    "    p   " +
-                    "        " +
-                    "     N  " +
-                    "PPPPPPPP" +
-                    "RNBQKB R"
+                "pppp ppp" +
+                "        " +
+                "    p   " +
+                "        " +
+                "     N  " +
+                "PPPPPPPP" +
+                "RNBQKB R"
         )
 
         val move = Move("Nf3e5")
@@ -205,13 +228,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCapture returns false with invalid capture (capture a piece of the same army)`() {
         val sut = Board(
             "rnbqkbnr" +
-                    "ppppp pp" +
-                    "        " +
-                    "     p  " +
-                    "        " +
-                    "     N  " +
-                    "PPPPPPPP" +
-                    "RNBQKB R"
+                "ppppp pp" +
+                "        " +
+                "     p  " +
+                "        " +
+                "     N  " +
+                "PPPPPPPP" +
+                "RNBQKB R"
         )
 
         val move = Move("Pf2f3")
@@ -225,13 +248,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCapture returns false with valid capture to empty square with wrong capture information`() {
         val sut = Board(
             "rnbqkbnr" +
-            "ppppp pp" +
-            "        " +
-            "     p  " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR"
+                "ppppp pp" +
+                "        " +
+                "     p  " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pe2xe4")
@@ -245,13 +268,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCapture returns true with valid promotion`() {
         val sut = Board(
             "rnbqkb r" +
-            "ppppppPp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR"
+                "ppppppPp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pg7g8=Q")
@@ -265,13 +288,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCapture returns false with invalid promotion (invalid pawn position)`() {
         val sut = Board(
             "rnbqkb r" +
-            "pppppp p" +
-            "        " +
-            "      P " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "RNBQKBNR"
+                "pppppp p" +
+                "        " +
+                "      P " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pg5g6=Q")
@@ -285,13 +308,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCapture return false with invalid promotion (promotion piece not specified)`() {
         val sut = Board(
             "rnbqkb r" +
-                    "ppppppPp" +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "        " +
-                    "PPPPPPPP" +
-                    "RNBQKBNR"
+                "ppppppPp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pg7g8")
@@ -309,13 +332,13 @@ class MoveValidationTests { // [✔]
     fun `isValidEnPassant returns true if the move is a valid en passant`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppp ppp" +
-            "        " +
-            "    pP  " +
-            "        " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQKBNR"
+                "pppp ppp" +
+                "        " +
+                "    pP  " +
+                "        " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pf5e6")
@@ -329,13 +352,13 @@ class MoveValidationTests { // [✔]
     fun `isValidEnPassant returns false if the move isn't a valid en passant`() {
         val sut = Board(
             "rnbqkbnr" +
-            "ppp pppp" +
-            "   p    " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQKBNR"
+                "ppp pppp" +
+                "   p    " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pf4f5")
@@ -353,13 +376,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCastle returns true if the move is a valid long castle with king`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "R   KBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "R   KBNR"
         )
 
         val move = Move("Ke1c1")
@@ -373,13 +396,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCastle returns false if the move isn't a valid long castle with king (rook moved already)`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "R   KBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "R   KBNR"
         )
 
         val move = Move("Ke1c1")
@@ -393,13 +416,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCastle returns true if the move is a valid short castle with king`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQK  R"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
         )
 
         val move = Move("Ke1g1")
@@ -413,13 +436,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCastle returns false if the move isn't a valid short castle with king (rook moved already)`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQK  R"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
         )
 
         val move = Move("Ke1g1")
@@ -433,15 +456,15 @@ class MoveValidationTests { // [✔]
     fun `isValidCastle returns false if the move is a valid long castle with king but the king is in check`() {
         val sut = Board(
             "rnbqk nr" +
-            "ppp  ppp" +
-            "        " +
-            "        " +
-            "     P b" +
-            "        " +
-            "PPPPP PP" +
-            "R   KBNR"
+                "ppp  ppp" +
+                "        " +
+                "        " +
+                "     P b" +
+                "        " +
+                "PPPPP PP" +
+                "R   KBNR"
         )
-        
+
         val game = Game(sut, listOfMoves("Pf2f4"))
 
         val move = Move("Ke1c1")
@@ -457,13 +480,13 @@ class MoveValidationTests { // [✔]
     fun `isValidCastle returns false if the move is a valid short castle with king but the king is in check`() {
         val sut = Board(
             "rnbqk nr" +
-            "ppp  ppp" +
-            "        " +
-            "        " +
-            "     P b" +
-            "        " +
-            "PPPPP PP" +
-            "RNBQK  R"
+                "ppp  ppp" +
+                "        " +
+                "        " +
+                "     P b" +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
         )
 
         val game = Game(sut, listOfMoves("Pf2f4"))
@@ -483,13 +506,13 @@ class MoveValidationTests { // [✔]
     fun `isEnPassantPossible returns true if an en passant move is possible to be made`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppp ppp" +
-            "        " +
-            "    pP  " +
-            "        " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQKBNR"
+                "pppp ppp" +
+                "        " +
+                "    pP  " +
+                "        " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pf5e6")
@@ -504,13 +527,13 @@ class MoveValidationTests { // [✔]
     fun `isEnPassantPossible returns false if an en passant move isn't possible to be made`() {
         val sut = Board(
             "rnbqkbnr" +
-            "ppp pppp" +
-            "   p    " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQKBNR"
+                "ppp pppp" +
+                "   p    " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQKBNR"
         )
 
         val move = Move("Pf4f5")
@@ -527,13 +550,13 @@ class MoveValidationTests { // [✔]
     fun `isCastlePossible returns true if a long castle move is possible to be made`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "R   KBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "R   KBNR"
         )
 
         val previousMoves = listOfMoves("Pf2f4")
@@ -551,17 +574,17 @@ class MoveValidationTests { // [✔]
     fun `isCastlePossible returns false if a long castle move isn't possible to be made (rook moved already)`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "R   KBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "R   KBNR"
         )
 
         val previousMoves = listOfMoves("Ra1b1", "Rb1a1")
-        
+
         val game = Game(sut, previousMoves)
         val move = Move("Ke1c1")
         val piece = sut.getPiece(move.from)
@@ -575,13 +598,13 @@ class MoveValidationTests { // [✔]
     fun `isCastlePossible returns true if a long castle move is possible to be made if other rook moved`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "R   KBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "R   KBNR"
         )
 
         val previousMoves = listOfMoves("Rh1g1", "Rg1h1")
@@ -599,13 +622,13 @@ class MoveValidationTests { // [✔]
     fun `isCastlePossible returns true if a short castle move is possible to be made`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQK  R"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
         )
 
         val previousMoves = listOfMoves("Pf2f4")
@@ -623,13 +646,13 @@ class MoveValidationTests { // [✔]
     fun `isCastlePossible returns false if a short castle move isn't possible to be made (rook moved already)`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQK  R"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
         )
 
         val previousMoves = listOfMoves("Rh1g1", "Rg1h1")
@@ -647,13 +670,13 @@ class MoveValidationTests { // [✔]
     fun `isCastlePossible returns true if a short castle move is possible to be made if other rook moved`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "     P  " +
-            "        " +
-            "PPPPP PP" +
-            "RNBQK  R"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "     P  " +
+                "        " +
+                "PPPPP PP" +
+                "RNBQK  R"
         )
 
         val previousMoves = listOfMoves("Ra1b1", "Rb1a1")
@@ -676,7 +699,7 @@ class MoveValidationTests { // [✔]
             getEnPassantCapturedPawnPosition(Board.Position(col = 'b', row = 6), Pawn(Army.WHITE))
         )
     }
-    
+
     // Castle.getRookPosition [✔]
 
     @Test

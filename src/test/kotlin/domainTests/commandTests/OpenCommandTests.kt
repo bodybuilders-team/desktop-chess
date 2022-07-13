@@ -1,15 +1,21 @@
 package domainTests.commandTests
 
-import storage.GameStorageStub
 import defaultGameResultingInCheckMate
 import defaultGameResultingInStaleMate
 import defaultGameResultingInWhiteCheck
-import domain.*
-import domain.game.*
-import domain.commands.*
-import domain.move.*
+import domain.SessionState
+import domain.commands.CommandException
+import domain.commands.OpenCommand
+import domain.game.GameState
+import domain.game.gameFromMoves
+import domain.game.state
+import domain.move.Move
 import kotlinx.coroutines.runBlocking
-import kotlin.test.*
+import storage.GameStorageStub
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class OpenCommandTests { // [✔]
     @Test
@@ -25,7 +31,7 @@ class OpenCommandTests { // [✔]
             )
         }
     }
-    
+
     @Test
     fun `Open command creates game if it doesn't exist`() {
         runBlocking {

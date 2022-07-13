@@ -1,8 +1,8 @@
 package domain.pieces
 
 import domain.board.Board
-import domain.move.*
-
+import domain.move.Move
+import domain.move.isValidDiagonalMove
 
 /**
  * Bishop piece with [type] 'B'.

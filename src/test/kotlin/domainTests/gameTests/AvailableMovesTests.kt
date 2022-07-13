@@ -1,11 +1,17 @@
 package domainTests.gameTests
 
-import domain.game.*
-import domain.board.*
+import domain.board.BOARD_SIDE_LENGTH
+import domain.board.Board
+import domain.game.Game
+import domain.game.gameFromMoves
+import domain.game.hasAvailableMoves
 import domain.pieces.Army
 import listOfMoves
-import kotlin.test.*
-
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class AvailableMovesTests { // [✔]
 
@@ -25,13 +31,13 @@ class AvailableMovesTests { // [✔]
     fun `getAvailableMoves returns available moves for queen`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            " P P    " +
-            "PP  PPPP" +
-            "RN QKBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "        " +
+                " P P    " +
+                "PP  PPPP" +
+                "RN QKBNR"
         )
         val position = Board.Position('d', 1)
         val piece = sut.getPiece(position)
@@ -47,13 +53,13 @@ class AvailableMovesTests { // [✔]
     fun `getAvailableMoves returns available moves, including castle move, for king`() {
         val sut = Board(
             "rnbqkbnr" +
-            "pppppppp" +
-            "        " +
-            "        " +
-            "        " +
-            "        " +
-            "PPPPPPPP" +
-            "R   KBNR"
+                "pppppppp" +
+                "        " +
+                "        " +
+                "        " +
+                "        " +
+                "PPPPPPPP" +
+                "R   KBNR"
         )
         val position = Board.Position('e', 1)
         val piece = sut.getPiece(position)
@@ -69,13 +75,13 @@ class AvailableMovesTests { // [✔]
     fun `getAvailableMoves returns available moves, including en passant move, for pawn`() {
         val sut = Board(
             "rnbqkbnr" +
-            " pp pppp" +
-            "        " +
-            "p  pP   " +
-            "        " +
-            "        " +
-            "PPPP PPP" +
-            "RNBQKBNR"
+                " pp pppp" +
+                "        " +
+                "p  pP   " +
+                "        " +
+                "        " +
+                "PPPP PPP" +
+                "RNBQKBNR"
         )
         val position = Board.Position('e', 5)
 

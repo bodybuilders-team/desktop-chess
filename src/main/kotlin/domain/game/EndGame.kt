@@ -3,13 +3,11 @@ package domain.game
 import domain.board.Board
 import domain.pieces.Army
 import domain.pieces.PieceType
-import java.util.*
-
+import java.util.Collections
 
 const val NUMBER_OF_MOVES_TO_DRAW = 100
 
-//TODO - Dead position
-
+// TODO - Dead position
 
 /**
  * Checks if the game ended.
@@ -36,14 +34,12 @@ fun Game.endedInDraw() = state in listOf(
     GameState.DEAD_POSITION
 )
 
-
 /**
  * Checks if the king of the [army] is in check.
  * @param army army of the king to check
  * @return true if the king is in check
  */
 fun Board.isKingInCheck(army: Army) = isKingInCheck(getKingPosition(army), army)
-
 
 /**
  * Checks if the king of the [army] is in check mate.
@@ -60,12 +56,10 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
     return isKingInCheck(kingPos, army) && !isKingProtectable(kingPos, army) && !canKingMove(kingPos, army)
 }
 
-
 /**
  * <-------------------------------------- Draws -------------------------------------->
  * You can check more about draw conditions here: https://www.chess.com/terms/draw-chess
  */
-
 
 /**
  * Checks if the king of the [army] is in stalemate.
@@ -76,8 +70,7 @@ fun Board.isKingInCheckMate(army: Army): Boolean {
  */
 fun Game.isKingInStaleMate(army: Army) =
     !board.isKingInCheck(board.getKingPosition(army), army) &&
-            armyToPlay == army && !hasAvailableMoves(army)
-
+        armyToPlay == army && !hasAvailableMoves(army)
 
 /**
  * Checks if the game is tied by the 50 move rule:
@@ -93,7 +86,6 @@ fun Game.isTiedByFiftyMoveRule() =
     moves.size >= NUMBER_OF_MOVES_TO_DRAW && moves.takeLast(NUMBER_OF_MOVES_TO_DRAW).none { move ->
         move.capture || move.symbol == PieceType.PAWN.symbol
     }
-
 
 /**
  * Checks if a game is tied by threefold rule:
@@ -116,7 +108,6 @@ fun Game.isTiedByThreefold(): Boolean {
 
     return false
 }
-
 
 // TODO: 27/12/2021 Test
 /**

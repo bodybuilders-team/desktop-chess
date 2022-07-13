@@ -1,9 +1,10 @@
-package play_games_from_chess_com
+package playGamesFromChessCom
 
 import org.bson.json.JsonObject
 import java.net.URI
-import java.net.http.*
-
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 
 // https://www.chess.com/news/view/published-data-api#pubapi-general
 
@@ -19,9 +20,7 @@ import java.net.http.*
 // URL pattern: https://api.chess.com/pub/player/{username}/games/{YYYY}/{MM}
 // Example: https://api.chess.com/pub/player/erik/games/2009/10
 
-
 const val CHESS_COM_API_URL = "https://api.chess.com"
-
 
 /**
  * Gets a list of all player usernames with the title [titleAbbrev]
@@ -30,12 +29,12 @@ const val CHESS_COM_API_URL = "https://api.chess.com"
 fun getPlayersFromTitle(titleAbbrev: String): List<String> {
     val json = getJsonResponse("$CHESS_COM_API_URL/pub/titled/$titleAbbrev")
 
-    if (json.json == "{\"code\":0,\"message\":\"Data provider not found for key \\\"/pub/titled/$titleAbbrev\\\".\"}")
+    if (json.json == "{\"code\":0,\"message\":\"Data provider not found for key \\\"/pub/titled/$titleAbbrev\\\".\"}") {
         throw Exception("Title abbreviation \"$titleAbbrev\" does not exist.")
+    }
 
     return json.toBsonDocument()["players"]!!.asArray().map { it.asString().value }
 }
-
 
 /**
  * Returns from a [player] a list of month uri's containing game information on games the player played that month.
@@ -44,12 +43,12 @@ fun getPlayersFromTitle(titleAbbrev: String): List<String> {
 fun getMonthlyArchives(player: String): List<String> {
     val json = getJsonResponse("$CHESS_COM_API_URL/pub/player/$player/games/archives")
 
-    if (json.json == "{\"code\":0,\"message\":\"User \\\"$player\\\" not found.\"}")
+    if (json.json == "{\"code\":0,\"message\":\"User \\\"$player\\\" not found.\"}") {
         throw Exception("Player \"$player\" does not exist.")
+    }
 
     return json.toBsonDocument()["archives"]!!.asArray().map { it.asString().value }
 }
-
 
 /**
  * Gets pgn file as list of strings containing information on all the games played in a month by a specific player.
@@ -63,7 +62,7 @@ fun getMonthPGNList(player: String, month: Month): List<PGN> {
     val json = getJsonResponse(uri)
 
     if (json.json == "{\"code\":0,\"message\":\"Data provider not found for key \\\"${
-            uri.substringAfter(CHESS_COM_API_URL)
+        uri.substringAfter(CHESS_COM_API_URL)
         }\\\".\"}"
     ) {
         throw Exception("Unknown month for player.")
@@ -71,7 +70,6 @@ fun getMonthPGNList(player: String, month: Month): List<PGN> {
 
     return getPGNListFromJSON(json)
 }
-
 
 /**
  * Gets a json response (as JsonObject) from a get request to the [uri].

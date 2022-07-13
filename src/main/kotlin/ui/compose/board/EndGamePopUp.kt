@@ -1,20 +1,30 @@
+@file:Suppress("FunctionName")
+
 package ui.compose.board
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import domain.Session
-import domain.game.*
+import domain.game.GameState
+import domain.game.armyToPlay
+import domain.game.state
 import ui.compose.WINDOW_SCALE
 
 // Constants
 private val END_GAME_POP_UP_WIDTH = 200.dp * WINDOW_SCALE
 private val END_GAME_POP_UP_TEXT_FONT_SIZE = 20.sp * WINDOW_SCALE
-
 
 /**
  * Composable used to show the endgame pop-up in case of a play that ends the game, i.e. checkmate.
@@ -44,15 +54,15 @@ fun EndGamePopUp(session: Session) {
                 Text(
                     text =
                     when (session.game.state) {
-                        GameState.CHECKMATE         -> "${session.game.armyToPlay.other()} won!"
-                        GameState.STALEMATE         -> "by stalemate"
-                        GameState.FIFTY_MOVE_RULE   -> "by fifty-move-rule"
-                        GameState.THREE_FOLD        -> "by repetition"
-                        GameState.DEAD_POSITION     -> "by insufficient material"
+                        GameState.CHECKMATE -> "${session.game.armyToPlay.other()} won!"
+                        GameState.STALEMATE -> "by stalemate"
+                        GameState.FIFTY_MOVE_RULE -> "by fifty-move-rule"
+                        GameState.THREE_FOLD -> "by repetition"
+                        GameState.DEAD_POSITION -> "by insufficient material"
                         else -> ""
                     },
                     fontSize = END_GAME_POP_UP_TEXT_FONT_SIZE,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Bold
                 )
             }
         },

@@ -1,11 +1,20 @@
 package domainTests.piecesTests
 
-import domain.pieces.*
-import kotlin.test.*
-
+import domain.pieces.Army
+import domain.pieces.Bishop
+import domain.pieces.King
+import domain.pieces.Knight
+import domain.pieces.Pawn
+import domain.pieces.PieceType
+import domain.pieces.Queen
+import domain.pieces.Rook
+import domain.pieces.getPieceFromSymbol
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class PieceTypeTests { // [✔]
-    
+
     // Piece type symbol [✔]
 
     @Test
@@ -37,7 +46,7 @@ class PieceTypeTests { // [✔]
     fun `Check if King's piece type is equal to expected`() {
         assertEquals('K', King(Army.WHITE).type.symbol)
     }
-    
+
     // getPieceFromSymbol [✔]
 
     @Test
@@ -101,7 +110,7 @@ class PieceTypeTests { // [✔]
     fun `PieceType get with 'Q' returns PieceType Queen`() {
         assertEquals(PieceType.QUEEN, PieceType['Q'])
     }
-    
+
     // Piece toString [✔]
 
     @Test
@@ -158,12 +167,12 @@ class PieceTypeTests { // [✔]
     fun `Piece toString with white king works correctly`() {
         assertEquals("WHITE KING", King(Army.WHITE).toString())
     }
+
     @Test
     fun `Piece toString with black king works correctly`() {
         assertEquals("BLACK KING", King(Army.BLACK).toString())
     }
-    
-    
+
     // Piece toChar [✔]
 
     @Test
